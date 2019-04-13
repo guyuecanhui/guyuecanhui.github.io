@@ -89,12 +89,12 @@
 <meta property="og:site_name" content="Looping">
 <meta property="og:description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。 ItemCF 推导过程首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://guyuecanhui.github.io/2019/04/12/itemcf/itemcf-f1.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/04/12/itemcf/itemcf/itemcf-f1.png">
 <meta property="og:updated_time" content="2019-04-13T07:08:36.074Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="可能是最好懂的ItemCF解释了">
 <meta name="twitter:description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。 ItemCF 推导过程首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因">
-<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/04/12/itemcf/itemcf-f1.png">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/04/12/itemcf/itemcf/itemcf-f1.png">
 
 
 
@@ -447,7 +447,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
 <li>如果觉得需要更多的考虑用户的短期兴趣，做即时的推荐，那可以将式 (6) 中的用户观看历史限制在最近几次，甚至一次；</li>
 </ol>
 <p>如果把用户-视频考虑成一个二部图，ItemCF 实际上是基于图的结构，执行了一次从用户到视频的兴趣扩散过程。可以考虑下图中的视频 $v_1,v_3​$，它们没有直接的共同观看，因此用 ItemCF 算出来的相似度为 0，但是实际上 $u_1,u_2​$ 都观看了 $v_2​$，因此可以认为用户 $u_1,u_2​$ 存在一定的相似性，因此如果执行一次视频-用户-视频的兴趣扩散过程就能够捕获 $v_1,v_3​$ 的相似度了。</p>
-<p><img src="/2019/04/12/itemcf/itemcf-f1.png" alt="itemcf-f1"></p>
+<p><img src="itemcf/itemcf-f1.png" alt="itemcf-f1"></p>
 <p>后面一种思路实际上就是 SimRank，但是由于需要执行多次兴趣扩散（即对二部图做多次迭代计算），SimRank 的计算复杂度相当高，在业务数据量大的情况下需要强大的算力支持，以后会再讨论下我在 SimRank 模型上的尝试。</p>
 
       
