@@ -5,7 +5,7 @@
   
 
 
-<html class="theme-next muse use-motion" lang>
+<html class="theme-next gemini use-motion" lang>
 <head><meta name="generator" content="Hexo 3.8.0">
   <meta charset="UTF-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="Looping">
 <meta property="og:description" content="前段时间搞 LR 的特征优化，切身体会到人工特征工程实在太费劲了，一方面发掘高价值的特征十分困难，另一方面某些特征之间需要组合才能有效，比如用户对视频的某个特征的偏好，就必须将视频的特征和用户的特征进行组合。LR 是线性模型，没法自动做特征组合，只能人工搞，但人工来干这事就相当麻烦了。自然而然的，就会想到用可以自动组合特征的模型。现在了解的包括 FM、FFM 等基于矩阵分解的模型、基于 GBDT">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-13T06:54:01.836Z">
+<meta property="og:updated_time" content="2019-04-13T06:55:46.132Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="特征组合之FFM">
 <meta name="twitter:description" content="前段时间搞 LR 的特征优化，切身体会到人工特征工程实在太费劲了，一方面发掘高价值的特征十分困难，另一方面某些特征之间需要组合才能有效，比如用户对视频的某个特征的偏好，就必须将视频的特征和用户的特征进行组合。LR 是线性模型，没法自动做特征组合，只能人工搞，但人工来干这事就相当麻烦了。自然而然的，就会想到用可以自动组合特征的模型。现在了解的包括 FM、FFM 等基于矩阵分解的模型、基于 GBDT">
@@ -100,7 +100,7 @@
   var NexT = window.NexT || {};
   var CONFIG = {
     root: '/',
-    scheme: 'Muse',
+    scheme: 'Gemini',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
     fancybox: true,
@@ -433,7 +433,7 @@ w_i=w_i-\frac{\eta}{\sqrt{G_i}} g_i
 (w_{j_1,f_2})_d=(w_{j_1,f_2})_d-\frac{\eta}{\sqrt{(G_{j_1,f_2})_d}} (g_{j_1,f_2})_d \\
 (w_{j_2,f_1})_d=(w_{j_2,f_1})_d-\frac{\eta}{\sqrt{(G_{j_2,f_1})_d}} (g_{j_2,f_1})_d
 \end{cases}, 
-\quad d=1,\cdots, k,\qquad (9)</script><p>基于以上各式，可以很容易把算法写出来了：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Algorithm: Train FFM using SG</span><br><span class="line"><span class="number">1.</span> init G = ones(n,f,k)</span><br><span class="line"><span class="number">2.</span> init g = rand(n,f,k)[<span class="number">0</span>,<span class="number">1</span>/sqrt(k)]</span><br><span class="line"><span class="number">3.</span> <span class="keyword">for</span> epoch = <span class="number">1</span> to t:</span><br><span class="line"><span class="number">4.</span>     <span class="keyword">for</span> i = <span class="number">1</span> to m:</span><br><span class="line"><span class="number">5.</span>         sample a data point (y,x)</span><br><span class="line"><span class="number">6.</span>         calculate kappa by (<span class="number">7</span>)</span><br><span class="line"><span class="number">7.</span>         <span class="keyword">for</span> xi, xj <span class="keyword">in</span> x:</span><br><span class="line"><span class="number">8.</span>             calculate gradients by (<span class="number">7</span>)</span><br><span class="line"><span class="number">9.</span>             update weights by (<span class="number">8</span>)(<span class="number">9</span>)</span><br></pre></td></tr></table></figure></p>
+\quad d=1,\cdots, k,\qquad (9)</script><p>基于以上各式，可以很容易把算法写出来了：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Algorithm: Train FFM using SG</span><br><span class="line">  init G = ones(n,f,k)</span><br><span class="line">  init g = rand(n,f,k)[<span class="number">0</span>,<span class="number">1</span>/sqrt(k)]</span><br><span class="line">  <span class="keyword">for</span> epoch = <span class="number">1</span> to t:</span><br><span class="line">    <span class="keyword">for</span> i = <span class="number">1</span> to m:</span><br><span class="line">      sample a data point (y,x)</span><br><span class="line">      calculate kappa by (<span class="number">7</span>)</span><br><span class="line">      <span class="keyword">for</span> xi, xj <span class="keyword">in</span> x:</span><br><span class="line">        calculate gradients by (<span class="number">7</span>)</span><br><span class="line">        update weights by (<span class="number">8</span>)(<span class="number">9</span>)</span><br></pre></td></tr></table></figure></p>
 <p>论文中指出，FFM 特别容易过拟合，其中，正则化系数 $\lambda$ 越小，效果越好但越容易过拟合；学习率 $\eta$ 越大，学习速度越快也越容易过拟合。我自己试了几个数据集，使用 $\lambda=0.00002,\ \eta=0.1,\ k=4$，一般 1~4 轮都差不多OK了，再多就容易过拟合。<br>为了防止过拟合，论文提出使用 <strong>early stopping</strong> 技术，即将训练数据进一步划分成训练集和验证集，每一轮用训练集更新完模型后，用验证集计算 logloss，并记录验证集 logloss 开始上升的轮数 $r$，最后再用整个数据集训练 $r$ 轮。但是实际在用的时候，可以线下调一个比较好的参数，然后直接放到线上去用，等数据发生变化，或者定时去重新评估这些参数。</p>
 <p>自己用 scala 实现的 FFM 模型没有使用指令集加速，只是将训练数据划分成多个 partition 并行训练，然后将参数合并（求平均），效果差一些。我拿 libFFM 做了一个性能的比较……<strong>完败</strong>……唉，Spark 做数值计算还是不太行啊！</p>
 <h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p>[1] Juan, Yuchin, et al. “Field-aware Factorization Machines for CTR Prediction.” ACM Conference on Recommender Systems ACM, 2016:43-50.<br>[2] <a href="https://github.com/guestwalk/libffm" target="_blank" rel="noopener">https://github.com/guestwalk/libffm</a><br>[3] <a href="https://github.com/VinceShieh/spark-ffm" target="_blank" rel="noopener">https://github.com/VinceShieh/spark-ffm</a></p>
@@ -668,7 +668,7 @@ w_i=w_i-\frac{\eta}{\sqrt{G_i}} g_i
 
 
 
-  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Muse</a> v5.1.4</div>
+  <div class="theme-info">主题 &mdash; <a class="theme-link" target="_blank" href="https://github.com/iissnan/hexo-theme-next">NexT.Gemini</a> v5.1.4</div>
 
 
 
@@ -787,6 +787,13 @@ w_i=w_i-\frac{\eta}{\sqrt{G_i}} g_i
 
   
   
+
+
+  <script type="text/javascript" src="../../../../js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="../../../../js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
 
   
   <script type="text/javascript" src="../../../../js/src/scrollspy.js?v=5.1.4"></script>
