@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io2019/04/13/可能是最好懂的ItemCF解释了/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io2019/04/13/ffm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="胡诚">
@@ -316,7 +316,194 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="2019/04/13/可能是最好懂的ItemCF解释了/" itemprop="url">可能是最好懂的ItemCF解释了</a></h1>
+                <a class="post-title-link" href="2019/04/13/ffm/" itemprop="url">特征组合之FFM</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-13T14:43:50+08:00">
+                2019-04-13
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>前段时间搞 LR 的特征优化，切身体会到人工特征工程实在太费劲了，一方面发掘高价值的特征十分困难，另一方面某些特征之间需要组合才能有效，比如用户对视频的某个特征的偏好，就必须将视频的特征和用户的特征进行组合。LR 是线性模型，没法自动做特征组合，只能人工搞，但人工来干这事就相当麻烦了。自然而然的，就会想到用可以自动组合特征的模型。现在了解的包括 FM、FFM 等基于矩阵分解的模型、基于 GBDT 之类的树模型和基于 DNN 的网络模型。这篇文章先介绍下 FFM 模型。</p>
+<h2 id="FFM-模型简介"><a href="#FFM-模型简介" class="headerlink" title="FFM 模型简介"></a>FFM 模型简介</h2><p>FFM (Field-aware Factorization Machines)$^{[1]}$是 Yuchin Juan 等人在台大期间提出的用于 CTR 预估的模型。它是对 FM 模型的推广，提到 FM 又不得不提到 Poly2 模型，好在它们三个的关系十分简单和明确：</p>
+<ol>
+<li><p>Poly2 模型是将所有特征进行两两组合，也就是当特征有 $n$ 个的时候，需要 $O(n^2)$ 个参数，而且这些参数之间是<strong>相互独立</strong>的，意味着<strong>每个参数都需要足够的样本来训练</strong>，也就是每对特征都同时出现在足够多的样本里。因此如果无法满足海量样本的要求时，这个模型很难训练出来。它的模型如下（其中 $h(i,j)$ 作用是将 $i,j$ 映射成一个自然数）：</p>
+<script type="math/tex; mode=display">
+\phi_{poly2}(\mathcal{w},\mathcal{x}) = \sum_{j_1=1}^n\sum_{j_2=j_1+1}^n w_{h(j_1,j_2)}x_{j_1}x_{j_2} \qquad (1)</script></li>
+<li><p>FM 模型是为每个特征训练一个隐向量，而特征组合的权重就是这两个特征的隐向量点积，假设隐向量的长度为 $k$，那么需要 $O(nk)$ 个参数，因此参数的规模要比 Poly2 小很多（这里可以认为 Poly2 为每个特征生成的向量长度为 $n$），训练数据量要求也就没那么高了。它的原始形态 (2) 和简化计算形态 (3) 分别如下：</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+\phi_{FM}(\mathcal{w},\mathcal{x})= \sum_{j_1=1}^n\sum_{j_2=j_1+1}^n (\mathcal{w}_{j_1}\cdot\mathcal{w}_{j_2})x_{j_1}x_{j_2} \qquad (2)</script><script type="math/tex; mode=display">
+\phi_{FM}(\mathcal{w},\mathcal{x})=\frac{1}{2}\sum_{j=1}^n(\mathcal{s}-\mathcal{w}_j x_j), \quad \mathcal{s}=\sum_{j'=1}^n\mathcal{w}_{j'} x_{j'} \qquad (3)</script><ol>
+<li>FFM 模型是为每个特征对每一个 Field 学习一个隐向量，一个 Field 可以认为是特征所属的属性，比如用户的常驻地可以看成是一个 Field、视频的分类可以看成是另一个 Field，假设有 $f$ 个 Field，每个隐向量长度为 $k$，则FFM模型需要 $O(nfk)$ 个参数，看起来比 FM 多很多，但是实际上由于每个特征对不同 Field 的作用都是单独学习的，因此 FFM 的 $k$ 往往比 FM 的 $k$ 小很多。它的模型如下：</li>
+</ol>
+<script type="math/tex; mode=display">
+\phi_{FFM}(\mathcal{w},\mathcal{x})= \sum_{j_1=1}^n\sum_{j_2=j_1+1}^n (\mathcal{w}_{j_1,f_2}\cdot\mathcal{w}_{j_2,f_1})x_{j_1}x_{j_2} \qquad (4)</script><p>FFM 为什么要把Field拎出来考虑呢？举个例子，还是在视频推荐里，假设只考虑用户的年龄特征、视频的分类特征和演员特征，FM 在学用户年龄特征的时候是综合考虑视频分类和演员来得到的，然而从直观上来看，年龄对分类的影响和对演员的影响是不同的，因此更自然的想法是对分类和演员各学一个隐向量，效果应该会更好。</p>
+<p>换句话说，如果特征有明显的 Field 划分，用 FFM 模型理论上是优于 FM 的；但是如果不满足这个条件，例如在 NLP 领域，所有特征都属于一个 Field，FFM 模型的优势就不明显了。<br>另外，Field 很容易对应到一个类别，因此 FFM 特别适合处理类别特征，对于连续特征，如果离散化处理效果比较好也还OK，否则优势也不明显。<br>因此，<strong>FFM 主要适合处理类别特征，并且喜欢稀疏数据，而不适合处理连续特征，不适合处理 Field 数量很少的数据</strong>。</p>
+<h2 id="FFM-模型实现"><a href="#FFM-模型实现" class="headerlink" title="FFM 模型实现"></a>FFM 模型实现</h2><p>由于官方只提供了 FFM 模型的 C++ 实现$^{[2]}$，而我们主要是基于 Spark 的，因此需要一份 scala 实现。网上也找了一下，发现 Vince Shieh 实现的一份代码$^{[3]}$，但是 review 以后发现参数有点问题，因此考虑自己实现一份。<br>实现的 FFM 的核心就在于如何计算梯度，如何更新模型。论文的模型 (4) 是简化处理，在实现的时候还需要带上全局偏置和线性部分，完整的模型如下：</p>
+<script type="math/tex; mode=display">
+\phi_{FFM}(\mathcal{w},\mathcal{x})= w_0 + \sum_{j=1}^n w_jx_j+ \sum_{j_1=1}^n\sum_{j_2=j_1+1}^n (\mathcal{w}_{j_1,f_2}\cdot\mathcal{w}_{j_2,f_1})x_{j_1}x_{j_2} \qquad (5)</script><p>而 FFM 用于 CTR 预估时，目标优化函数定义成：</p>
+<script type="math/tex; mode=display">
+\mathcal{L}=\min_{\mathcal{w}} \frac{\lambda}{2}||\mathcal{w}||^2_2+\sum_{i=1}^m \log(1+e^{-y_i\phi(\mathcal{w},\mathcal{x})}) \qquad (6)</script><p>使用 SG 的方式进行更新，即每次使用一个样本 $(y,\mathcal{x})$ 来更新模型，其中，$\mathcal{x}$ 的格式为 $\mathcal{x}=[f<em>{i_1}j</em>{i<em>1}x</em>{i<em>1},\cdots,f</em>{i<em>t}j</em>{i<em>t}x</em>{i_t}]$，表示该样本中 $t$ 个非零特征，$f$ 表示特征的域编号，$j$ 表示特征编号，$x$ 表示特征取值（对于 one-hot 编码，$x=1$）。<br>首先对式 (6) 中各权重计算梯度：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+g_0=\lambda w_0+\kappa \\
+g_j=\lambda w_j+\kappa w_j \\
+\mathcal{g}_{j_1,f_2}=\lambda \mathcal{w}_{j_1,f_2}+\kappa \mathcal{w}_{j_2,f_1} \\
+\mathcal{g}_{j_2,f_1}=\lambda \mathcal{w}_{j_2,f_1}+\kappa \mathcal{w}_{j_1,f_2}
+\end{cases}, 
+\quad \kappa=\frac{-y_ie^{-y_i\phi(\mathcal{w},\mathcal{x})}}{1+e^{-y_i\phi(\mathcal{w},\mathcal{x})}} \qquad (7)</script><p>然后使用 AdaGrad 对累积梯度进行更新（这里也可以不用 AdaGrad，直接使用 GD，或者用 Adam 等其他方法更新）：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+G_i=G_i+g_i^2 \\
+w_i=w_i-\frac{\eta}{\sqrt{G_i}} g_i
+\end{cases},
+\quad i=0, i_1, \cdots, i_t \qquad (8)</script><script type="math/tex; mode=display">
+\begin{cases}
+(G_{j_1,f_2})_d=(G_{j_1,f_2})_d+(g_{j_1,f_2})_d^2 \\
+(G_{j_2,f_1})_d=(G_{j_2,f_1})_d+(g_{j_2,f_1})_d^2 \\
+(w_{j_1,f_2})_d=(w_{j_1,f_2})_d-\frac{\eta}{\sqrt{(G_{j_1,f_2})_d}} (g_{j_1,f_2})_d \\
+(w_{j_2,f_1})_d=(w_{j_2,f_1})_d-\frac{\eta}{\sqrt{(G_{j_2,f_1})_d}} (g_{j_2,f_1})_d
+\end{cases}, 
+\quad d=1,\cdots, k,\qquad (9)</script><p>基于以上各式，可以很容易把算法写出来了：<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Algorithm: Train FFM using SG</span><br><span class="line"><span class="number">1.</span> init G = ones(n,f,k)</span><br><span class="line"><span class="number">2.</span> init g = rand(n,f,k)[<span class="number">0</span>,<span class="number">1</span>/sqrt(k)]</span><br><span class="line"><span class="number">3.</span> <span class="keyword">for</span> epoch = <span class="number">1</span> to t:</span><br><span class="line"><span class="number">4.</span>     <span class="keyword">for</span> i = <span class="number">1</span> to m:</span><br><span class="line"><span class="number">5.</span>         sample a data point (y,x)</span><br><span class="line"><span class="number">6.</span>         calculate kappa by (<span class="number">7</span>)</span><br><span class="line"><span class="number">7.</span>         <span class="keyword">for</span> xi, xj <span class="keyword">in</span> x:</span><br><span class="line"><span class="number">8.</span>             calculate gradients by (<span class="number">7</span>)</span><br><span class="line"><span class="number">9.</span>             update weights by (<span class="number">8</span>)(<span class="number">9</span>)</span><br></pre></td></tr></table></figure></p>
+<p>论文中指出，FFM 特别容易过拟合，其中，正则化系数 $\lambda$ 越小，效果越好但越容易过拟合；学习率 $\eta$ 越大，学习速度越快也越容易过拟合。我自己试了几个数据集，使用 $\lambda=0.00002,\ \eta=0.1,\ k=4$，一般 1~4 轮都差不多OK了，再多就容易过拟合。<br>为了防止过拟合，论文提出使用 <strong>early stopping</strong> 技术，即将训练数据进一步划分成训练集和验证集，每一轮用训练集更新完模型后，用验证集计算 logloss，并记录验证集 logloss 开始上升的轮数 $r$，最后再用整个数据集训练 $r$ 轮。但是实际在用的时候，可以线下调一个比较好的参数，然后直接放到线上去用，等数据发生变化，或者定时去重新评估这些参数。</p>
+<p>自己用 scala 实现的 FFM 模型没有使用指令集加速，只是将训练数据划分成多个 partition 并行训练，然后将参数合并（求平均），效果差一些。我拿 libFFM 做了一个性能的比较……<strong>完败</strong>……唉，Spark 做数值计算还是不太行啊！</p>
+<h2 id="References"><a href="#References" class="headerlink" title="References"></a>References</h2><p>[1] Juan, Yuchin, et al. “Field-aware Factorization Machines for CTR Prediction.” ACM Conference on Recommender Systems ACM, 2016:43-50.<br>[2] <a href="https://github.com/guestwalk/libffm" target="_blank" rel="noopener">https://github.com/guestwalk/libffm</a><br>[3] <a href="https://github.com/VinceShieh/spark-ffm" target="_blank" rel="noopener">https://github.com/VinceShieh/spark-ffm</a></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io2019/04/13/itemcf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="胡诚">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Looping">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="2019/04/13/itemcf/" itemprop="url">可能是最好懂的ItemCF解释了</a></h1>
         
 
         <div class="post-meta">
@@ -413,7 +600,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
 <li>如果觉得需要更多的考虑用户的短期兴趣，做即时的推荐，那可以将式 (6) 中的用户观看历史限制在最近几次，甚至一次；</li>
 </ol>
 <p>如果把用户-视频考虑成一个二部图，ItemCF 实际上是基于图的结构，执行了一次从用户到视频的兴趣扩散过程。可以考虑下图中的视频 $v_1,v_3​$，它们没有直接的共同观看，因此用 ItemCF 算出来的相似度为 0，但是实际上 $u_1,u_2​$ 都观看了 $v_2​$，因此可以认为用户 $u_1,u_2​$ 存在一定的相似性，因此如果执行一次视频-用户-视频的兴趣扩散过程就能够捕获 $v_1,v_3​$ 的相似度了。</p>
-<p><img src="/2019/04/13/可能是最好懂的ItemCF解释了/itemcf-f1.png" alt="itemcf-f1"></p>
+<p><img src="/2019/04/13/itemcf/itemcf-f1.png" alt="itemcf-f1"></p>
 <p>后面一种思路实际上就是 SimRank，但是由于需要执行多次兴趣扩散（即对二部图做多次迭代计算），SimRank 的计算复杂度相当高，在业务数据量大的情况下需要强大的算力支持，以后会再讨论下我在 SimRank 模型上的尝试。</p>
 
           
@@ -463,7 +650,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io2019/04/13/置信区间在推荐中的应用/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io2019/04/13/confidence-interval/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="胡诚">
@@ -482,7 +669,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="2019/04/13/置信区间在推荐中的应用/" itemprop="url">置信区间在推荐中的应用</a></h1>
+                <a class="post-title-link" href="2019/04/13/confidence-interval/" itemprop="url">置信区间在推荐中的应用</a></h1>
         
 
         <div class="post-meta">
@@ -779,7 +966,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">3</span>
+                  <span class="site-state-item-count">4</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -801,7 +988,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
               
               <div class="site-state-item site-state-tags">
                 <a href="tags/index.html">
-                  <span class="site-state-item-count">5</span>
+                  <span class="site-state-item-count">8</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
