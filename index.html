@@ -40,7 +40,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -48,9 +48,9 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+<link href="css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
   <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
@@ -74,7 +74,7 @@
 
 
 
-  <link rel="alternate" href="/atom.xml" title="Looping" type="application/atom+xml">
+  <link rel="alternate" href="atom.xml" title="Looping" type="application/atom+xml">
 
 
 
@@ -184,7 +184,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
@@ -194,7 +194,7 @@
       
         
         <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
+          <a href rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
@@ -204,7 +204,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
+          <a href rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
@@ -214,7 +214,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
+          <a href rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
@@ -224,7 +224,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
@@ -297,12 +297,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/04/13/可能是最好懂的ItemCF解释了/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io2019/04/13/可能是最好懂的ItemCF解释了/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="胡诚">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -316,7 +316,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/04/13/可能是最好懂的ItemCF解释了/" itemprop="url">可能是最好懂的ItemCF解释了</a></h1>
+                <a class="post-title-link" href="2019/04/13/可能是最好懂的ItemCF解释了/" itemprop="url">可能是最好懂的ItemCF解释了</a></h1>
         
 
         <div class="post-meta">
@@ -351,7 +351,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                  <a href="categories/推荐系统/" itemprop="url" rel="index">
                     <span itemprop="name">推荐系统</span>
                   </a>
                 </span>
@@ -412,8 +412,8 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
 <li>如果觉得用户只有观看完完成度很高时才是真实兴趣，那可以将式 (4) 的 $cos(\cdot)$ 部分改成类似 $r_u(i)\cdot r_u(j)$ 的形式；</li>
 <li>如果觉得需要更多的考虑用户的短期兴趣，做即时的推荐，那可以将式 (6) 中的用户观看历史限制在最近几次，甚至一次；</li>
 </ol>
-<p>如果把用户-视频考虑成一个二部图，ItemCF 实际上是基于图的结构，执行了一次从用户到视频的兴趣扩散过程。可以考虑下图中的视频 $v_1,v_3$，它们没有直接的共同观看，因此用 ItemCF 算出来的相似度为 0，但是实际上 $u_1,u_2$ 都观看了 $v_2$，因此可以认为用户 $u_1,u_2$ 存在一定的相似性，因此如果执行一次视频-用户-视频的兴趣扩散过程就能够捕获 $v_1,v_3​$ 的相似度了。</p>
-<p><img src="figs/itemcf-f1.png" alt="itemcf-f1"></p>
+<p>如果把用户-视频考虑成一个二部图，ItemCF 实际上是基于图的结构，执行了一次从用户到视频的兴趣扩散过程。可以考虑下图中的视频 $v_1,v_3​$，它们没有直接的共同观看，因此用 ItemCF 算出来的相似度为 0，但是实际上 $u_1,u_2​$ 都观看了 $v_2​$，因此可以认为用户 $u_1,u_2​$ 存在一定的相似性，因此如果执行一次视频-用户-视频的兴趣扩散过程就能够捕获 $v_1,v_3​$ 的相似度了。</p>
+<p><img src="/2019/04/13/可能是最好懂的ItemCF解释了/itemcf-f1.png" alt="itemcf-f1"></p>
 <p>后面一种思路实际上就是 SimRank，但是由于需要执行多次兴趣扩散（即对二部图做多次迭代计算），SimRank 的计算复杂度相当高，在业务数据量大的情况下需要强大的算力支持，以后会再讨论下我在 SimRank 模型上的尝试。</p>
 
           
@@ -463,12 +463,12 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/04/13/about/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io2019/04/13/置信区间在推荐中的应用/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="胡诚">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -482,128 +482,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/04/13/about/" itemprop="url">关于我自己</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-13T13:51:57+08:00">
-                2019-04-13
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-
-          
-            
-          
-
-          
-          
-
-          
-
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>我叫胡诚，本博就读于东南大学计算机系，研究方向为分布式计算，传感器网络，云计算。目前主要兴趣为推荐系统、大数据、机器学习技术和传统算法。</p>
-<p>欢迎大家与我交流。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/04/13/置信区间在推荐中的应用/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="胡诚">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Looping">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/04/13/置信区间在推荐中的应用/" itemprop="url">置信区间在推荐中的应用</a></h1>
+                <a class="post-title-link" href="2019/04/13/置信区间在推荐中的应用/" itemprop="url">置信区间在推荐中的应用</a></h1>
         
 
         <div class="post-meta">
@@ -638,7 +517,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                  <a href="categories/推荐系统/" itemprop="url" rel="index">
                     <span itemprop="name">推荐系统</span>
                   </a>
                 </span>
@@ -739,12 +618,12 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/04/10/hello-world/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io2019/04/10/hello-world/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="胡诚">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -758,7 +637,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/04/10/hello-world/" itemprop="url">Hello World</a></h1>
+                <a class="post-title-link" href="2019/04/10/hello-world/" itemprop="url">Hello World</a></h1>
         
 
         <div class="post-meta">
@@ -900,7 +779,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">4</span>
+                  <span class="site-state-item-count">3</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -910,7 +789,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
               
               
               <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
+                <a href="categories/index.html">
                   <span class="site-state-item-count">1</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
@@ -921,7 +800,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
               
               
               <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
+                <a href="tags/index.html">
                   <span class="site-state-item-count">5</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
@@ -932,7 +811,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
 
           
             <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
+              <a href="atom.xml" rel="alternate">
                 <i class="fa fa-rss"></i>
                 RSS
               </a>
@@ -1073,53 +952,53 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+  <script type="text/javascript" src="js/src/utils.js?v=5.1.4"></script>
 
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+  <script type="text/javascript" src="js/src/motion.js?v=5.1.4"></script>
 
 
 
   
-  
-
   
 
   
 
+  
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
