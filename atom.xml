@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://guyuecanhui.github.io/"/>
-  <updated>2019-04-13T07:08:36.074Z</updated>
+  <updated>2019-04-14T13:50:26.192Z</updated>
   <id>https://guyuecanhui.github.io/</id>
   
   <author>
@@ -15,6 +15,37 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>Hexo+NexT+github 配置指南</title>
+    <link href="https://guyuecanhui.github.io/2019/04/14/hexo-next-github/"/>
+    <id>https://guyuecanhui.github.io/2019/04/14/hexo-next-github/</id>
+    <published>2019-04-14T06:43:50.000Z</published>
+    <updated>2019-04-14T13:50:26.192Z</updated>
+    
+    <content type="html"><![CDATA[<p>这两天在网络各位大神的帖子指导下完成了 Hexo+Next 在 github 上的部署，记录一下全过程，以供后来者参考。</p><p>进入正题前，需要安装 Node.js 和 Git，并创建 github 帐号，可以参考其他帖子，这里就不详述了。</p><h2 id="安装使用-Hexo"><a href="#安装使用-Hexo" class="headerlink" title="安装使用 Hexo"></a>安装使用 Hexo</h2><h3 id="安装-Hexo"><a href="#安装-Hexo" class="headerlink" title="安装 Hexo"></a>安装 Hexo</h3><p>Hexo 安装过程很简单，只需要选择一个项目的名称和目录（如 <code>project</code>），然后输入以下代码即可在当前目录创建一个 <code>project</code> 的目录，同时初始化该工程：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">npm install hexo-cli -g</span><br><span class="line">hexo init project</span><br><span class="line">cd project</span><br><span class="line">npm install</span><br><span class="line">hexo g</span><br><span class="line">hexo s</span><br></pre></td></tr></table></figure><p>如果打开 <code>[http://localhost:4000](http://localhost:4000/)</code> 能够看到 <code>Hello World</code>，说明安装已经成功了。</p><h3 id="Hexo-常用命令"><a href="#Hexo-常用命令" class="headerlink" title="Hexo 常用命令"></a>Hexo 常用命令</h3><p>Hexo 常用的命令不多，而且很容易记，按一般使用顺序记录如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hexo n "new post" # 创建新博客，名为 new post</span><br><span class="line">hexo g # 生成静态文件</span><br><span class="line">hexo s # 在本地起一个服务，可以查看效果，默认路径为 http://localhost:4000</span><br><span class="line">hexo d # 将本地文件部署到远端，本文将使用 github 托管</span><br></pre></td></tr></table></figure><h2 id="部署到-github"><a href="#部署到-github" class="headerlink" title="部署到 github"></a>部署到 github</h2><h3 id="创建新仓库"><a href="#创建新仓库" class="headerlink" title="创建新仓库"></a>创建新仓库</h3><p>首先需要创建一个新的仓库，例如我的用户名为 <code>guyuecanhui</code>，则我需要创建的仓库名为 <code>guyuecanhui.github.io</code>。注意：仓库的名字一定要按照规范命名，即 <code>用户名.github.io</code>，否则无法通过该路径访问博客。</p><h3 id="配置-Hexo-的-deploy-选项"><a href="#配置-Hexo-的-deploy-选项" class="headerlink" title="配置 Hexo 的 deploy 选项"></a>配置 Hexo 的 deploy 选项</h3><p>配置 <code>project</code> 根目录下的 <code>_config.yml</code>，在最后添加如下代码：</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">deploy:</span></span><br><span class="line"><span class="attr">    type:</span> <span class="string">git</span></span><br><span class="line"><span class="attr">    repository:</span> <span class="attr">http://github.com/guyuecanhui/guyuecanhui.github.io.git</span></span><br><span class="line"><span class="attr">    branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure><p>注意仓库的路径按照参考代码设置，把用户名改成自己的即可。</p><p>配置完后执行（这两步后面简称重新部署）：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo g</span><br><span class="line">hexo d</span><br></pre></td></tr></table></figure><p>即可把本地的博客发布到 github 上了。可以通过 <code>用户名.github.io</code> 来访问主页了。</p><h2 id="安装和配置-NexT-主题"><a href="#安装和配置-NexT-主题" class="headerlink" title="安装和配置 NexT 主题"></a>安装和配置 NexT 主题</h2><p>我使用 Hexo 的目的之一是使用网络大神们提供的各种养眼的主题。这里推荐安装 NexT 主题，也是当前使用比较广泛的一种。</p><h3 id="下载并使用-NexT-主题"><a href="#下载并使用-NexT-主题" class="headerlink" title="下载并使用 NexT 主题"></a><a href="https://theme-next.org/docs/getting-started/" target="_blank" rel="noopener">下载并使用 NexT 主题</a></h3><p>首先定位到博客根目录下，然后下载 NexT 源码：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/theme-next/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure><p>然后修改根目录下的 <code>_config.yml</code> 的 <code>theme</code> 选项，修改为：</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></table></figure><p>然后重新部署博客即可看到主题变成了 NexT。NextT 提供了四种模式，在 <code>themes/next/_config.yml</code> 中可以修改，每次修改后需要重新部署才能生效：</p><figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Schemes</span></span><br><span class="line"><span class="comment">#scheme: Muse   # 默认风格</span></span><br><span class="line"><span class="comment">#scheme: Mist</span></span><br><span class="line"><span class="comment">#scheme: Pisces</span></span><br><span class="line"><span class="attr">scheme:</span> <span class="string">Gemini</span>  <span class="comment"># 选择 gemini 风格</span></span><br></pre></td></tr></table></figure><h3 id="常用选项设置"><a href="#常用选项设置" class="headerlink" title="常用选项设置"></a>常用选项设置</h3><p>只要记住，跟主题相关的所有设置基本都可以在 <code>themes/next/_config.yml</code> 里面找到。</p><h4 id="访问统计"><a href="#访问统计" class="headerlink" title="访问统计"></a><a href="http://ibruce.info/2015/04/04/busuanzi/" target="_blank" rel="noopener">访问统计</a></h4><p>使用不蒜子统计博客访问的人数，首先要引入 <code>busuanzi.js</code>。先在 <code>themes/next/_config.yml</code> 中启用并配置 <code>busuanzi_count</code> 插件：</p><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">busuanzi_count:</span><br><span class="line">  <span class="comment"># count values only if the other configs are false</span></span><br><span class="line">  <span class="built_in">enable</span>: <span class="literal">true</span></span><br><span class="line">  <span class="comment"># custom uv span for the whole site</span></span><br><span class="line">  site_uv: <span class="literal">true</span></span><br><span class="line">  site_uv_header: &lt;i class=<span class="string">"fa fa-user"</span>&gt;&lt;/i&gt; 访问人数</span><br><span class="line">  site_uv_footer: 人</span><br><span class="line">  <span class="comment"># custom pv span for the whole site</span></span><br><span class="line">  site_pv: <span class="literal">true</span></span><br><span class="line">  site_pv_header: &lt;i class=<span class="string">"fa fa-eye"</span>&gt;&lt;/i&gt; 总访问量</span><br><span class="line">  site_pv_footer: 次</span><br><span class="line">  <span class="comment"># custom pv span for one page only</span></span><br><span class="line">  page_pv: <span class="literal">true</span></span><br><span class="line">  page_pv_header: &lt;i class=<span class="string">"fa fa-file-o"</span>&gt;&lt;/i&gt; 阅读数</span><br><span class="line">  page_pv_footer:</span><br></pre></td></tr></table></figure><p>然后在 <code>themes/next/layout/_partial/footer.swig</code> 中添加以下代码：</p><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="tag">&lt;<span class="name">script</span> <span class="attr">async</span> <span class="attr">src</span>=<span class="string">"//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"</span>&gt;</span><span class="undefined"></span></span><br><span class="line"><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></span><br></pre></td></tr></table></figure><p>重新部署后，就能看到博客的访问统计数据啦！</p><h4 id="其他"><a href="#其他" class="headerlink" title="其他"></a>其他</h4><ul><li><a href="https://blog.csdn.net/qq_31640513/article/details/83931014" target="_blank" rel="noopener">Latex 支持</a></li><li><a href="https://www.jianshu.com/p/e17711e44e00" target="_blank" rel="noopener">添加分类、标签页面</a></li><li><a href="https://www.jianshu.com/p/60f5c84aa5a8" target="_blank" rel="noopener">添加关于页面</a></li><li><a href="https://www.jianshu.com/p/cf0628478a4e" target="_blank" rel="noopener">添加图片支持</a></li><li><a href="https://blog.csdn.net/blue_zy/article/details/79071414" target="_blank" rel="noopener">添加评论</a></li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;这两天在网络各位大神的帖子指导下完成了 Hexo+Next 在 github 上的部署，记录一下全过程，以供后来者参考。&lt;/p&gt;
+&lt;p&gt;进入正题前，需要安装 Node.js 和 Git，并创建 github 帐号，可以参考其他帖子，这里就不详述了。&lt;/p&gt;
+&lt;h2 id=&quot;
+      
+    
+    </summary>
+    
+      <category term="安装部署" scheme="https://guyuecanhui.github.io/categories/%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2/"/>
+    
+    
+      <category term="hexo" scheme="https://guyuecanhui.github.io/tags/hexo/"/>
+    
+      <category term="github" scheme="https://guyuecanhui.github.io/tags/github/"/>
+    
+      <category term="next" scheme="https://guyuecanhui.github.io/tags/next/"/>
+    
+  </entry>
   
   <entry>
     <title>可能是最好懂的ItemCF解释了</title>
@@ -43,27 +74,6 @@
       <category term="协同过滤" scheme="https://guyuecanhui.github.io/tags/%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4/"/>
     
       <category term="算法" scheme="https://guyuecanhui.github.io/tags/%E7%AE%97%E6%B3%95/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>Hello World</title>
-    <link href="https://guyuecanhui.github.io/2019/04/10/hello-world/"/>
-    <id>https://guyuecanhui.github.io/2019/04/10/hello-world/</id>
-    <published>2019-04-10T13:57:37.514Z</published>
-    <updated>2019-04-10T13:57:37.514Z</updated>
-    
-    <content type="html"><![CDATA[<p>Welcome to <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a>! This is your very first post. Check <a href="https://hexo.io/docs/" target="_blank" rel="noopener">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a href="https://hexo.io/docs/troubleshooting.html" target="_blank" rel="noopener">troubleshooting</a> or you can ask me on <a href="https://github.com/hexojs/hexo/issues" target="_blank" rel="noopener">GitHub</a>.</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;Welcome to &lt;a href=&quot;https://hexo.io/&quot; target=&quot;_blank&quot; rel=&quot;noopener&quot;&gt;Hexo&lt;/a&gt;! This is your very first post. Check &lt;a href=&quot;https://hexo.
-      
-    
-    </summary>
-    
     
   </entry>
   
