@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="Looping">
 <meta property="og:description" content="前段时间搞 LR 的特征优化，切身体会到人工特征工程实在太费劲了，一方面发掘高价值的特征十分困难，另一方面某些特征之间需要组合才能有效，比如用户对视频的某个特征的偏好，就必须将视频的特征和用户的特征进行组合。LR 是线性模型，没法自动做特征组合，只能人工搞，但人工来干这事就相当麻烦了。自然而然的，就会想到用可以自动组合特征的模型。现在了解的包括 FM、FFM 等基于矩阵分解的模型、基于 GBDT">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-13T07:08:32.023Z">
+<meta property="og:updated_time" content="2019-05-04T13:37:20.601Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="特征组合之FFM">
 <meta name="twitter:description" content="前段时间搞 LR 的特征优化，切身体会到人工特征工程实在太费劲了，一方面发掘高价值的特征十分困难，另一方面某些特征之间需要组合才能有效，比如用户对视频的某个特征的偏好，就必须将视频的特征和用户的特征进行组合。LR 是线性模型，没法自动做特征组合，只能人工搞，但人工来干这事就相当麻烦了。自然而然的，就会想到用可以自动组合特征的模型。现在了解的包括 FM、FFM 等基于矩阵分解的模型、基于 GBDT">
@@ -447,13 +447,13 @@
 <li>FFM 模型是为每个特征对每一个 Field 学习一个隐向量，一个 Field 可以认为是特征所属的属性，比如用户的常驻地可以看成是一个 Field、视频的分类可以看成是另一个 Field，假设有 $f$ 个 Field，每个隐向量长度为 $k$，则FFM模型需要 $O(nfk)$ 个参数，看起来比 FM 多很多，但是实际上由于每个特征对不同 Field 的作用都是单独学习的，因此 FFM 的 $k$ 往往比 FM 的 $k$ 小很多。它的模型如下：</li>
 </ol>
 <script type="math/tex; mode=display">
-\phi_{FFM}(\mathcal{w},\mathcal{x})= \sum_{j_1=1}^n\sum_{j_2=j_1+1}^n (\mathcal{w}_{j_1,f_2}\cdot\mathcal{w}_{j_2,f_1})x_{j_1}x_{j_2} \qquad (4)</script><p>FFM 为什么要把Field拎出来考虑呢？举个例子，还是在视频推荐里，假设只考虑用户的年龄特征、视频的分类特征和演员特征，FM 在学用户年龄特征的时候是综合考虑视频分类和演员来得到的，然而从直观上来看，年龄对分类的影响和对演员的影响是不同的，因此更自然的想法是对分类和演员各学一个隐向量，效果应该会更好。</p>
+\phi_{FFM}(\mathcal{w},\mathcal{x})= \sum_{j_1=1}^n\sum_{j_2=j_1+1}^n (\mathcal{w}_{j_1,f_2}\cdot\mathcal{w}_{j_2,f_1})x_{j_1}x_{j_2} \qquad (4)</script><p>FFM 为什么要把 Field 拎出来考虑呢？举个例子，还是在视频推荐里，假设只考虑用户的年龄特征、视频的分类特征和演员特征，FM 在学用户年龄特征的时候是综合考虑视频分类和演员来得到的，然而从直观上来看，年龄对分类的影响和对演员的影响是不同的，因此更自然的想法是对分类和演员各学一个隐向量，效果应该会更好。</p>
 <p>换句话说，如果特征有明显的 Field 划分，用 FFM 模型理论上是优于 FM 的；但是如果不满足这个条件，例如在 NLP 领域，所有特征都属于一个 Field，FFM 模型的优势就不明显了。<br>另外，Field 很容易对应到一个类别，因此 FFM 特别适合处理类别特征，对于连续特征，如果离散化处理效果比较好也还OK，否则优势也不明显。<br>因此，<strong>FFM 主要适合处理类别特征，并且喜欢稀疏数据，而不适合处理连续特征，不适合处理 Field 数量很少的数据</strong>。</p>
 <h2 id="FFM-模型实现"><a href="#FFM-模型实现" class="headerlink" title="FFM 模型实现"></a>FFM 模型实现</h2><p>由于官方只提供了 FFM 模型的 C++ 实现$^{[2]}$，而我们主要是基于 Spark 的，因此需要一份 scala 实现。网上也找了一下，发现 Vince Shieh 实现的一份代码$^{[3]}$，但是 review 以后发现参数有点问题，因此考虑自己实现一份。<br>实现的 FFM 的核心就在于如何计算梯度，如何更新模型。论文的模型 (4) 是简化处理，在实现的时候还需要带上全局偏置和线性部分，完整的模型如下：</p>
 <script type="math/tex; mode=display">
 \phi_{FFM}(\mathcal{w},\mathcal{x})= w_0 + \sum_{j=1}^n w_jx_j+ \sum_{j_1=1}^n\sum_{j_2=j_1+1}^n (\mathcal{w}_{j_1,f_2}\cdot\mathcal{w}_{j_2,f_1})x_{j_1}x_{j_2} \qquad (5)</script><p>而 FFM 用于 CTR 预估时，目标优化函数定义成：</p>
 <script type="math/tex; mode=display">
-\mathcal{L}=\min_{\mathcal{w}} \frac{\lambda}{2}||\mathcal{w}||^2_2+\sum_{i=1}^m \log(1+e^{-y_i\phi(\mathcal{w},\mathcal{x})}) \qquad (6)</script><p>使用 SG 的方式进行更新，即每次使用一个样本 $(y,\mathcal{x})$ 来更新模型，其中，$\mathcal{x}$ 的格式为 $\mathcal{x}=[f<em>{i_1}j</em>{i<em>1}x</em>{i<em>1},\cdots,f</em>{i<em>t}j</em>{i<em>t}x</em>{i_t}]$，表示该样本中 $t$ 个非零特征，$f$ 表示特征的域编号，$j$ 表示特征编号，$x$ 表示特征取值（对于 one-hot 编码，$x=1$）。<br>首先对式 (6) 中各权重计算梯度：</p>
+\mathcal{L}=\min_{\mathcal{w}} \frac{\lambda}{2}||\mathcal{w}||^2_2+\sum_{i=1}^m \log(1+e^{-y_i\phi(\mathcal{w},\mathcal{x})}) \qquad (6)</script><p>使用 SGD 的方式进行更新，即每次使用一个样本 $(y,\mathcal{x})$ 来更新模型，其中，$\mathcal{x}$ 的格式为 <script type="math/tex">\mathcal{x}=[f_{i_1}j_{i_1}x_{i_1},\cdots,f_{i_t}j_{i_t}x_{i_t}]</script>，表示该样本中 $t$ 个非零特征，$f$ 表示特征的域编号，$j$ 表示特征编号，$x$ 表示特征取值（对于 one-hot 编码，$x=1$）。<br>首先对式 (6) 中各权重计算梯度：</p>
 <script type="math/tex; mode=display">
 \begin{cases}
 g_0=\lambda w_0+\kappa \\
