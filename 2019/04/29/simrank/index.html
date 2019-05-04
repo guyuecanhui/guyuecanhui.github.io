@@ -91,7 +91,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/04/29/simrank/simrank/simrank-f1.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/04/29/simrank/simrank/simrank-f2.png">
-<meta property="og:updated_time" content="2019-05-04T12:31:51.895Z">
+<meta property="og:updated_time" content="2019-05-04T12:41:29.051Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SimRank与视频相似度计算">
 <meta name="twitter:description" content="一、应用背景最近需要对视频的相关推荐进行一些优化。之前尝试过 TagSim、AutoEncoder 和 Word2Vec 等方法，无非是基于元数据相似或基于协同相似的思路。但是在实际应用的时候，由于媒资传过来的信息未必是非常准确的，因此基于元数据相似的方法在数据基础上可能就存在一定的不确定性，因此常常会推出来一些虽然实际上很符合算法预期，但是看起来很奇怪的结果。而基于协同相似的推荐，由于需要比较多">
@@ -436,7 +436,7 @@
 
       
         <h2 id="一、应用背景"><a href="#一、应用背景" class="headerlink" title="一、应用背景"></a>一、应用背景</h2><p>最近需要对视频的相关推荐进行一些优化。之前尝试过 TagSim、AutoEncoder 和 Word2Vec 等方法，无非是基于元数据相似或基于协同相似的思路。但是在实际应用的时候，由于媒资传过来的信息未必是非常准确的，因此基于元数据相似的方法在数据基础上可能就存在一定的不确定性，因此常常会推出来一些虽然实际上很符合算法预期，但是看起来很奇怪的结果。而基于协同相似的推荐，由于需要比较多的行为数据来估计视频之间的相似度，又往往只能覆盖少量的视频。在应用中，我们往往使用的是两者的混合，但是由于混合比较简单粗暴，仍然有很多 VOC 问题。</p>
-<p>因此，团队迫切的需要一种能够提升相关推荐效果的模型。而这种相关又是有强业务语义的，需要能够支持灵活的定制，因此在短时间内先不考虑深度网络，比如 RNN 之类的（RNN 比较适合视频流的推荐）。在调研中，发现有基于热传导的算法，感觉好像挺符合直观感觉，用了协同数据，同时也支持元数据。但是再顺着这个思路往下找的时候，发现 SimRank 是一种十分成熟且常用于相关推荐的模型，粗看了一下，感觉很符合我们的业务诉求，就迫不及待尝试了一下。</p>
+<p>因此，团队迫切的需要一种能够提升相关推荐效果的模型。而这种相关又是有强业务语义的，需要能够支持灵活的定制，因此在短时间内先不考虑深度网络（可解释性太差）。在调研中，发现有基于热传导的算法，感觉好像挺符合直观感觉，用了协同数据，同时也支持元数据。但是再顺着这个思路往下找的时候，发现 SimRank 是一种十分成熟且常用于相关推荐的模型，粗看了一下，感觉很符合我们的业务诉求，就迫不及待尝试了一下。</p>
 <h2 id="二、SimRank-基本模型"><a href="#二、SimRank-基本模型" class="headerlink" title="二、SimRank 基本模型"></a>二、SimRank 基本模型</h2><h3 id="2-1-核心思想"><a href="#2-1-核心思想" class="headerlink" title="2.1 核心思想"></a>2.1 核心思想</h3><p>由于 SimRank 提出的时间比较早，网上的材料很多，而且大多长的也差不多，可以参考文献 [1, 2] ，这里只简单的搬个砖。</p>
 <p>文献 [1] 最早提出 SimRank 模型，核心的思想是 “<strong>two objects are similar if they are related to similar objects</strong>“（这跟 PageRank 的思路完全一致，只是 PageRank 是用来评估每个链接的重要性，而 SimRank 是用来评估每两个物品间的相似度）。SimRank 既支持计算所有节点对之间的相似度（如输入数据为文章引用记录），也支持计算二部图中每一部分节点间的相似度（如输入数据为用户行为记录）。由于我们是做视频推荐，主要用的是用户行为数据，因此这里只介绍基于二部图的模型。</p>
 <p>举个简单的例子：如下图所示，用户 $u_1$ 观看了视频 $v_1,v_2,v_3$；用户 $u_2$ 观看了视频 $v_2,v_3,v_4$，则可以用二部图来表示这种观影关系（二部图是因为用户 $u_1,u_2$ 之间无联系，且视频 $v_1,v_2,v_3,v_4$ 间无联系，只有用户-视频间存在有向边）：</p>
