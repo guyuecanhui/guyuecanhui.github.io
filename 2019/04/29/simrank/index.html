@@ -91,7 +91,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/04/29/simrank/simrank-f1.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/04/29/simrank/simrank-f2.png">
-<meta property="og:updated_time" content="2019-05-04T13:30:29.524Z">
+<meta property="og:updated_time" content="2019-05-10T14:44:49.781Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SimRank与视频相似度计算">
 <meta name="twitter:description" content="一、应用背景最近需要对视频的相关推荐进行一些优化。之前尝试过 TagSim、AutoEncoder 和 Word2Vec 等方法，无非是基于元数据相似或基于协同相似的思路。但是在实际应用的时候，由于媒资传过来的信息未必是非常准确的，因此基于元数据相似的方法在数据基础上可能就存在一定的不确定性，因此常常会推出来一些虽然实际上很符合算法预期，但是看起来很奇怪的结果。而基于协同相似的推荐，由于需要比较多">
@@ -436,9 +436,9 @@
 
       
         <h2 id="一、应用背景"><a href="#一、应用背景" class="headerlink" title="一、应用背景"></a>一、应用背景</h2><p>最近需要对视频的相关推荐进行一些优化。之前尝试过 TagSim、AutoEncoder 和 Word2Vec 等方法，无非是基于元数据相似或基于协同相似的思路。但是在实际应用的时候，由于媒资传过来的信息未必是非常准确的，因此基于元数据相似的方法在数据基础上可能就存在一定的不确定性，因此常常会推出来一些虽然实际上很符合算法预期，但是看起来很奇怪的结果。而基于协同相似的推荐，由于需要比较多的行为数据来估计视频之间的相似度，又往往只能覆盖少量的视频。在应用中，我们往往使用的是两者的混合，但是由于混合比较简单粗暴，仍然有很多 VOC 问题。</p>
-<p>因此，团队迫切的需要一种能够提升相关推荐效果的模型。而这种相关又是有强业务语义的，需要能够支持灵活的定制，因此在短时间内先不考虑深度网络（可解释性太差）。在调研中，发现有基于热传导的算法，感觉好像挺符合直观感觉，用了协同数据，同时也支持元数据。但是再顺着这个思路往下找的时候，发现 SimRank 是一种十分成熟且常用于相关推荐的模型，粗看了一下，感觉很符合我们的业务诉求，就迫不及待尝试了一下。</p>
-<h2 id="二、SimRank-基本模型"><a href="#二、SimRank-基本模型" class="headerlink" title="二、SimRank 基本模型"></a>二、SimRank 基本模型</h2><h3 id="2-1-核心思想"><a href="#2-1-核心思想" class="headerlink" title="2.1 核心思想"></a>2.1 核心思想</h3><p>由于 SimRank 提出的时间比较早，网上的材料很多，而且大多长的也差不多，可以参考文献 [1, 2] ，这里只简单的搬个砖。</p>
-<p>文献 [1] 最早提出 SimRank 模型，核心的思想是 “<strong>two objects are similar if they are related to similar objects</strong>“（这跟 PageRank 的思路完全一致，只是 PageRank 是用来评估每个链接的重要性，而 SimRank 是用来评估每两个物品间的相似度）。SimRank 既支持计算所有节点对之间的相似度（如输入数据为文章引用记录），也支持计算二部图中每一部分节点间的相似度（如输入数据为用户行为记录）。由于我们是做视频推荐，主要用的是用户行为数据，因此这里只介绍基于二部图的模型。</p>
+<p>因此，团队迫切的需要一种能够提升相关推荐效果的模型。而这种相关又是有强业务语义的，需要能够支持灵活的定制，因此在短时间内先不考虑深度网络（可解释性太差）。在调研中，发现有基于热传导的算法，感觉好像挺符合直观感觉，用了协同数据，同时也支持元数据。但是再顺着这个思路往下找的时候，发现  <strong>SimRank</strong> 是一种十分成熟且常用于相关推荐的模型，粗看了一下，感觉很符合我们的业务诉求，就迫不及待尝试了一下。</p>
+<h2 id="二、SimRank-基本模型"><a href="#二、SimRank-基本模型" class="headerlink" title="二、SimRank 基本模型"></a>二、SimRank 基本模型</h2><h3 id="2-1-核心思想"><a href="#2-1-核心思想" class="headerlink" title="2.1 核心思想"></a>2.1 核心思想</h3><p>由于 <strong>SimRank</strong> 提出的时间比较早，网上的材料很多，而且大多长的也差不多，可以参考文献 [1, 2] ，这里只简单的搬个砖。</p>
+<p>文献 [1] 最早提出  <strong>SimRank</strong> 模型，核心的思想是 “<strong>two objects are similar if they are related to similar objects</strong>“（这跟 PageRank 的思路完全一致，只是 PageRank 是用来评估每个链接的重要性，而  <strong>SimRank</strong> 是用来评估每两个物品间的相似度）。 <strong>SimRank</strong> 既支持计算所有节点对之间的相似度（如输入数据为文章引用记录），也支持计算二部图中每一部分节点间的相似度（如输入数据为用户行为记录）。由于我们是做视频推荐，主要用的是用户行为数据，因此这里只介绍基于二部图的模型。</p>
 <p>举个简单的例子：如下图所示，用户 $u_1$ 观看了视频 $v_1,v_2,v_3$；用户 $u_2$ 观看了视频 $v_2,v_3,v_4$，则可以用二部图来表示这种观影关系（二部图是因为用户 $u_1,u_2$ 之间无联系，且视频 $v_1,v_2,v_3,v_4$ 间无联系，只有用户-视频间存在有向边）：</p>
 <img src="/2019/04/29/simrank/simrank-f1.png" title="用户观影二部图示例">
 <p>为了评估视频 $v_1,v_4$ 之间的相似度，需要看看哪些人看了 $v_1,v_4$ ，以及这些用户的相似度。这是一个典型的递归逻辑，递归的起点在于：每个节点（包括这里的用户/视频）与自己的相似度为 1；没有关联的节点间相似度为 0（一种情况是这两个节点没有与其他节点的联系，还有一种情况是在迭代的初始状态时，所有节点对间的相似度为 0）。值得注意的是，如果用 ItemCF 算法来计算 $v_1,v_4$ 的相似度，由于它们没有共同观看的用户，相似度为 0，具体对比可以参考我之前的博客：<a href="https://guyuecanhui.github.io/2019/04/12/itemcf/">可能是最好懂的ItemCF解释了</a>。</p>
@@ -490,7 +490,7 @@ W_{uv}^T\cdot S_u \cdot W_{uv} & 0
 \begin{cases}
 S_u^{k+1} = c_1 \cdot W_{vu}^T\cdot S_v^k \cdot W_{vu} + (I - diag(c_1 \cdot W_{vu}^T\cdot S_v^k \cdot W_{vu})) \\
 S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}^T\cdot S_u^k \cdot W_{uv}))
-\end{cases}\quad (3)</script><h3 id="2-4-扩展用户-视频属性"><a href="#2-4-扩展用户-视频属性" class="headerlink" title="2.4 扩展用户/视频属性"></a>2.4 扩展用户/视频属性</h3><p>以上描述了经典的基于二部图的 SimRank 算法，但是其实我们可以将视频的元数据/用户的属性数据作为辅助节点加入到图中来，并添加<code>视频元数据</code>$\rightarrow$<code>视频</code>和<code>用户画像</code>$\rightarrow$<code>用户</code>的单向边（表示用户/视频的相似度不会反向传播给画像/元数据），同时初始化不同维度的视频元数据/用户画像的相似度，以达到运营干预的目的。具体的分块乘法就不推导了，跟 2.3 节差不多，这里只举一个例子：</p>
+\end{cases}\quad (3)</script><h3 id="2-4-扩展用户-视频属性"><a href="#2-4-扩展用户-视频属性" class="headerlink" title="2.4 扩展用户/视频属性"></a>2.4 扩展用户/视频属性</h3><p>以上描述了经典的基于二部图的  <strong>SimRank</strong> 算法，但是其实我们可以将视频的元数据/用户的属性数据作为辅助节点加入到图中来，并添加<code>视频元数据</code>$\rightarrow$<code>视频</code>和<code>用户画像</code>$\rightarrow$<code>用户</code>的单向边（表示用户/视频的相似度不会反向传播给画像/元数据），同时初始化不同维度的视频元数据/用户画像的相似度，以达到运营干预的目的。具体的分块乘法就不推导了，跟 2.3 节差不多，这里只举一个例子：</p>
 <img src="/2019/04/29/simrank/simrank-f2.png" title="扩展用户/视频属性后的二部图示例">
 <p>上图中，本来 $u_1,u_2$ 之间是没有边相连的，因此相似度为 0，但是由于他们同属男性，因此由<code>男性</code>这个画像向这两个用户传播了一定的相似度；同样的，本来 $v_1,v_2$ 之间的相似度也为 0，但是由于它们都是搞笑的视频，因此<code>搞笑</code>这个元数据也向它们传播了一定的相似度。<strong>加入用户维度和视频维度的辅助节点以后，有助于解决由于行为较少而无法准确评估相似度的情况。</strong></p>
 <h2 id="三、模型实现与优化讨论"><a href="#三、模型实现与优化讨论" class="headerlink" title="三、模型实现与优化讨论"></a>三、模型实现与优化讨论</h2><p>我在 spark 2 和在 python 中分别实现了上述过程，使用图遍历的方式优点是代码简单，但是对于大规模的图优化比较麻烦，速度很慢；使用矩阵计算的时候，主要的问题又在于矩阵的优化计算。下面简单讲下一些可行的优化思路。</p>
@@ -548,6 +548,10 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/10/simrankpp/" rel="prev" title="从 SimRank 到 SimRank++">
+                从 SimRank 到 SimRank++ <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -627,7 +631,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -649,7 +653,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -733,7 +737,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">14.1k</span>
+    <span title="Site words total count">16.3k</span>
   
 </div>
 

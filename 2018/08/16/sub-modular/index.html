@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="Submodular 函数的定义与性质最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。所谓 Submodular 函数，是指满足如下定义的集合函数$^{[1]}$：  记 $[n]={1,2,\cdots,n}​$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}​$ 为一个集合函数，该函数是 submudular当：">
+<meta name="description" content="Submodular 函数的定义与性质最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。所谓 Submodular 函数，是指满足如下定义的集合函数$^{[1]}$：  记 $[n]={1,2,\cdots,n}$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}$ 为一个集合函数，该函数是 submudular当： f">
 <meta name="keywords" content="优化,计算学习理论,函数">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Submodular函数">
 <meta property="og:url" content="https://guyuecanhui.github.io/2018/08/16/sub-modular/index.html">
 <meta property="og:site_name" content="Looping">
-<meta property="og:description" content="Submodular 函数的定义与性质最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。所谓 Submodular 函数，是指满足如下定义的集合函数$^{[1]}$：  记 $[n]={1,2,\cdots,n}​$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}​$ 为一个集合函数，该函数是 submudular当：">
+<meta property="og:description" content="Submodular 函数的定义与性质最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。所谓 Submodular 函数，是指满足如下定义的集合函数$^{[1]}$：  记 $[n]={1,2,\cdots,n}$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}$ 为一个集合函数，该函数是 submudular当： f">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-13T12:36:25.532Z">
+<meta property="og:updated_time" content="2019-05-10T14:41:11.981Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Submodular函数">
-<meta name="twitter:description" content="Submodular 函数的定义与性质最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。所谓 Submodular 函数，是指满足如下定义的集合函数$^{[1]}$：  记 $[n]={1,2,\cdots,n}​$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}​$ 为一个集合函数，该函数是 submudular当：">
+<meta name="twitter:description" content="Submodular 函数的定义与性质最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。所谓 Submodular 函数，是指满足如下定义的集合函数$^{[1]}$：  记 $[n]={1,2,\cdots,n}$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}$ 为一个集合函数，该函数是 submudular当： f">
 
 
 
@@ -432,21 +432,21 @@
       
 
       
-        <h2 id="Submodular-函数的定义与性质"><a href="#Submodular-函数的定义与性质" class="headerlink" title="Submodular 函数的定义与性质"></a>Submodular 函数的定义与性质</h2><p>最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。<br>所谓 Submodular 函数，是指满足如下定义的<strong>集合函数</strong>$^{[1]}$：</p>
+        <h2 id="Submodular-函数的定义与性质"><a href="#Submodular-函数的定义与性质" class="headerlink" title="Submodular 函数的定义与性质"></a>Submodular 函数的定义与性质</h2><p>最近在看一些计算学习理论的时候，发现很多文章是基于 <strong>Submodular</strong> 函数做的，就去了解了一下。<br>所谓 <strong>Submodular</strong> 函数，是指满足如下定义的<strong>集合函数</strong>$^{[1]}$：</p>
 <blockquote>
-<p>记 $[n]={1,2,\cdots,n}​$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}​$ 为一个集合函数，该函数是 submudular当：</p>
-<script type="math/tex; mode=display">f(A)+f(B)\ge f(A\cup B)+f(A\cap B), \quad \forall A,B\subseteq[n] \qquad(1)​</script></blockquote>
-<p>它是对 Modular 函数的条件进行放松，而 Modular 函数是指满足如下定义的函数：</p>
+<p>记 $[n]={1,2,\cdots,n}$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}$ 为一个集合函数，该函数是 submudular当：</p>
+<script type="math/tex; mode=display">f(A)+f(B)\ge f(A\cup B)+f(A\cap B), \quad \forall A,B\subseteq[n] \qquad(1)</script></blockquote>
+<p>它是对 <strong>Modular</strong> 函数的条件进行放松，而 <strong>Modular</strong> 函数是指满足如下定义的函数：</p>
 <script type="math/tex; mode=display">
-f(A)+f(B)=f(A\cup B)+f(A\cap B), \quad \forall A,B\subseteq[n] \qquad(2)</script><p>看定义，Submodular 函数与凹函数有些相似，不同的在于它并不限定元素的顺序！<br>Submodular 函数还有一种等价式，更能体现它的一个核心特点：</p>
+f(A)+f(B)=f(A\cup B)+f(A\cap B), \quad \forall A,B\subseteq[n] \qquad(2)</script><p>看定义，<strong>Submodular</strong> 函数与凹函数有些相似，不同的在于它并不限定元素的顺序！<br><strong>Submodular</strong> 函数还有一种等价式，更能体现它的一个核心特点：</p>
 <script type="math/tex; mode=display">
 f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq [n],\ i\not \in B \qquad(3)</script><p>通俗的来讲，这个特点就是<strong>边际效用递减</strong>，即增加一个元素对整体的收益贡献递减。这种边际效用递减的程度可以用曲率 $\kappa$（Curvature）来度量：$f_S(i)\ge (1-\kappa)f(i)$，其中，$0\le\kappa\le1$。</p>
-<p>举两个跟推荐有关系的 Submodular 函数的例子：</p>
+<p>举两个跟推荐有关系的 <strong>Submodular</strong> 函数的例子：</p>
 <ol>
-<li><strong>视频推荐多样性：</strong>对于一个可推荐的视频集合 $S$，假设每个视频有一个分类 $g_i$，则一个推荐列表中不同类别的总数 $f(S)=\sum_i \mathbb{I}(g_i)$ 就是一个 Submodular 函数，其中，$\mathbb{I}(x)$ 表示元素 $x$ 是否存在。</li>
-<li><strong>商品推广用户选择：</strong>对于一个社交网络的用户集合 $S$，如果某用户看过一个物品，则他有可能向他的朋友推荐和分享。假设某个物品在推广期时给 $k$ 个用户 $S_k$ 展示了，则最终该物品会展示给多少用户 $m=f(S_k)$ 是一个 Submodular 函数。</li>
+<li><strong>视频推荐多样性：</strong>对于一个可推荐的视频集合 $S$，假设每个视频有一个分类 $g_i$，则一个推荐列表中不同类别的总数 $f(S)=\sum_i \mathbb{I}(g_i)$ 就是一个 <strong>Submodular</strong> 函数，其中，$\mathbb{I}(x)$ 表示元素 $x$ 是否存在。</li>
+<li><strong>商品推广用户选择：</strong>对于一个社交网络的用户集合 $S$，如果某用户看过一个物品，则他有可能向他的朋友推荐和分享。假设某个物品在推广期时给 $k$ 个用户 $S_k$ 展示了，则最终该物品会展示给多少用户 $m=f(S_k)$ 是一个 <strong>Submodular</strong> 函数。</li>
 </ol>
-<p>最后简单介绍下它的一些性质。Submodular 函数首先是集合函数，因此满足如下性质：</p>
+<p>最后简单介绍下它的一些性质。<strong>Submodular</strong> 函数首先是集合函数，因此满足如下性质：</p>
 <ul>
 <li><strong>非负性：</strong>$f(A)\ge 0$</li>
 <li><strong>单调性：</strong>可以是单调增或单调减</li>
@@ -454,10 +454,10 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
 </ul>
 <p>另外，根据定义，可以证明它还满足：</p>
 <ul>
-<li>若 $f_1,f_2,\cdots,f_k$ 是 Submodular 函数，给定 $w_1,w_2,\cdots,w_k\ge 0$，则 $g(S)=\sum_iw_if_i(S)$ 也是 Submodular 函数</li>
-<li>若 $f$ 在 $X$ 集合上是 Submodular 函数，给定 $T\subseteq X$ 则 $f(S\cup T)$、$f(S\cap T)$、$f(X\setminus S)$ 都是 Submodular 函数</li>
+<li>若 $f_1,f_2,\cdots,f_k$ 是 <strong>Submodular</strong> 函数，给定 $w_1,w_2,\cdots,w_k\ge 0$，则 $g(S)=\sum_iw_if_i(S)$ 也是 <strong>Submodular</strong> 函数</li>
+<li>若 $f$ 在 $X$ 集合上是 <strong>Submodular</strong> 函数，给定 $T\subseteq X$ 则 $f(S\cup T)$、$f(S\cap T)$、$f(X\setminus S)$ 都是 <strong>Submodular</strong> 函数</li>
 </ul>
-<p>由于 Submodular 函数性质好、易证明，它在机器学习、博弈论等领域的理论研究方面获得了广泛的应用$^{[1,2]}​$。特别的，文献$[1]​$基于 Submodular 目标提出了 PMAC 理论，是对 PAC 理论的扩展；文献$[2]​$基于 Submodular 函数提出一种 AdaptiveSampling 的算法，可以在理论保证的前提下，将样本数大大减少，这里就不展开了。</p>
+<p>由于 <strong>Submodular</strong> 函数性质好、易证明，它在机器学习、博弈论等领域的理论研究方面获得了广泛的应用$^{[1,2]}$。特别的，文献$[1]$基于 <strong>Submodular</strong> 目标提出了 PMAC 理论，是对 PAC 理论的扩展；文献$[2]$基于 <strong>Submodular</strong> 函数提出一种 AdaptiveSampling 的算法，可以在理论保证的前提下，将样本数大大减少，这里就不展开了。</p>
 <h2 id="Reference"><a href="#Reference" class="headerlink" title="Reference"></a>Reference</h2><p>[1] Balcan, Maria Florina, and N. J. A. Harvey. “Learning submodular functions.” ACM Symposium on Theory of Computing ACM, 2011:793-802.<br>[2] Balkanski, Eric and Singer, Yaron. “Approximation Guarantees for Adaptive Sampling.” Proceedings of the 35th International Conference on Machine Learning, 2018:393-402.</p>
 
       
@@ -585,7 +585,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -607,7 +607,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -691,7 +691,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">14.1k</span>
+    <span title="Site words total count">16.3k</span>
   
 </div>
 

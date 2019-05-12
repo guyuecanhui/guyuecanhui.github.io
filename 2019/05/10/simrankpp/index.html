@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="推荐,协同过滤,算法,相似度,二部图,">
 
 
 
@@ -81,17 +81,21 @@
 
 
 
-<meta name="description" content="总结心得">
-<meta name="keywords" content="feature, model, algorithm">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Looping">
-<meta property="og:url" content="https://guyuecanhui.github.io/tags/特征组合/index.html">
+<meta name="description" content="从 SimRank 到 SimRank++上一篇博客《SimRank与视频相似度计算》 介绍了 SimRank$^{[1]}$ 及其在视频推荐中的应用，这一篇再谈谈 SimRank++。顾名思义，SimRank++ 是在 SimRank 的基础上做了一些优化，在文献 [2] 中提出时是为了解决搜索词改写的问题，本质上也就是计算搜索词的相似度。作者发现，当需要考虑二部图的边权信息时，原始的 SimR">
+<meta name="keywords" content="推荐,协同过滤,算法,相似度,二部图">
+<meta property="og:type" content="article">
+<meta property="og:title" content="从 SimRank 到 SimRank++">
+<meta property="og:url" content="https://guyuecanhui.github.io/2019/05/10/simrankpp/index.html">
 <meta property="og:site_name" content="Looping">
-<meta property="og:description" content="总结心得">
+<meta property="og:description" content="从 SimRank 到 SimRank++上一篇博客《SimRank与视频相似度计算》 介绍了 SimRank$^{[1]}$ 及其在视频推荐中的应用，这一篇再谈谈 SimRank++。顾名思义，SimRank++ 是在 SimRank 的基础上做了一些优化，在文献 [2] 中提出时是为了解决搜索词改写的问题，本质上也就是计算搜索词的相似度。作者发现，当需要考虑二部图的边权信息时，原始的 SimR">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/05/10/simrankpp/group-watch-1.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/05/10/simrankpp/group-watch-2.png">
+<meta property="og:updated_time" content="2019-05-12T14:48:49.603Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Looping">
-<meta name="twitter:description" content="总结心得">
+<meta name="twitter:title" content="从 SimRank 到 SimRank++">
+<meta name="twitter:description" content="从 SimRank 到 SimRank++上一篇博客《SimRank与视频相似度计算》 介绍了 SimRank$^{[1]}$ 及其在视频推荐中的应用，这一篇再谈谈 SimRank++。顾名思义，SimRank++ 是在 SimRank 的基础上做了一些优化，在文献 [2] 中提出时是为了解决搜索词改写的问题，本质上也就是计算搜索词的相似度。作者发现，当需要考虑二部图的边权信息时，原始的 SimR">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/05/10/simrankpp/group-watch-1.png">
 
 
 
@@ -121,13 +125,13 @@
 
 
 
-  <link rel="canonical" href="https://guyuecanhui.github.io/tags/特征组合/">
+  <link rel="canonical" href="https://guyuecanhui.github.io/2019/05/10/simrankpp/">
 
 
 
 
 
-  <title>标签: 特征组合 | Looping</title>
+  <title>从 SimRank 到 SimRank++ | Looping</title>
   
 
 
@@ -146,7 +150,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -282,52 +286,264 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>特征组合<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/05/10/simrankpp/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="胡诚">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Looping">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2018/10/04/ffm/" itemprop="url">
-              
-                <span itemprop="name">特征组合之FFM</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">从 SimRank 到 SimRank++</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2018-10-04T14:43:50+08:00" content="2018-10-04">
-          10-04
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-10T22:42:18+08:00">
+                2019-05-10
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/10/simrankpp/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/10/simrankpp/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <h2 id="从-SimRank-到-SimRank"><a href="#从-SimRank-到-SimRank" class="headerlink" title="从 SimRank 到 SimRank++"></a>从 SimRank 到 SimRank++</h2><p>上一篇博客<a href="https://guyuecanhui.github.io/2019/04/29/simrank/">《SimRank与视频相似度计算》</a> 介绍了 <strong>SimRank</strong>$^{[1]}$ 及其在视频推荐中的应用，这一篇再谈谈 <strong>SimRank++</strong>。顾名思义，<strong>SimRank++</strong> 是在 <strong>SimRank</strong> 的基础上做了一些优化，在文献 [2] 中提出时是为了解决搜索词改写的问题，本质上也就是计算搜索词的相似度。作者发现，当需要考虑二部图的边权信息时，原始的 <strong>SimRank</strong> 模型难以评估物品间相似度的可信度，这篇博客从视频推荐的角度来阐释作者的优化点。</p>
+<h3 id="从用户到用户群"><a href="#从用户到用户群" class="headerlink" title="从用户到用户群"></a>从用户到用户群</h3><p>由于我们影片的观众量级在千万级，而影片的数量在十万级，因此使用 <strong>SimRank</strong> 模型来计算视频相似度时，最大的计算和存储瓶颈在于<code>用户相似矩阵</code>、<code>用户-视频转移矩阵</code>及<code>视频-用户转移矩阵</code>。但是从使用场景上来讲，我们在这里实际上并不需要度量用户之间的相似度（尽管它们可以用来做用户协同推荐），用户仅仅是用来传递视频间的相似度。因此，为了减少计算和存储的开销，我们可以对用户进行聚类，使用用户组来代替用户完成视频相似度的传递。</p>
+<p>基于这个想法，我们可以使用各种聚类的方法：按用户性别、年龄、地域等；我是直接基于历史行为进行用户聚类。具体的做法是基于用户最近 $N$ 天的播放、收藏、分享等行为生成用户的表征向量（可以用 AutoEncoder、PCA 等方法），然后基于表征向量执行 KMeans（直接 KMeans 可能跑不出来），这里的用户群数量需要根据实际场景调试，我们希望类内最大距离越小越好。然后再将用户的行为聚合到用户组，例如有效播放次数累加、总播放时长的累加、总播放占比的累加、平均 CTR 等。这样我们就从<code>用户-视频二部图</code>切换到了<code>用户组-视频</code>二部图，整个网络的规模降低了 2 个数量级。</p>
+<h3 id="SimRank-的优化"><a href="#SimRank-的优化" class="headerlink" title="SimRank++ 的优化"></a>SimRank++ 的优化</h3><p>我们将用户聚成了用户组，丢失了大量的网络信息，虽然用户组作为网络中的一个节点，我们看不出它的出边是来自哪些用户，但是好在我们保留了这个组里有多少用户看了某个视频。而由于这一组用户又是相似的，因此我们期望通过充分利用边权来最小化网络信息的丢失。</p>
+<p><strong>SimRank++</strong> 正好满足我们的需求，它在 <strong>SimRank</strong> 的基础上增加了两项优化：</p>
+<h4 id="1-两个节点共同节点越多，则这两个节点相似度的可信度越高"><a href="#1-两个节点共同节点越多，则这两个节点相似度的可信度越高" class="headerlink" title="1. 两个节点共同节点越多，则这两个节点相似度的可信度越高"></a>1. 两个节点共同节点越多，则这两个节点相似度的可信度越高</h4><p>这一条很容易理解，如果很多人同时看了两部视频，那这两部视频的相似度也就越可信（注意，共同观看越多并不意味着相似度越高）。例如下图所示，视频 $v_1,v_2$ 与 $v_3,v_4$ 相比同时被更多的用户组同时观看，因此 $v_1,v_2$ 根据 <strong>SimRank</strong> 模型算出来的相似度应该比 $v_3,v_4$ 的相似度更可信。</p>
+<img src="/2019/05/10/simrankpp/group-watch-1.png" title="共同节点越多，相似度可信度越高">
+<p>我们用 $E(i,j)$ 来表示节点 $i,j$ 相似度的可信度，论文 [2] 中推荐使用 $E<em>v(v_i,v_j)=\sum</em>{k=1}^{|I(v_i)\cap I(v_j)|} \frac{1}{2^k}$ 或者 $E_v(v_i,v_j)=1-e^{|I(v_i)\cap I(v_j)|}$ 来评估该权重（用户侧的同理），则：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+s(u,u')=c_1\cdot E_u(u,u')\cdot \sum_{i\in O(u)}\sum_{j\in O(u')}W_{uv}(u,i)\cdot W_{uv}(u',j)\cdot s(i, j) \\
+s(v,v')=c_2\cdot E_v(v,v')\cdot \sum_{i\in I(v)}\sum_{j\in I(v')}W_{vu}(v,i)\cdot W_{vu}(v',j)\cdot s(i, j)
+\end{cases} \qquad (1)</script><h4 id="2-节点边权越大、差异越小，则它的邻居节点相似度的权重越高"><a href="#2-节点边权越大、差异越小，则它的邻居节点相似度的权重越高" class="headerlink" title="2. 节点边权越大、差异越小，则它的邻居节点相似度的权重越高"></a>2. 节点边权越大、差异越小，则它的邻居节点相似度的权重越高</h4><p>如下图所示，我们用用户播放数来表示边权（如上所述，并非只有这一种权重表示方法）。不考虑边权时，$s(v_1,v_2)$ 和 $s(v_3,v_4)$ 完全相同。但是实际上，由于用户组 1 中有 100 个人看了 $v_1$ 和 $v_2$，可以认为用户组 1 中很多人都同时喜欢 $v_1,v_2$；而用户组 2 中有 100 个人看了 $v_3$，但只有 1 个人看了 $v_4$，因此 $v_3$ 和 $v_4$ 显然相似度应该比 $v_1,v_2$ 的低。</p>
+<img src="/2019/05/10/simrankpp/group-watch-2.png" title="边权越大、差异越小，相似度越高">
+<p>我们用新的权重 $P(i,j)$ 来表示节点 $i,j$ 的相似度传导权重，则：</p>
+<script type="math/tex; mode=display">
+P(i,j)=e^{-var(j)}\frac{w(i,j)}{\sum_{k\in N(i)}w(i,k)}\quad (2)</script><p>其中，$e^{-var(i)}$ 用来度量节点 $i$ 的边权差异，边权差异越大，该系数越小；$\frac{w(i,j)}{\sum_{k\in N(i)}w(i,k)}$ 则是用来计算归一化的权重。</p>
+<h3 id="SimRank-模型的矩阵描述"><a href="#SimRank-模型的矩阵描述" class="headerlink" title="SimRank++ 模型的矩阵描述"></a>SimRank++ 模型的矩阵描述</h3><p>基于式 (1) 和 式 (2)，我们可以写出 <strong>SimRank++</strong> 的矩阵描述：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+S_u^{k+1} = c_1\cdot E_u\circ P_{vu}^T\cdot S_v^k \cdot P_{vu} + (I - diag(c_1\cdot E_u\circ P_{vu}^T\cdot S_v^k \cdot P_{vu})) \\
+S_v^{k+1} = c_2\cdot E_v\circ P_{uv}^T\cdot S_u^k \cdot P_{uv} + (I-diag(c_2\cdot E_v\circ P_{uv}^T\cdot S_u^k \cdot P_{uv}))
+\end{cases}\quad (3)</script><p>其中，</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+E_u(u,u')=1-e^{-|O(u)\cap O(u')|}\\
+E_v(v,v')=1-e^{-|I(v)\cap I(v')|}
+\end{cases}\quad (4)</script><script type="math/tex; mode=display">
+\begin{cases}
+P_{uv}(u,v)=e^{-var(v)}\frac{w(u,v)}{\sum_{i\in O(u)}w(u,i)} \\
+P_{vu}(v,u)=e^{-var(u)}\frac{w(v,u)}{\sum_{i\in I(v)}w(v,i)}
+\end{cases} \qquad(5)</script><p>但是使用数据进行验证时，发现该模型对用户聚类的效果和权重的设置十分敏感，这两项没调好的话，很容易导致算出来的视频相似列表趋同或者有其他的问题。具体来说，用户聚类的原则是类内用户的行为越相似越好；权重的话则没有很明显的规律，需要根据业务场景来尝试了。</p>
+<h3 id="发散讨论：扩散算法"><a href="#发散讨论：扩散算法" class="headerlink" title="发散讨论：扩散算法"></a>发散讨论：扩散算法</h3><p>前几天跟其他同学交流的时候，有人提过之前做过用热传导算法来算用户的个性化推荐结果，据说效果也很不错。这里顺便扒一扒热传导算法和 <strong>SimRank</strong> 算法的区别和联系。</p>
+<p>首先，它们都属于扩散算法，都是基于对物理世界现象的观察和模拟。典型的扩散有两类：一类是物质或者能量的扩散，满足守恒律，常称作为<strong>物质扩散</strong>，最终稳定下来后，总量是不变的；另一类是热的扩散，一般由一个或多个恒温热源驱动，不满足守恒律，常被称作为<strong>热传导</strong>。SimRank 是属于热传导（物品与自己的相似度恒定为 1）。</p>
+<p>相比而言，物质扩散倾向于推荐比较流行的物品，而热传导倾向于推荐比较冷门的物品。更详细的讨论可以参考文献 [3]。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Jeh, G., &amp; Widom, J. (2002, July). SimRank: a measure of structural-context similarity. In <em>Proceedings of the eighth ACM SIGKDD international conference on Knowledge discovery and data mining</em> (pp. 538-543). ACM.</p>
+<p>[2] Antonellis, I., Molina, H. G., &amp; Chang, C. C. (2008). Simrank++: query rewriting through link analysis of the click graph. <em>Proceedings of the VLDB Endowment</em>, <em>1</em>(1), 408-421.</p>
+<p>[3] 推荐算法整理 — 扩散算法. <em><a href="https://www.zybuluo.com/chanvee/note/21053" target="_blank" rel="noopener">https://www.zybuluo.com/chanvee/note/21053</a>.</em></p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+            <a href="/tags/协同过滤/" rel="tag"># 协同过滤</a>
+          
+            <a href="/tags/算法/" rel="tag"># 算法</a>
+          
+            <a href="/tags/相似度/" rel="tag"># 相似度</a>
+          
+            <a href="/tags/二部图/" rel="tag"># 二部图</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/04/29/simrank/" rel="next" title="SimRank与视频相似度计算">
+                <i class="fa fa-chevron-left"></i> SimRank与视频相似度计算
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/11/terminology/" rel="prev" title="Terminology">
+                Terminology <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -335,6 +551,13 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -355,8 +578,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -433,6 +665,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#从-SimRank-到-SimRank"><span class="nav-number">1.</span> <span class="nav-text">从 SimRank 到 SimRank++</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#从用户到用户群"><span class="nav-number">1.1.</span> <span class="nav-text">从用户到用户群</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SimRank-的优化"><span class="nav-number">1.2.</span> <span class="nav-text">SimRank++ 的优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-两个节点共同节点越多，则这两个节点相似度的可信度越高"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. 两个节点共同节点越多，则这两个节点相似度的可信度越高</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-节点边权越大、差异越小，则它的邻居节点相似度的权重越高"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. 节点边权越大、差异越小，则它的邻居节点相似度的权重越高</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SimRank-模型的矩阵描述"><span class="nav-number">1.3.</span> <span class="nav-text">SimRank++ 模型的矩阵描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#发散讨论：扩散算法"><span class="nav-number">1.4.</span> <span class="nav-text">发散讨论：扩散算法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">2.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -598,6 +846,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 

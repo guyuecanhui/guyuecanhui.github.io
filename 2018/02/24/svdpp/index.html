@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="Looping">
 <meta property="og:description" content="论文引用：Koren, Y. . (2008). Factorization meets the neighborhood : a multifaceted collaborative filtering model. Proceedings of the 14th ACM SIGKDD International Conference of Knowledge Discovery and Da">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-04T13:46:14.334Z">
+<meta property="og:updated_time" content="2019-05-08T14:13:49.930Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SVD++ 论文精读">
 <meta name="twitter:description" content="论文引用：Koren, Y. . (2008). Factorization meets the neighborhood : a multifaceted collaborative filtering model. Proceedings of the 14th ACM SIGKDD International Conference of Knowledge Discovery and Da">
@@ -500,7 +500,11 @@ c_{ij} \leftarrow c_{ij} + \gamma\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\la
 <script type="math/tex; mode=display">
 \hat{r_{ui}} = b_{ui} + q_i^T(p_u +\mid N(u)\mid ^{-1/2}\sum_{j\in N(u)} y_j)</script><h2 id="4、联合模型"><a href="#4、联合模型" class="headerlink" title="4、联合模型"></a>4、联合模型</h2><p>如果把上面两个模型看成是 <code>预测值=基准估计+偏移量</code> 的话，那么这两个模型就可以混合到一起，变成：</p>
 <script type="math/tex; mode=display">
-\hat{r_{ui}} = b_{ui} + q_i^T(p_u +\mid N(u)\mid ^{-1/2}\sum_{j\in N(u)} y_j) + (\mid R^k(i;u)\mid ^{-1/2}\sum_{j\in R(u)} (r_{uj} - b_{uj})\omega_{ij} +\mid N^k(i;u)\mid ^{-1/2}\sum_{j\in N(u)} c_{ij})</script><p>其中，第一项为基准估计，第二项 provides the interaction between the user profile and the item profile. In our example, it may find that “The Sixth Sense” and Joe are rated high on the Psychological Thrillers scale. 第三项 contributes fine grained adjustments that are hard to profile, such as the fact that Joe rated low the related movie “Signs”.</p>
+\begin{align}
+\hat{r_{ui}} &= b_{ui} \\
+&+ q_i^T(p_u +\mid N(u)\mid ^{-1/2}\sum_{j\in N(u)} y_j) \\
+&+ \mid R^k(i;u)\mid ^{-1/2}\sum_{j\in R(u)} (r_{uj} - b_{uj})\omega_{ij} +\mid N^k(i;u)\mid ^{-1/2}\sum_{j\in N(u)} c_{ij}
+\end{align}</script><p>其中，第一项为基准估计，第二项 provides the interaction between the user profile and the item profile. In our example, it may find that “The Sixth Sense” and Joe are rated high on the Psychological Thrillers scale. 第三项 contributes fine grained adjustments that are hard to profile, such as the fact that Joe rated low the related movie “Signs”.</p>
 <p>使用梯度下降法得到的迭代公式如下：</p>
 <script type="math/tex; mode=display">
 \begin{cases}
@@ -643,7 +647,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">8</span>
+                  <span class="site-state-item-count">10</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -665,7 +669,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">19</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -749,7 +753,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">14.1k</span>
+    <span title="Site words total count">16.3k</span>
   
 </div>
 
