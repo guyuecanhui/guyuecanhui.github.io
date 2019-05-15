@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://guyuecanhui.github.io/"/>
-  <updated>2019-05-12T14:52:35.196Z</updated>
+  <updated>2019-05-15T14:29:19.469Z</updated>
   <id>https://guyuecanhui.github.io/</id>
   
   <author>
@@ -17,21 +17,49 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>Terminology</title>
-    <link href="https://guyuecanhui.github.io/2019/05/11/terminology/"/>
-    <id>https://guyuecanhui.github.io/2019/05/11/terminology/</id>
-    <published>2019-05-11T13:51:23.000Z</published>
-    <updated>2019-05-12T14:52:35.196Z</updated>
+    <title>二项 Logistic Regression 模型</title>
+    <link href="https://guyuecanhui.github.io/2019/05/15/lr/"/>
+    <id>https://guyuecanhui.github.io/2019/05/15/lr/</id>
+    <published>2019-05-15T14:02:00.000Z</published>
+    <updated>2019-05-15T14:29:19.469Z</updated>
     
-    <content type="html"><![CDATA[<h2 id="推荐系统常用符号含义"><a href="#推荐系统常用符号含义" class="headerlink" title="推荐系统常用符号含义"></a>推荐系统常用符号含义</h2><div class="table-container"><table><thead><tr><th>符号表示</th><th>含义</th><th>示例</th></tr></thead><tbody><tr><td>$\mathbb{x}$</td><td>输入变量</td><td></td></tr><tr><td>$x_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$</td><td>第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $x=(x_1,\cdots,x_n)$，此时 $x_i$ 表示样本的第 $i$ 维特征</td><td></td></tr><tr><td>$\mathcal{X}={x_1,\cdots,x_N}$</td><td>输入实例集合</td><td></td></tr><tr><td>$(x_j^{(i)})^k$</td><td>第 $j$ 个输入变量的第 $i$ 维特征取值的 $k$ 次方</td><td></td></tr><tr><td>$\mathbb{y}$</td><td>输出变量</td><td></td></tr><tr><td>$y_i$</td><td>第 $i$ 个输出变量的取值</td><td></td></tr><tr><td>$\mathcal{Y}={y_1,\cdots,y_N}$</td><td>输出实例集合</td><td></td></tr><tr><td>$(x_i,y_i)$</td><td>第 $i$ 个样本点</td><td></td></tr><tr><td>$\mathcal{T}={(x_1,y_1),\cdots,(x_n,y_n)}$</td><td>训练数据集</td><td></td></tr><tr><td>$\mathbb{w}=(w_1,\cdots,w_N)$</td><td>权重向量</td><td></td></tr><tr><td>$w_i^t$</td><td>第 $i$ 维特征的权重在第 $t$ 轮迭代的取值</td><td></td></tr><tr><td>$\parallel \mathbb{w} \parallel_i^j$</td><td>权重向量 $\mathbb{w}$ 的 $Li$ 范数的 $j$ 次方</td><td>$\parallel \mathbb{w} \parallel_2^2$</td></tr><tr><td>$\mathbb{g}=(g_1,\cdots,g_N)$</td><td>梯度向量</td><td></td></tr><tr><td>$\psi(\mathbb{w})$</td><td>正则化函数</td></tr></tbody></table></div><h2 id="常用的函数和公式"><a href="#常用的函数和公式" class="headerlink" title="常用的函数和公式"></a>常用的函数和公式</h2><h3 id="Sigmoid-函数"><a href="#Sigmoid-函数" class="headerlink" title="Sigmoid 函数"></a>Sigmoid 函数</h3><ul><li>表达式：$\pi(x)=\frac{1}{1+e^{-x}}$；</li><li>导数：$\pi’(x)=\pi(x)\big(1-\pi(x)\big)$；</li></ul><h2 id="常用模型"><a href="#常用模型" class="headerlink" title="常用模型"></a>常用模型</h2><h3 id="二项-Logistic-Regression-模型"><a href="#二项-Logistic-Regression-模型" class="headerlink" title="二项 Logistic Regression 模型"></a>二项 Logistic Regression 模型</h3><p><strong>模型描述：</strong></p><script type="math/tex; mode=display">\begin{cases}P(\mathbb{y}=1|x)=\pi(x)=\frac{1}{1+e^{-wx}}=\frac{e^{wx}}{1+e^{wx}} \\P(\mathbb{y}\not=1|x)=1-\pi(x)=\frac{1}{1+e^{wx}}\end{cases}</script><h3 id="FM-Factorization-Machines-模型"><a href="#FM-Factorization-Machines-模型" class="headerlink" title="FM (Factorization Machines) 模型"></a>FM (Factorization Machines) 模型</h3><p><strong>模型描述：</strong></p><script type="math/tex; mode=display">f(x|\mathbb{w})=w_0+\sum_{i=1}^n w_ix_i+\frac{1}{2}\sum_{l=1}^{k}\Big(\big(\sum_{i=1}^{n}v_i^{(l)} x_i \big)^2- \sum_{i=1}^{n} (v_i^{(l)}x_i)^2\Big)</script>]]></content>
+    <content type="html"><![CDATA[<h2 id="模型推导"><a href="#模型推导" class="headerlink" title="模型推导"></a>模型推导</h2><h3 id="模型描述"><a href="#模型描述" class="headerlink" title="模型描述"></a>模型描述</h3><p>记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 <strong>Logistic Regression</strong> 模型是如下的条件概率分布：</p><script type="math/tex; mode=display">\begin{cases}P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\boldsymbol{wx}}} \\P(y\not=1|\boldsymbol{x})=1-\pi(\boldsymbol{x})=\frac{1}{1+e^{\boldsymbol{wx}}}\end{cases}</script><h3 id="模型求解（极大似然估计）"><a href="#模型求解（极大似然估计）" class="headerlink" title="模型求解（极大似然估计）"></a>模型求解（极大似然估计）</h3><p>常见的 label 设置有正负样本分别为 {1,0} 或 {1,-1}，下面分别讨论两种设置下的损失函数和梯度的推导。首先要假设训练样本独立同分布并且数量足够，模型中待估计的参数为 $\boldsymbol{w}$，似然函数的目标是 $y_i=1$ 时 $\pi(\boldsymbol{x}_i)$ 尽可能大，且 $y_i\not =1$ 时 $1-\pi(\boldsymbol{x}_i)$ 尽可能大。</p><h4 id="1-label-为-1-0"><a href="#1-label-为-1-0" class="headerlink" title="1. label 为 {1,0}"></a>1. label 为 {1,0}</h4><p>根据<a href="https://guyuecanhui.github.io/2019/05/11/terminology/">最大似然估计公式</a>，$p(\boldsymbol{x}_i|\boldsymbol{w})=\big(\pi(\boldsymbol{x}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{x}_i)\big)^{1-y_i}$，对数似然函数可以设计为：</p><script type="math/tex; mode=display">\begin{align}H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln\Big(\big(\pi(\boldsymbol{x}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{x}_i)\big)^{1-y_i}\Big) \\&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-y_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big) \\&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln(\frac{e^{\boldsymbol{wx}_i}}{1+e^{\boldsymbol{wx}_i}})+(1-y_i)\cdot \ln(\frac{1}{1+e^{\boldsymbol{wx}_i}})\Big) \\&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\boldsymbol{wx}_i-\ln(1+e^{\boldsymbol{wx}_i})\Big)\end{align}</script><p>这里，$-\Big(\boldsymbol{y}_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-\boldsymbol{y}_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big)$ 实际上就是样本 $ (\boldsymbol{x}_i,\boldsymbol{y}_i)$ 的 <strong>LogLoss</strong>。</p><h4 id="2-label-为-1-1"><a href="#2-label-为-1-1" class="headerlink" title="2. label 为 {1,-1}"></a>2. label 为 {1,-1}</h4><p>$p(\boldsymbol{x}_i|\boldsymbol{w})=\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}$，对数似然函数可以设计为：</p><script type="math/tex; mode=display">\begin{align}H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}) \\&=\arg \min_{\boldsymbol{w}}\sum_{i=1}^N \ln(1+e^{-y_i\boldsymbol{wx}_i}) \\\end{align}</script>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;h2 id=&quot;推荐系统常用符号含义&quot;&gt;&lt;a href=&quot;#推荐系统常用符号含义&quot; class=&quot;headerlink&quot; title=&quot;推荐系统常用符号含义&quot;&gt;&lt;/a&gt;推荐系统常用符号含义&lt;/h2&gt;&lt;div class=&quot;table-container&quot;&gt;
-&lt;table&gt;
-&lt;th
+        &lt;h2 id=&quot;模型推导&quot;&gt;&lt;a href=&quot;#模型推导&quot; class=&quot;headerlink&quot; title=&quot;模型推导&quot;&gt;&lt;/a&gt;模型推导&lt;/h2&gt;&lt;h3 id=&quot;模型描述&quot;&gt;&lt;a href=&quot;#模型描述&quot; class=&quot;headerlink&quot; title=&quot;模型描述&quot;&gt;&lt;/a
+      
+    
+    </summary>
+    
+      <category term="数学" scheme="https://guyuecanhui.github.io/categories/%E6%95%B0%E5%AD%A6/"/>
+    
+    
+      <category term="模型" scheme="https://guyuecanhui.github.io/tags/%E6%A8%A1%E5%9E%8B/"/>
+    
+      <category term="线性模型" scheme="https://guyuecanhui.github.io/tags/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
+    
+      <category term="LR" scheme="https://guyuecanhui.github.io/tags/LR/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>符号约定与常用公式</title>
+    <link href="https://guyuecanhui.github.io/2019/05/11/terminology/"/>
+    <id>https://guyuecanhui.github.io/2019/05/11/terminology/</id>
+    <published>2019-05-11T13:51:23.000Z</published>
+    <updated>2019-05-15T14:33:59.020Z</updated>
+    
+    <content type="html"><![CDATA[<h2 id="一、推荐系统常用符号含义"><a href="#一、推荐系统常用符号含义" class="headerlink" title="一、推荐系统常用符号含义"></a>一、推荐系统常用符号含义</h2><div class="table-container"><table><thead><tr><th style="text-align:left">符号表示</th><th style="text-align:left">含义</th></tr></thead><tbody><tr><td style="text-align:left">$\boldsymbol{x}$</td><td style="text-align:left">输入变量，一般为特征向量</td></tr><tr><td style="text-align:left">$\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$</td><td style="text-align:left">第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x_i$ 表示样本的第 $i$ 维特征</td></tr><tr><td style="text-align:left"><script type="math/tex">\mathcal{X}=\{\boldsymbol{x}_1,\cdots,\boldsymbol{x}_N\}</script></td><td style="text-align:left">输入实例集合</td></tr><tr><td style="text-align:left"><script type="math/tex">(x_j^{(i)})^k</script></td><td style="text-align:left">第 $j$ 个输入变量的第 $i$ 维特征取值的 $k$ 次方</td></tr><tr><td style="text-align:left">$y$</td><td style="text-align:left">输出变量，一般为样本标签</td></tr><tr><td style="text-align:left">$y_i$</td><td style="text-align:left">第 $i$ 个输出变量的取值</td></tr><tr><td style="text-align:left">$\mathcal{Y}={y_1,\cdots,y_N}$</td><td style="text-align:left">输出实例集合</td></tr><tr><td style="text-align:left">$(\boldsymbol{x}_i,y_i)$</td><td style="text-align:left">第 $i$ 个样本点</td></tr><tr><td style="text-align:left">$\mathcal{T}={(\boldsymbol{x}_1,y_1),\cdots,(\boldsymbol{x}_N,y_N)}$</td><td style="text-align:left">训练数据集</td></tr><tr><td style="text-align:left">$\boldsymbol{w}=(w_1,\cdots,w_n)$</td><td style="text-align:left">权重向量</td></tr><tr><td style="text-align:left">$w_i^t$</td><td style="text-align:left">第 $i$ 维特征的权重在第 $t$ 轮迭代的取值</td></tr><tr><td style="text-align:left">$\parallel \boldsymbol{w} \parallel_i^j$</td><td style="text-align:left">权重向量 $\boldsymbol{w}$ 的 Li 范数的 $j$ 次方，例如 L1 范数：$\parallel \boldsymbol{w} \parallel_1$，L2 范数： $\parallel \boldsymbol{w} \parallel_2^2$</td></tr><tr><td style="text-align:left">$\boldsymbol{g}=(g_1,\cdots,g_n)$</td><td style="text-align:left">梯度向量</td></tr><tr><td style="text-align:left">$\psi(\boldsymbol{w})$</td><td style="text-align:left">正则化函数</td></tr></tbody></table></div><h2 id="二、常用定理"><a href="#二、常用定理" class="headerlink" title="二、常用定理"></a>二、常用定理</h2><h3 id="中心极限定理"><a href="#中心极限定理" class="headerlink" title="中心极限定理"></a>中心极限定理</h3><ol><li>样本的平均值约等于总体的平均值。</li><li>给定一个任意分布的总体，从中随机抽取 $N$ 个样本，抽取 $k$ 次，这 $k$ 组抽样平均值的分布接近正态分布。</li><li>经验表明，当每组抽样数量 $N\ge 30$ 时就服从中心极限定理。</li></ol><h3 id="极大似然估计"><a href="#极大似然估计" class="headerlink" title="极大似然估计"></a>极大似然估计</h3><p><strong>前提假设：</strong>训练样本的分布能代表样本的真实分布；每个样本集中的样本都是所谓独立同分布的随机变量，且有充分的训练样本。</p><p><strong>最大似然估计的目的是：</strong>利用已知的样本结果，反推最有可能（最大概率）导致这样结果的参数值。换句话说，极大似然估计提供了一种给定观察数据来评估模型参数的方法，即：<strong>模型已定，参数未知</strong>。</p><p>ML估计的求解方法：</p><script type="math/tex; mode=display">\hat{\theta} = \arg \max_{\theta} l(\theta) = \arg \max_{\theta}\prod_{i=1}^N p(\boldsymbol{x}_i|\theta)</script><p>为了便于分析，定义对数似然函数 $H(\theta) = \ln l(\theta)$，则：</p><script type="math/tex; mode=display">\hat{\theta} = \arg \max_{\theta} \ln l(\theta) = \arg \max_{\theta}\sum_{i=1}^N \ln p(\boldsymbol{x}_i|\theta)</script><p>当 $H(\theta)$ 连续可微的情况下，可以通过求导（单个未知参数）或者求梯度（多个未知参数）的方式求解方程。</p><h2 id="三、常用的函数和公式"><a href="#三、常用的函数和公式" class="headerlink" title="三、常用的函数和公式"></a>三、常用的函数和公式</h2><h3 id="Sigmoid-函数"><a href="#Sigmoid-函数" class="headerlink" title="Sigmoid 函数"></a>Sigmoid 函数</h3><ul><li>表达式：$\pi(x)=\frac{1}{1+e^{-x}}$；</li><li>导数：$\pi’(x)=\pi(x)\big(1-\pi(x)\big)$；</li></ul>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h2 id=&quot;一、推荐系统常用符号含义&quot;&gt;&lt;a href=&quot;#一、推荐系统常用符号含义&quot; class=&quot;headerlink&quot; title=&quot;一、推荐系统常用符号含义&quot;&gt;&lt;/a&gt;一、推荐系统常用符号含义&lt;/h2&gt;&lt;div class=&quot;table-container&quot;&gt;
+&lt;ta
       
     
     </summary>
@@ -41,9 +69,9 @@
     
       <category term="符号" scheme="https://guyuecanhui.github.io/tags/%E7%AC%A6%E5%8F%B7/"/>
     
-      <category term="模型" scheme="https://guyuecanhui.github.io/tags/%E6%A8%A1%E5%9E%8B/"/>
-    
       <category term="公式" scheme="https://guyuecanhui.github.io/tags/%E5%85%AC%E5%BC%8F/"/>
+    
+      <category term="定理" scheme="https://guyuecanhui.github.io/tags/%E5%AE%9A%E7%90%86/"/>
     
   </entry>
   

@@ -1,16 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[Terminology]]></title>
+    <title><![CDATA[二项 Logistic Regression 模型]]></title>
+    <url>%2F2019%2F05%2F15%2Flr%2F</url>
+    <content type="text"><![CDATA[模型推导模型描述记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 Logistic Regression 模型是如下的条件概率分布： \begin{cases} P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\boldsymbol{wx}}} \\ P(y\not=1|\boldsymbol{x})=1-\pi(\boldsymbol{x})=\frac{1}{1+e^{\boldsymbol{wx}}} \end{cases}模型求解（极大似然估计）常见的 label 设置有正负样本分别为 {1,0} 或 {1,-1}，下面分别讨论两种设置下的损失函数和梯度的推导。首先要假设训练样本独立同分布并且数量足够，模型中待估计的参数为 $\boldsymbol{w}$，似然函数的目标是 $y_i=1$ 时 $\pi(\boldsymbol{x}_i)$ 尽可能大，且 $y_i\not =1$ 时 $1-\pi(\boldsymbol{x}_i)$ 尽可能大。 1. label 为 {1,0}根据最大似然估计公式，$p(\boldsymbol{x}_i|\boldsymbol{w})=\big(\pi(\boldsymbol{x}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{x}_i)\big)^{1-y_i}$，对数似然函数可以设计为： \begin{align} H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln\Big(\big(\pi(\boldsymbol{x}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{x}_i)\big)^{1-y_i}\Big) \\ &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-y_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big) \\ &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln(\frac{e^{\boldsymbol{wx}_i}}{1+e^{\boldsymbol{wx}_i}})+(1-y_i)\cdot \ln(\frac{1}{1+e^{\boldsymbol{wx}_i}})\Big) \\ &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\boldsymbol{wx}_i-\ln(1+e^{\boldsymbol{wx}_i})\Big) \end{align}这里，$-\Big(\boldsymbol{y}_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-\boldsymbol{y}_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big)$ 实际上就是样本 $ (\boldsymbol{x}_i,\boldsymbol{y}_i)$ 的 LogLoss。 2. label 为 {1,-1}$p(\boldsymbol{x}_i|\boldsymbol{w})=\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}$，对数似然函数可以设计为： \begin{align} H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}) \\ &=\arg \min_{\boldsymbol{w}}\sum_{i=1}^N \ln(1+e^{-y_i\boldsymbol{wx}_i}) \\ \end{align}]]></content>
+      <categories>
+        <category>数学</category>
+      </categories>
+      <tags>
+        <tag>模型</tag>
+        <tag>线性模型</tag>
+        <tag>LR</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[符号约定与常用公式]]></title>
     <url>%2F2019%2F05%2F11%2Fterminology%2F</url>
-    <content type="text"><![CDATA[推荐系统常用符号含义 符号表示 含义 示例 $\mathbb{x}$ 输入变量 $x_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$ 第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $x=(x_1,\cdots,x_n)$，此时 $x_i$ 表示样本的第 $i$ 维特征 $\mathcal{X}={x_1,\cdots,x_N}$ 输入实例集合 $(x_j^{(i)})^k$ 第 $j$ 个输入变量的第 $i$ 维特征取值的 $k$ 次方 $\mathbb{y}$ 输出变量 $y_i$ 第 $i$ 个输出变量的取值 $\mathcal{Y}={y_1,\cdots,y_N}$ 输出实例集合 $(x_i,y_i)$ 第 $i$ 个样本点 $\mathcal{T}={(x_1,y_1),\cdots,(x_n,y_n)}$ 训练数据集 $\mathbb{w}=(w_1,\cdots,w_N)$ 权重向量 $w_i^t$ 第 $i$ 维特征的权重在第 $t$ 轮迭代的取值 $\parallel \mathbb{w} \parallel_i^j$ 权重向量 $\mathbb{w}$ 的 $Li$ 范数的 $j$ 次方 $\parallel \mathbb{w} \parallel_2^2$ $\mathbb{g}=(g_1,\cdots,g_N)$ 梯度向量 $\psi(\mathbb{w})$ 正则化函数 常用的函数和公式Sigmoid 函数 表达式：$\pi(x)=\frac{1}{1+e^{-x}}$； 导数：$\pi’(x)=\pi(x)\big(1-\pi(x)\big)$； 常用模型二项 Logistic Regression 模型模型描述： \begin{cases} P(\mathbb{y}=1|x)=\pi(x)=\frac{1}{1+e^{-wx}}=\frac{e^{wx}}{1+e^{wx}} \\ P(\mathbb{y}\not=1|x)=1-\pi(x)=\frac{1}{1+e^{wx}} \end{cases}FM (Factorization Machines) 模型模型描述： f(x|\mathbb{w})=w_0+\sum_{i=1}^n w_ix_i+\frac{1}{2}\sum_{l=1}^{k}\Big(\big(\sum_{i=1}^{n}v_i^{(l)} x_i \big)^2- \sum_{i=1}^{n} (v_i^{(l)}x_i)^2\Big)]]></content>
+    <content type="text"><![CDATA[一、推荐系统常用符号含义 符号表示 含义 $\boldsymbol{x}$ 输入变量，一般为特征向量 $\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$ 第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x_i$ 表示样本的第 $i$ 维特征 \mathcal{X}=\{\boldsymbol{x}_1,\cdots,\boldsymbol{x}_N\} 输入实例集合 (x_j^{(i)})^k 第 $j$ 个输入变量的第 $i$ 维特征取值的 $k$ 次方 $y$ 输出变量，一般为样本标签 $y_i$ 第 $i$ 个输出变量的取值 $\mathcal{Y}={y_1,\cdots,y_N}$ 输出实例集合 $(\boldsymbol{x}_i,y_i)$ 第 $i$ 个样本点 $\mathcal{T}={(\boldsymbol{x}_1,y_1),\cdots,(\boldsymbol{x}_N,y_N)}$ 训练数据集 $\boldsymbol{w}=(w_1,\cdots,w_n)$ 权重向量 $w_i^t$ 第 $i$ 维特征的权重在第 $t$ 轮迭代的取值 $\parallel \boldsymbol{w} \parallel_i^j$ 权重向量 $\boldsymbol{w}$ 的 Li 范数的 $j$ 次方，例如 L1 范数：$\parallel \boldsymbol{w} \parallel_1$，L2 范数： $\parallel \boldsymbol{w} \parallel_2^2$ $\boldsymbol{g}=(g_1,\cdots,g_n)$ 梯度向量 $\psi(\boldsymbol{w})$ 正则化函数 二、常用定理中心极限定理 样本的平均值约等于总体的平均值。 给定一个任意分布的总体，从中随机抽取 $N$ 个样本，抽取 $k$ 次，这 $k$ 组抽样平均值的分布接近正态分布。 经验表明，当每组抽样数量 $N\ge 30$ 时就服从中心极限定理。 极大似然估计前提假设：训练样本的分布能代表样本的真实分布；每个样本集中的样本都是所谓独立同分布的随机变量，且有充分的训练样本。 最大似然估计的目的是：利用已知的样本结果，反推最有可能（最大概率）导致这样结果的参数值。换句话说，极大似然估计提供了一种给定观察数据来评估模型参数的方法，即：模型已定，参数未知。 ML估计的求解方法： \hat{\theta} = \arg \max_{\theta} l(\theta) = \arg \max_{\theta}\prod_{i=1}^N p(\boldsymbol{x}_i|\theta)为了便于分析，定义对数似然函数 $H(\theta) = \ln l(\theta)$，则： \hat{\theta} = \arg \max_{\theta} \ln l(\theta) = \arg \max_{\theta}\sum_{i=1}^N \ln p(\boldsymbol{x}_i|\theta)当 $H(\theta)$ 连续可微的情况下，可以通过求导（单个未知参数）或者求梯度（多个未知参数）的方式求解方程。 三、常用的函数和公式Sigmoid 函数 表达式：$\pi(x)=\frac{1}{1+e^{-x}}$； 导数：$\pi’(x)=\pi(x)\big(1-\pi(x)\big)$；]]></content>
       <categories>
         <category>数学</category>
       </categories>
       <tags>
         <tag>符号</tag>
-        <tag>模型</tag>
         <tag>公式</tag>
+        <tag>定理</tag>
       </tags>
   </entry>
   <entry>
