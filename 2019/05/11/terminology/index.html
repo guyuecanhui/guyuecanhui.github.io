@@ -68,7 +68,7 @@
 
 
 
-  <meta name="keywords" content="符号,公式,定理,">
+  <meta name="keywords" content="符号,定理,公式,">
 
 
 
@@ -82,14 +82,14 @@
 
 
 <meta name="description" content="一、推荐系统常用符号含义    符号表示 含义     $\boldsymbol{x}$ 输入变量，一般为特征向量   $\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$ 第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x">
-<meta name="keywords" content="符号,公式,定理">
+<meta name="keywords" content="符号,定理,公式">
 <meta property="og:type" content="article">
 <meta property="og:title" content="符号约定与常用公式">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/05/11/terminology/index.html">
 <meta property="og:site_name" content="Looping">
 <meta property="og:description" content="一、推荐系统常用符号含义    符号表示 含义     $\boldsymbol{x}$ 输入变量，一般为特征向量   $\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$ 第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-15T14:33:59.020Z">
+<meta property="og:updated_time" content="2019-05-17T15:24:10.176Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="符号约定与常用公式">
 <meta name="twitter:description" content="一、推荐系统常用符号含义    符号表示 含义     $\boldsymbol{x}$ 输入变量，一般为特征向量   $\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$ 第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x">
@@ -395,7 +395,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  643
+                  772
                 </span>
               
 
@@ -411,7 +411,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  2
+                  3
                 </span>
               
             </div>
@@ -516,6 +516,16 @@
 <li>表达式：$\pi(x)=\frac{1}{1+e^{-x}}$；</li>
 <li>导数：$\pi’(x)=\pi(x)\big(1-\pi(x)\big)$；</li>
 </ul>
+<h3 id="SigmoidLoss"><a href="#SigmoidLoss" class="headerlink" title="SigmoidLoss"></a>SigmoidLoss</h3><ul>
+<li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_s(\boldsymbol{x},y)=-\ln(1+e^{-yf(\boldsymbol{x})})$</li>
+<li>导数：$l_s’(\boldsymbol{x},y)=y\Big(1-\pi\big(f(\boldsymbol{x})\big)\Big)\cdot f’(\boldsymbol{x})$</li>
+<li>使用极大似然估计，标签值为 {-1,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li>
+</ul>
+<h3 id="LogLoss"><a href="#LogLoss" class="headerlink" title="LogLoss"></a>LogLoss</h3><ul>
+<li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_{l}(\boldsymbol{x},y)=\ln(1+e^{f(\boldsymbol{x})})-yf(\boldsymbol{x})$</li>
+<li>导数：$l_l’(\boldsymbol{x},y)=\Big(\pi\big(f(\boldsymbol{x})\big)-1\Big)\cdot f’(\boldsymbol{x})$</li>
+<li>使用极大似然估计，标签值为 {0,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li>
+</ul>
 
       
     </div>
@@ -535,9 +545,9 @@
           
             <a href="/tags/符号/" rel="tag"># 符号</a>
           
-            <a href="/tags/公式/" rel="tag"># 公式</a>
-          
             <a href="/tags/定理/" rel="tag"># 定理</a>
+          
+            <a href="/tags/公式/" rel="tag"># 公式</a>
           
         </div>
       
@@ -642,7 +652,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -664,7 +674,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -714,7 +724,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、推荐系统常用符号含义"><span class="nav-number">1.</span> <span class="nav-text">一、推荐系统常用符号含义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、常用定理"><span class="nav-number">2.</span> <span class="nav-text">二、常用定理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#中心极限定理"><span class="nav-number">2.1.</span> <span class="nav-text">中心极限定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#极大似然估计"><span class="nav-number">2.2.</span> <span class="nav-text">极大似然估计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、常用的函数和公式"><span class="nav-number">3.</span> <span class="nav-text">三、常用的函数和公式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sigmoid-函数"><span class="nav-number">3.1.</span> <span class="nav-text">Sigmoid 函数</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、推荐系统常用符号含义"><span class="nav-number">1.</span> <span class="nav-text">一、推荐系统常用符号含义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#二、常用定理"><span class="nav-number">2.</span> <span class="nav-text">二、常用定理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#中心极限定理"><span class="nav-number">2.1.</span> <span class="nav-text">中心极限定理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#极大似然估计"><span class="nav-number">2.2.</span> <span class="nav-text">极大似然估计</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#三、常用的函数和公式"><span class="nav-number">3.</span> <span class="nav-text">三、常用的函数和公式</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Sigmoid-函数"><span class="nav-number">3.1.</span> <span class="nav-text">Sigmoid 函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#SigmoidLoss"><span class="nav-number">3.2.</span> <span class="nav-text">SigmoidLoss</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LogLoss"><span class="nav-number">3.3.</span> <span class="nav-text">LogLoss</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -748,7 +758,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">17.1k</span>
+    <span title="Site words total count">18k</span>
   
 </div>
 

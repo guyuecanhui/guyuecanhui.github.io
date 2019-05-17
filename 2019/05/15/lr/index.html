@@ -81,18 +81,18 @@
 
 
 
-<meta name="description" content="模型推导模型描述记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 Logistic Regression 模型是如下的条件概率分布：  \begin{cases} P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\b">
+<meta name="description" content="二项 Logistic Regression 模型推导模型描述记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 Logistic Regression 模型是如下的条件概率分布：  \begin{cases} P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\b">
 <meta name="keywords" content="模型,线性模型,LR">
 <meta property="og:type" content="article">
 <meta property="og:title" content="二项 Logistic Regression 模型">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/05/15/lr/index.html">
 <meta property="og:site_name" content="Looping">
-<meta property="og:description" content="模型推导模型描述记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 Logistic Regression 模型是如下的条件概率分布：  \begin{cases} P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\b">
+<meta property="og:description" content="二项 Logistic Regression 模型推导模型描述记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 Logistic Regression 模型是如下的条件概率分布：  \begin{cases} P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\b">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-15T14:29:19.469Z">
+<meta property="og:updated_time" content="2019-05-17T15:24:22.458Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="二项 Logistic Regression 模型">
-<meta name="twitter:description" content="模型推导模型描述记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 Logistic Regression 模型是如下的条件概率分布：  \begin{cases} P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\b">
+<meta name="twitter:description" content="二项 Logistic Regression 模型推导模型描述记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 Logistic Regression 模型是如下的条件概率分布：  \begin{cases} P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\b">
 
 
 
@@ -395,7 +395,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  468
+                  470
                 </span>
               
 
@@ -432,7 +432,7 @@
       
 
       
-        <h2 id="模型推导"><a href="#模型推导" class="headerlink" title="模型推导"></a>模型推导</h2><h3 id="模型描述"><a href="#模型描述" class="headerlink" title="模型描述"></a>模型描述</h3><p>记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 <strong>Logistic Regression</strong> 模型是如下的条件概率分布：</p>
+        <h2 id="二项-Logistic-Regression-模型推导"><a href="#二项-Logistic-Regression-模型推导" class="headerlink" title="二项 Logistic Regression 模型推导"></a>二项 <strong>Logistic Regression</strong> 模型推导</h2><h3 id="模型描述"><a href="#模型描述" class="headerlink" title="模型描述"></a>模型描述</h3><p>记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 <strong>Logistic Regression</strong> 模型是如下的条件概率分布：</p>
 <script type="math/tex; mode=display">
 \begin{cases}
 P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\boldsymbol{wx}}} \\
@@ -445,7 +445,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln\Big(\big(\pi(\bol
 &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-y_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big) \\
 &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln(\frac{e^{\boldsymbol{wx}_i}}{1+e^{\boldsymbol{wx}_i}})+(1-y_i)\cdot \ln(\frac{1}{1+e^{\boldsymbol{wx}_i}})\Big) \\
 &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\boldsymbol{wx}_i-\ln(1+e^{\boldsymbol{wx}_i})\Big)
-\end{align}</script><p>这里，$-\Big(\boldsymbol{y}_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-\boldsymbol{y}_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big)$ 实际上就是样本 $ (\boldsymbol{x}_i,\boldsymbol{y}_i)$ 的 <strong>LogLoss</strong>。</p>
+\end{align}</script><p>这里，$l(\boldsymbol{x_i},y_i)=-\Big(y_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-y_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big)$ 实际上就是样本 $ (\boldsymbol{x}_i,y_i)$ 的 <strong>LogLoss</strong>。</p>
 <h4 id="2-label-为-1-1"><a href="#2-label-为-1-1" class="headerlink" title="2. label 为 {1,-1}"></a>2. label 为 {1,-1}</h4><p>$p(\boldsymbol{x}_i|\boldsymbol{w})=\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}$，对数似然函数可以设计为：</p>
 <script type="math/tex; mode=display">
 \begin{align}
@@ -494,6 +494,10 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2019/05/17/fm/" rel="prev" title="Factorization Machines 模型">
+                Factorization Machines 模型 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -573,7 +577,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">11</span>
+                  <span class="site-state-item-count">12</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -595,7 +599,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">25</span>
+                  <span class="site-state-item-count">26</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -645,7 +649,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#模型推导"><span class="nav-number">1.</span> <span class="nav-text">模型推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模型描述"><span class="nav-number">1.1.</span> <span class="nav-text">模型描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型求解（极大似然估计）"><span class="nav-number">1.2.</span> <span class="nav-text">模型求解（极大似然估计）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-label-为-1-0"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. label 为 {1,0}</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-label-为-1-1"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. label 为 {1,-1}</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#二项-Logistic-Regression-模型推导"><span class="nav-number">1.</span> <span class="nav-text">二项 Logistic Regression 模型推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#模型描述"><span class="nav-number">1.1.</span> <span class="nav-text">模型描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型求解（极大似然估计）"><span class="nav-number">1.2.</span> <span class="nav-text">模型求解（极大似然估计）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-label-为-1-0"><span class="nav-number">1.2.1.</span> <span class="nav-text">1. label 为 {1,0}</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-label-为-1-1"><span class="nav-number">1.2.2.</span> <span class="nav-text">2. label 为 {1,-1}</span></a></li></ol></li></ol></li></ol></div>
             
 
           </div>
@@ -679,7 +683,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">17.1k</span>
+    <span title="Site words total count">18k</span>
   
 </div>
 
