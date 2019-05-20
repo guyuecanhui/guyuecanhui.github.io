@@ -392,7 +392,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  751
+                  792
                 </span>
               
 
@@ -472,8 +472,10 @@ l(\boldsymbol{w},z) = \ln(1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})})\big)\qquad(7
 \frac{\partial l(\boldsymbol{w},z)}{\partial w} 
 &= \frac{1}{1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})}}\cdot e^{-yf(\boldsymbol{x}|\boldsymbol{w})} \cdot(-y)\cdot\frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w} \\
 &=y\cdot\big(\frac{1}{1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})}}-1\big)\cdot \frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w} \\
-&=y\cdot\big(\hat{y}-1\big)\cdot \frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w}
-\end{align} \qquad (8)</script>
+&=y\cdot\Big(\pi\big(yf(\boldsymbol{x}|\boldsymbol{w})\big)-1\Big)\cdot \frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w}
+\end{align} \qquad (8)</script><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Rendle, S. (2011). Factorization Machines. <em>IEEE International Conference on Data Mining</em>.</p>
+<p>[2] Rendle, S. (2012). Factorization machines with libfm. <em>Acm Transactions on Intelligent Systems &amp; Technology**,</em> <em>3</em>(3), 1-22.</p>
+
           
         
       
@@ -616,7 +618,7 @@ l(\boldsymbol{w},z) = \ln(1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})})\big)\qquad(7
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  470
+                  721
                 </span>
               
 
@@ -632,7 +634,7 @@ l(\boldsymbol{w},z) = \ln(1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})})\big)\qquad(7
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  2
+                  3
                 </span>
               
             </div>
@@ -655,25 +657,39 @@ l(\boldsymbol{w},z) = \ln(1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})})\big)\qquad(7
       
         
           
-            <h2 id="二项-Logistic-Regression-模型推导"><a href="#二项-Logistic-Regression-模型推导" class="headerlink" title="二项 Logistic Regression 模型推导"></a>二项 <strong>Logistic Regression</strong> 模型推导</h2><h3 id="模型描述"><a href="#模型描述" class="headerlink" title="模型描述"></a>模型描述</h3><p>记 $\pi(x)=\frac{1}{1+e^{-wx}}$，二项 <strong>Logistic Regression</strong> 模型是如下的条件概率分布：</p>
+            <h2 id="二项-Logistic-Regression-模型推导"><a href="#二项-Logistic-Regression-模型推导" class="headerlink" title="二项 Logistic Regression 模型推导"></a>二项 <strong>Logistic Regression</strong> 模型推导</h2><h3 id="模型描述"><a href="#模型描述" class="headerlink" title="模型描述"></a>模型描述</h3><p>记 $\pi(x)=\frac{1}{1+e^{-x}}$，二项 <strong>Logistic Regression</strong> 模型是如下的条件概率分布：</p>
 <script type="math/tex; mode=display">
 \begin{cases}
-P(y=1|\boldsymbol{x})=\pi(\boldsymbol{x})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\boldsymbol{wx}}} \\
-P(y\not=1|\boldsymbol{x})=1-\pi(\boldsymbol{x})=\frac{1}{1+e^{\boldsymbol{wx}}}
-\end{cases}</script><h3 id="模型求解（极大似然估计）"><a href="#模型求解（极大似然估计）" class="headerlink" title="模型求解（极大似然估计）"></a>模型求解（极大似然估计）</h3><p>常见的 label 设置有正负样本分别为 {1,0} 或 {1,-1}，下面分别讨论两种设置下的损失函数和梯度的推导。首先要假设训练样本独立同分布并且数量足够，模型中待估计的参数为 $\boldsymbol{w}$，似然函数的目标是 $y_i=1$ 时 $\pi(\boldsymbol{x}_i)$ 尽可能大，且 $y_i\not =1$ 时 $1-\pi(\boldsymbol{x}_i)$ 尽可能大。</p>
-<h4 id="1-label-为-1-0"><a href="#1-label-为-1-0" class="headerlink" title="1. label 为 {1,0}"></a>1. label 为 {1,0}</h4><p>根据<a href="https://guyuecanhui.github.io/2019/05/11/terminology/">最大似然估计公式</a>，$p(\boldsymbol{x}_i|\boldsymbol{w})=\big(\pi(\boldsymbol{x}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{x}_i)\big)^{1-y_i}$，对数似然函数可以设计为：</p>
+P(y=1|\boldsymbol{x})=\pi(\boldsymbol{wx})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\boldsymbol{wx}}} \\
+P(y\not=1|\boldsymbol{x})=1-\pi(\boldsymbol{wx})=\frac{1}{1+e^{\boldsymbol{wx}}}
+\end{cases}\qquad(1)</script><h3 id="模型求解（极大似然估计）"><a href="#模型求解（极大似然估计）" class="headerlink" title="模型求解（极大似然估计）"></a>模型求解（极大似然估计）</h3><p>常见的 label 设置有正负样本分别为 {1,0} 或 {1,-1}，下面分别讨论两种设置下的损失函数和梯度的推导。首先要假设训练样本独立同分布并且数量足够，模型中待估计的参数为 $\boldsymbol{w}$，似然函数的目标是 $y_i=1$ 时 $\pi(\boldsymbol{wx}_i)$ 尽可能大，且 $y_i\not =1$ 时 $1-\pi(\boldsymbol{wx}_i)$ 尽可能大。</p>
+<h4 id="1-label-为-1-0"><a href="#1-label-为-1-0" class="headerlink" title="1. label 为 {1,0}"></a>1. label 为 {1,0}</h4><p>此时，可以直接将 $\hat{y}=\pi(\boldsymbol{wx})$ 的结果作为对 $y$ 值的预测（或者说是预测结果为 1 的概率）。根据<a href="https://guyuecanhui.github.io/2019/05/11/terminology/">最大似然估计公式</a>，$p(\boldsymbol{x}_i|\boldsymbol{w})=\big(\pi(\boldsymbol{wx}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{wx}_i)\big)^{1-y_i}$，对数似然函数可以设计为：</p>
 <script type="math/tex; mode=display">
 \begin{align}
-H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln\Big(\big(\pi(\boldsymbol{x}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{x}_i)\big)^{1-y_i}\Big) \\
-&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-y_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big) \\
+H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln\Big(\big(\pi(\boldsymbol{wx}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{wx}_i)\big)^{1-y_i}\Big) \\
+&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln\big(\pi(\boldsymbol{wx}_i)\big)+(1-y_i)\cdot\big(1-\pi(\boldsymbol{wx}_i)\big)\Big) \\
 &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln(\frac{e^{\boldsymbol{wx}_i}}{1+e^{\boldsymbol{wx}_i}})+(1-y_i)\cdot \ln(\frac{1}{1+e^{\boldsymbol{wx}_i}})\Big) \\
-&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\boldsymbol{wx}_i-\ln(1+e^{\boldsymbol{wx}_i})\Big)
-\end{align}</script><p>这里，$l(\boldsymbol{x_i},y_i)=-\Big(y_i\cdot \ln\big(\pi(\boldsymbol{x}_i)\big)+(1-y_i)\cdot\big(1-\pi(\boldsymbol{x}_i)\big)\Big)$ 实际上就是样本 $ (\boldsymbol{x}_i,y_i)$ 的 <strong>LogLoss</strong>。</p>
-<h4 id="2-label-为-1-1"><a href="#2-label-为-1-1" class="headerlink" title="2. label 为 {1,-1}"></a>2. label 为 {1,-1}</h4><p>$p(\boldsymbol{x}_i|\boldsymbol{w})=\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}$，对数似然函数可以设计为：</p>
+&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\boldsymbol{wx}_i-\ln(1+e^{\boldsymbol{wx}_i})\Big)\qquad(2)
+\end{align}</script><p>这里，$l_l(\boldsymbol{x},y)=-\big(y\cdot \ln(\hat{y})+(1-y)\cdot\ln(1-\hat{y})\big)=\ln(1+e^{f(\boldsymbol{x})})-yf(\boldsymbol{x})$ 记作样本 $ (\boldsymbol{x},y)$ 的 <strong>LogLoss</strong>，后面会经常见到。</p>
+<p>根据损失函数 $l_l(\boldsymbol{x},y)$，对每个维度上的参数分别求导：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\frac{\partial l_l(\boldsymbol{x},y)}{\partial w_i}
+&=\frac{1}{(1+e^{\boldsymbol{wx}})}\cdot e^{\boldsymbol{wx}}\cdot x_i-y\cdot x_i\\
+&=\big(\pi(\boldsymbol{wx})-y\big)\cdot x_i\\
+&=(\hat{y}-y)\cdot x_i\qquad(3)
+\end{align}</script><h4 id="2-label-为-1-1"><a href="#2-label-为-1-1" class="headerlink" title="2. label 为 {1,-1}"></a>2. label 为 {1,-1}</h4><p>此时仍然可以认为 $\pi(\boldsymbol{wx})$ 输出了模型预测样本结果为 1 的概率，但是由于负样本的标签为 -1，因此考虑使用 $p(\boldsymbol{x}_i|\boldsymbol{w})=\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}$，则对数似然函数可以设计为：</p>
 <script type="math/tex; mode=display">
 \begin{align}
 H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}) \\
-&=\arg \min_{\boldsymbol{w}}\sum_{i=1}^N \ln(1+e^{-y_i\boldsymbol{wx}_i}) \\
+&=\arg \min_{\boldsymbol{w}}\sum_{i=1}^N \ln(1+e^{-y_i\boldsymbol{wx}_i}) \qquad(4)\\
+\end{align}</script><p>这里，$l_s(\boldsymbol{x},y)=\ln(1+e^{-y\boldsymbol{wx}})$ 称作样本 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong>，后面也会经常看到。</p>
+<p>根据损失函数 $l_s(\boldsymbol{x},y)$，对每个维度上的参数分别求导：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+\frac{\partial l_s(\boldsymbol{x},y)}{\partial w_i}
+&=\frac{1}{1+e^{-y\boldsymbol{wx}}}\cdot e^{-y\boldsymbol{wx}}\cdot (-y\cdot x_i) \\
+&=y\cdot \big(\pi(y\boldsymbol{wx})-1\big)\cdot x_i\qquad(4)\\
 \end{align}</script>
           
         
@@ -817,7 +833,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  772
+                  780
                 </span>
               
 
@@ -937,18 +953,18 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
 <script type="math/tex; mode=display">
 \hat{\theta} = \arg \max_{\theta} \ln l(\theta) = \arg \max_{\theta}\sum_{i=1}^N \ln p(\boldsymbol{x}_i|\theta)</script><p>当 $H(\theta)$ 连续可微的情况下，可以通过求导（单个未知参数）或者求梯度（多个未知参数）的方式求解方程。</p>
 <h2 id="三、常用的函数和公式"><a href="#三、常用的函数和公式" class="headerlink" title="三、常用的函数和公式"></a>三、常用的函数和公式</h2><h3 id="Sigmoid-函数"><a href="#Sigmoid-函数" class="headerlink" title="Sigmoid 函数"></a>Sigmoid 函数</h3><ul>
-<li>表达式：$\pi(x)=\frac{1}{1+e^{-x}}$；</li>
+<li>表达式：$\pi(x)=\frac{1}{1+e^{-x}}=\frac{e^x}{1+e^x}$；</li>
 <li>导数：$\pi’(x)=\pi(x)\big(1-\pi(x)\big)$；</li>
-</ul>
-<h3 id="SigmoidLoss"><a href="#SigmoidLoss" class="headerlink" title="SigmoidLoss"></a>SigmoidLoss</h3><ul>
-<li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_s(\boldsymbol{x},y)=-\ln(1+e^{-yf(\boldsymbol{x})})$</li>
-<li>导数：$l_s’(\boldsymbol{x},y)=y\Big(1-\pi\big(f(\boldsymbol{x})\big)\Big)\cdot f’(\boldsymbol{x})$</li>
-<li>使用极大似然估计，标签值为 {-1,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li>
 </ul>
 <h3 id="LogLoss"><a href="#LogLoss" class="headerlink" title="LogLoss"></a>LogLoss</h3><ul>
 <li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_{l}(\boldsymbol{x},y)=\ln(1+e^{f(\boldsymbol{x})})-yf(\boldsymbol{x})$</li>
-<li>导数：$l_l’(\boldsymbol{x},y)=\Big(\pi\big(f(\boldsymbol{x})\big)-1\Big)\cdot f’(\boldsymbol{x})$</li>
+<li>导数：$l_l’(\boldsymbol{x},y)=\Big(\pi\big(f(\boldsymbol{x})\big)-y\Big)\cdot f’(\boldsymbol{x})$</li>
 <li>使用极大似然估计，标签值为 {0,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li>
+</ul>
+<h3 id="SigmoidLoss"><a href="#SigmoidLoss" class="headerlink" title="SigmoidLoss"></a>SigmoidLoss</h3><ul>
+<li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_s(\boldsymbol{x},y)=\ln(1+e^{-yf(\boldsymbol{x})})$</li>
+<li>导数：$l_s’(\boldsymbol{x},y)=y\Big(\pi\big(y\cdot f(\boldsymbol{x})\big)-1\Big)\cdot f’(\boldsymbol{x})$</li>
+<li>使用极大似然估计，标签值为 {-1,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li>
 </ul>
 
           
@@ -2649,7 +2665,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">18k</span>
+    <span title="Site words total count">18.3k</span>
   
 </div>
 

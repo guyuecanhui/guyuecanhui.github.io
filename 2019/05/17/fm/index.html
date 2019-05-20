@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="Looping">
 <meta property="og:description" content="一、FM (Factorization Machines) 推导FM 模型描述给定样本 $z=(\boldsymbol{x},y)$，记 $\boldsymbol{v}_i = (v_i^{(1)},\cdots,v_i^{(d)})^\top$ 为第 $i$ 维特征对应的隐式向量，则 FM 模型为：  \begin{align} f(\boldsymbol{x}|\boldsymbol{w})&amp;">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-17T15:23:02.138Z">
+<meta property="og:updated_time" content="2019-05-20T15:09:33.825Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Factorization Machines 模型">
 <meta name="twitter:description" content="一、FM (Factorization Machines) 推导FM 模型描述给定样本 $z=(\boldsymbol{x},y)$，记 $\boldsymbol{v}_i = (v_i^{(1)},\cdots,v_i^{(d)})^\top$ 为第 $i$ 维特征对应的隐式向量，则 FM 模型为：  \begin{align} f(\boldsymbol{x}|\boldsymbol{w})&amp;">
@@ -395,7 +395,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  751
+                  792
                 </span>
               
 
@@ -473,8 +473,10 @@ l(\boldsymbol{w},z) = \ln(1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})})\big)\qquad(7
 \frac{\partial l(\boldsymbol{w},z)}{\partial w} 
 &= \frac{1}{1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})}}\cdot e^{-yf(\boldsymbol{x}|\boldsymbol{w})} \cdot(-y)\cdot\frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w} \\
 &=y\cdot\big(\frac{1}{1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})}}-1\big)\cdot \frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w} \\
-&=y\cdot\big(\hat{y}-1\big)\cdot \frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w}
-\end{align} \qquad (8)</script>
+&=y\cdot\Big(\pi\big(yf(\boldsymbol{x}|\boldsymbol{w})\big)-1\Big)\cdot \frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w}
+\end{align} \qquad (8)</script><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Rendle, S. (2011). Factorization Machines. <em>IEEE International Conference on Data Mining</em>.</p>
+<p>[2] Rendle, S. (2012). Factorization machines with libfm. <em>Acm Transactions on Intelligent Systems &amp; Technology**,</em> <em>3</em>(3), 1-22.</p>
+
       
     </div>
     
@@ -668,7 +670,7 @@ l(\boldsymbol{w},z) = \ln(1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})})\big)\qquad(7
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、FM-Factorization-Machines-推导"><span class="nav-number">1.</span> <span class="nav-text">一、FM (Factorization Machines) 推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FM-模型描述"><span class="nav-number">1.1.</span> <span class="nav-text">FM 模型描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FM-模型求解（回归问题）"><span class="nav-number">1.2.</span> <span class="nav-text">FM 模型求解（回归问题）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FM-模型求解（二分类问题）"><span class="nav-number">1.3.</span> <span class="nav-text">FM 模型求解（二分类问题）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Label-为-1-0"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. Label 为 {1,0}</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Label-为-1-1"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Label 为 {1,-1}</span></a></li></ol></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#一、FM-Factorization-Machines-推导"><span class="nav-number">1.</span> <span class="nav-text">一、FM (Factorization Machines) 推导</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#FM-模型描述"><span class="nav-number">1.1.</span> <span class="nav-text">FM 模型描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FM-模型求解（回归问题）"><span class="nav-number">1.2.</span> <span class="nav-text">FM 模型求解（回归问题）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#FM-模型求解（二分类问题）"><span class="nav-number">1.3.</span> <span class="nav-text">FM 模型求解（二分类问题）</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#1-Label-为-1-0"><span class="nav-number">1.3.1.</span> <span class="nav-text">1. Label 为 {1,0}</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#2-Label-为-1-1"><span class="nav-number">1.3.2.</span> <span class="nav-text">2. Label 为 {1,-1}</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">2.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
             
 
           </div>
@@ -702,7 +704,7 @@ l(\boldsymbol{w},z) = \ln(1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})})\big)\qquad(7
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">18k</span>
+    <span title="Site words total count">18.3k</span>
   
 </div>
 
