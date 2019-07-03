@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/05/17/fm/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="胡诚">
@@ -316,7 +316,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/05/17/fm/" itemprop="url">Factorization Machines 模型</a></h1>
+                <a class="post-title-link" href="/2019/07/03/ftrl-fm/" itemprop="url">用 FTRL 训练 FM 模型</a></h1>
         
 
         <div class="post-meta">
@@ -328,8 +328,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-17T22:45:49+08:00">
-                2019-05-17
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-03T22:45:49+08:00">
+                2019-07-03
               </time>
             
 
@@ -351,8 +351,8 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/" itemprop="url" rel="index">
-                    <span itemprop="name">数学</span>
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
                   </a>
                 </span>
 
@@ -369,8 +369,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/05/17/fm/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/17/fm/" itemprop="commentCount"></span>
+                <a href="/2019/07/03/ftrl-fm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/03/ftrl-fm/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -392,7 +392,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  792
+                  1.6k
                 </span>
               
 
@@ -408,7 +408,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  4
+                  7
                 </span>
               
             </div>
@@ -431,7 +431,15 @@
       
         
           
-            <h2 id="一、FM-Factorization-Machines-推导"><a href="#一、FM-Factorization-Machines-推导" class="headerlink" title="一、FM (Factorization Machines) 推导"></a>一、FM (Factorization Machines) 推导</h2><h3 id="FM-模型描述"><a href="#FM-模型描述" class="headerlink" title="FM 模型描述"></a>FM 模型描述</h3><p>给定样本 $z=(\boldsymbol{x},y)$，记 $\boldsymbol{v}_i = (v_i^{(1)},\cdots,v_i^{(d)})^\top$ 为第 $i$ 维特征对应的隐式向量，则 <strong>FM</strong> 模型为：</p>
+            <p>近期尝试了基于 <strong>FTRL</strong> 来训练 <strong>FM</strong> 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。</p>
+<h2 id="一、FM-Factorization-Machines-推导"><a href="#一、FM-Factorization-Machines-推导" class="headerlink" title="一、FM (Factorization Machines) 推导"></a>一、FM (Factorization Machines) 推导</h2><h3 id="FM-模型简介"><a href="#FM-模型简介" class="headerlink" title="FM 模型简介"></a>FM 模型简介</h3><p>在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特征组合来说，业界现在通用的做法主要有两大类：</p>
+<ul>
+<li><strong>FM</strong> 系列，常见的模型包括 <strong>FM</strong>，<strong>FFM</strong>，<strong>DeepFM</strong>，它们对特征的取值范围比较敏感。</li>
+<li><strong>Tree</strong> 系列，常见的模型包括 <strong>GBDT</strong>，它们对特征的取值范围不敏感。</li>
+</ul>
+<p>其中，<strong>FM</strong> 系列由于适合处理大规模稀疏数据，并且易于与深度神经网络结合，因此使用十分广泛，成为大厂居家必备。</p>
+<p><strong>FM</strong> 模型的主要思想是在 <strong>LR</strong> 的基础上，对所有的特征自动做两两组合$^{[1,2]}$。两两组合最直观的方法就是为每对特征组合设置一个参数（例如 <strong>Poly2</strong> 模型），但是这样就需要 $\text{O}(n^2)$ 个参数，当特征数量很多时，需要的样本量也是巨大的，往往不可能所有的参数都有充足的样本训练。因此 <strong>FM</strong> 考虑使用矩阵分解的方式来还原这个 $n\times n$ 的参数矩阵，只需要 $n\times k$ （$k$ 通常是个很小的常数）的参数即可实现特征两两组合的目的。 </p>
+<p>具体来说，给定样本 $z=(\boldsymbol{x},y)$，记 $\boldsymbol{v}_i = (v_i^{(1)},\cdots,v_i^{(d)})^\top$ 为第 $i$ 维特征对应的隐式向量，则 <strong>FM</strong> 模型为：</p>
 <script type="math/tex; mode=display">
 \begin{align}
 f(\boldsymbol{x}|\boldsymbol{w})&=w_0+\sum_{i=1}^n w_ix_i+\sum_{i=1}^{n}\sum_{j=i+1}^{n} (\boldsymbol{v}_i^\top \boldsymbol{v}_j)x_ix_j \\
@@ -473,8 +481,24 @@ l(\boldsymbol{w},z) = \ln(1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})})\big)\qquad(7
 &= \frac{1}{1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})}}\cdot e^{-yf(\boldsymbol{x}|\boldsymbol{w})} \cdot(-y)\cdot\frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w} \\
 &=y\cdot\big(\frac{1}{1+e^{-yf(\boldsymbol{x}|\boldsymbol{w})}}-1\big)\cdot \frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w} \\
 &=y\cdot\Big(\pi\big(yf(\boldsymbol{x}|\boldsymbol{w})\big)-1\Big)\cdot \frac{\partial f(\boldsymbol{x}|\boldsymbol{w})}{\partial w}
-\end{align} \qquad (8)</script><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Rendle, S. (2011). Factorization Machines. <em>IEEE International Conference on Data Mining</em>.</p>
-<p>[2] Rendle, S. (2012). Factorization machines with libfm. <em>Acm Transactions on Intelligent Systems &amp; Technology**,</em> <em>3</em>(3), 1-22.</p>
+\end{align} \qquad (8)</script><h2 id="二、FTRL-Optimizer-介绍"><a href="#二、FTRL-Optimizer-介绍" class="headerlink" title="二、FTRL Optimizer 介绍"></a>二、FTRL Optimizer 介绍</h2><p>上面一陀公式实际上是优化算法求梯度的时候用到的。优化算法目前有很多种，在如在线更新模型或者在线排序等对性能有严格要求的场景中，模型的稀疏解十分关键。稀疏的模型意味着只保留最关键特征的参数，意味着更少的存储、查询与计算。为了得到模型的稀疏解，通常的做法是使用 <strong>L1</strong> 正则、基于参数大小或者累积梯度大小的截断等技术。其中，<strong>FTRL</strong> 集众家之长，实现了精度与稀疏性的平衡$^{[3]}$。</p>
+<p><strong>FTRL</strong> 更像是一种启发式的模型组装，其特征权重的更新公式为：</p>
+<script type="math/tex; mode=display">
+\boldsymbol{w}^{t+1}=\arg \min_\boldsymbol{w}(\boldsymbol{g}^{1:t}\cdot \boldsymbol{w}+\lambda_1 || \boldsymbol{w}||_1+\frac{1}{2}\lambda_2 || \boldsymbol{w}||_2^2 +\frac{1}{2}\sum_{j=1}^t\sigma^j || \boldsymbol{w}-\boldsymbol{w}^j ||_2^2) \qquad(9)</script><p>其中，$\boldsymbol{g}^{1:t}$ 表示 $1\sim t$ 轮迭代中参数梯度的累积和，其中，<strong>L1</strong> 正则化部分是为了生成稀疏解，<strong>L2</strong> 正则化部分是为了使解更平滑（在论文的推导中不包含这一项），而 $\parallel \boldsymbol{w}-\boldsymbol{w}^t\parallel^2_2$ 是为了保证 $\boldsymbol{w}$ 不要离已迭代过的解太远。经过比较复杂的推导（参考文献 [4]），可以得到每一维参数的求解式：</p>
+<script type="math/tex; mode=display">
+w^{t+1}_i=
+\begin{cases}
+\begin{align}
+0  &, \qquad |z^t_i|<\lambda_1 \\
+-\Big(\lambda_2+\frac{\beta+\sqrt{s^t_i}}{\alpha}\Big)^{-1}\cdot\big(z^t_i-\lambda_1\cdot \text{sgn}(z^t_i)\big) &, \qquad \text{otherwise}
+\end{align}
+\end{cases} \qquad(10)</script><p>其中，令 $z<em>i^t=g^{1:t}-\sum</em>{s=1}^t\sigma<em>s\boldsymbol{w}_s, \ s_i^t=\sum</em>{j=1}^t (g_i^j)^2$，主要是方便存储和迭代计算。</p>
+<h2 id="三、基于-FTRL-训练-FM-的算法流程"><a href="#三、基于-FTRL-训练-FM-的算法流程" class="headerlink" title="三、基于 FTRL 训练 FM 的算法流程"></a>三、基于 FTRL 训练 FM 的算法流程</h2><p>用 <strong>FTRL</strong> 来训练 <strong>FM</strong> 模型，由于我们组习惯用 {0,1} 作为样本标签，则根据式 (2), (6), (10)，可以得到如下算法流程：</p>
+<h3 id="Algorithm-Ftrl-FM"><a href="#Algorithm-Ftrl-FM" class="headerlink" title="Algorithm Ftrl+FM"></a><strong>Algorithm</strong> Ftrl+FM</h3><img src="/2019/07/03/ftrl-fm/alg-ftrl-fm.png" title="用 FTRL 算法训练 FM 模型流程">
+<p><strong>FTRL</strong> 算法特别适合在线更新模型，即基于每条实时样本更新模型。但是出于性能和可靠性考虑，也可以稍加修改应用于离线训练或者近线批量训练。例如，离线训练任务，将每天/每小时的数据作为一个批次用来更新 <strong>FM</strong> 模型：在每轮迭代时，需要将一批次样本的所有梯度、损失等计算结果进行汇总（可以简单的用平均值来代替），再用汇总后的值更新模型。为了训练充分，可以对每个批次的样本迭代训练若干轮。训练完的模型需要将参数 $\boldsymbol{w}, \boldsymbol{s}, \boldsymbol{z}$ 保存起来，下次加载后再增量更新；而在线预测时，只需要加载参数 $\boldsymbol{w}$ 即可。</p>
+<p>另外，由于短视频的标签、UP 主等特征变化较快，因此对于离散特征的编码可以考虑使用特征 Hash，虽然牺牲了一定的可解释性，并且存在一定的编码冲突，但是实测下来效果还是不错的，并且工程上确实能省下很多麻烦，提升不少性能。</p>
+<p>最后，虽然 <strong>FM</strong> 模型具备表征特征两两组合的能力，但是实际上我们发现由于样本、调参等的限制，并不能充分发掘每对特征组合的作用，并且该模型对于三个及以上特征的组合就完全无能为力了。因此，实际应用时还是不能太依赖模型的自动特征组合能力，如果有什么对业务比较有帮助的特征，还是人工生成，再一起丢到模型里去训练吧。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Rendle, S. (2011). Factorization Machines. <em>IEEE International Conference on Data Mining</em>.<br>[2] Rendle, S. (2012). Factorization machines with libfm. <em>Acm Transactions on Intelligent Systems &amp; Technology, 3</em>(3), 1-22.<br>[3] McMahan, H. B., Holt, G., Sculley, D., Young, M., Ebner, D., Grady, J., … &amp; Chikkerur, S. (2013, August). Ad click prediction: a view from the trenches. In <em>Proceedings of the 19th ACM SIGKDD international conference on Knowledge discovery and data mining</em> (pp. 1222-1230). ACM.<br>[4] 冯扬 (2014). 在线最优化求解.</p>
 
           
         
@@ -2597,7 +2621,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2665,7 +2689,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">18.3k</span>
+    <span title="Site words total count">19k</span>
   
 </div>
 
