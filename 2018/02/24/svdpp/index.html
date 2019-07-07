@@ -89,7 +89,7 @@
 <meta property="og:site_name" content="Looping">
 <meta property="og:description" content="论文引用：Koren, Y. . (2008). Factorization meets the neighborhood : a multifaceted collaborative filtering model. Proceedings of the 14th ACM SIGKDD International Conference of Knowledge Discovery and Da">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-08T14:13:49.930Z">
+<meta property="og:updated_time" content="2019-07-03T14:28:09.414Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SVD++ 论文精读">
 <meta name="twitter:description" content="论文引用：Koren, Y. . (2008). Factorization meets the neighborhood : a multifaceted collaborative filtering model. Proceedings of the 14th ACM SIGKDD International Conference of Knowledge Discovery and Da">
@@ -470,7 +470,7 @@ l(p_1,p_2,\cdots) = \sum_{(u,i)\in \kappa} (r_{ui} - \hat{r_{ui}})^2 + \lambda(\
 <script type="math/tex; mode=display">
 \min_{b_*}\sum_{(u,i)\in \kappa} (r_{ui} - \hat{r_{ui}})^2 + \lambda(\sum_{p_1} p_1^2 + \sum_{p_2} p_2^2 + \cdots)</script><h2 id="2、推广到基于邻域的模型"><a href="#2、推广到基于邻域的模型" class="headerlink" title="2、推广到基于邻域的模型"></a>2、推广到基于邻域的模型</h2><p>本文主要考虑 ItemCF，对于两个物品 $i$ 和 $j$，它们的相似性 <script type="math/tex">s_{ij}</script> 是基于 Pearson 相关系数 <script type="math/tex">\rho_{ij}</script> 计算得到：</p>
 <script type="math/tex; mode=display">
-s_{ij} = \frac{n_{ij}}{n_{ij}+\lambda_2}\rho_{ij}, \ \ \rho_{ij}=\frac{E((x-\mu_x)(y-\mu_y))}{\sigma_x\sigma_y}</script><p>其中，$n_{ij}$ 表示同时对 $i$ 和 $j$ 进行评分的用户数，$\lambda_2$ 应该是防止 $i$ 和 $j$ 比较冷门的情况下，恰好有个别用户同时对它们进行了评分，这时候它们的相关性实际是看不出来的，属于偶然情况，通常 $\lambda_2=100$。之前的 ItemCF 进一步利用用户 $u$ 评过分的与 $i$ 最相关的 $k$ 个物品 $S^k(i;u)$ 来估计用户 $u$ 对 $i$ 的评分：</p>
+s_{ij} = \frac{n_{ij}}{n_{ij}+\lambda_2}\rho_{ij}, \\ \rho_{ij}=\frac{E((x-\mu_x)(y-\mu_y))}{\sigma_x\sigma_y}</script><p>其中，$n_{ij}$ 表示同时对 $i$ 和 $j$ 进行评分的用户数，$\lambda_2$ 应该是防止 $i$ 和 $j$ 比较冷门的情况下，恰好有个别用户同时对它们进行了评分，这时候它们的相关性实际是看不出来的，属于偶然情况，通常 $\lambda_2=100$。之前的 ItemCF 进一步利用用户 $u$ 评过分的与 $i$ 最相关的 $k$ 个物品 $S^k(i;u)$ 来估计用户 $u$ 对 $i$ 的评分：</p>
 <script type="math/tex; mode=display">
 \hat{r_{ui}} = b_{ui} + \frac{\sum_{j\in S^k(i;u)} s_{ij}(r_{uj} - b_{uj})}{\sum_{j\in S^k(i;u)} s_{ij}}</script><p>但是如果 $u$ 没有对与 $i$ 相似的物品评过分，那上式就主要取决于 <script type="math/tex">b_{ui}</script> 了。为了解决这个小问题，有方案先计算插值权重 $\theta_{ij}^u$ 来取代实际的评分：</p>
 <script type="math/tex; mode=display">

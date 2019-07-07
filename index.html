@@ -432,7 +432,7 @@
         
           
             <p>近期尝试了基于 <strong>FTRL</strong> 来训练 <strong>FM</strong> 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。</p>
-<h2 id="一、FM-Factorization-Machines-推导"><a href="#一、FM-Factorization-Machines-推导" class="headerlink" title="一、FM (Factorization Machines) 推导"></a>一、FM (Factorization Machines) 推导</h2><h3 id="FM-模型简介"><a href="#FM-模型简介" class="headerlink" title="FM 模型简介"></a>FM 模型简介</h3><p>在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特征组合来说，业界现在通用的做法主要有两大类：</p>
+<h2 id="一、FM-Factorization-Machines-模型推导"><a href="#一、FM-Factorization-Machines-模型推导" class="headerlink" title="一、FM (Factorization Machines) 模型推导"></a>一、FM (Factorization Machines) 模型推导</h2><h3 id="FM-模型简介"><a href="#FM-模型简介" class="headerlink" title="FM 模型简介"></a>FM 模型简介</h3><p>在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特征组合来说，业界现在通用的做法主要有两大类：</p>
 <ul>
 <li><strong>FM</strong> 系列，常见的模型包括 <strong>FM</strong>，<strong>FFM</strong>，<strong>DeepFM</strong>，它们对特征的取值范围比较敏感。</li>
 <li><strong>Tree</strong> 系列，常见的模型包括 <strong>GBDT</strong>，它们对特征的取值范围不敏感。</li>
@@ -492,7 +492,7 @@ w^{t+1}_i=
 0  &, \qquad |z^t_i|<\lambda_1 \\
 -\Big(\lambda_2+\frac{\beta+\sqrt{s^t_i}}{\alpha}\Big)^{-1}\cdot\big(z^t_i-\lambda_1\cdot \text{sgn}(z^t_i)\big) &, \qquad \text{otherwise}
 \end{align}
-\end{cases} \qquad(10)</script><p>其中，令 $z<em>i^t=g^{1:t}-\sum</em>{s=1}^t\sigma<em>s\boldsymbol{w}_s, \ s_i^t=\sum</em>{j=1}^t (g_i^j)^2$，主要是方便存储和迭代计算。</p>
+\end{cases} \qquad(10)</script><p>其中，令 <script type="math/tex">z_i^t=g^{1:t}-\sum_{s=1}^t\sigma_s\boldsymbol{w}_s, \ s_i^t=\sum_{j=1}^t (g_i^j)^2</script>，主要是方便存储和迭代计算。</p>
 <h2 id="三、基于-FTRL-训练-FM-的算法流程"><a href="#三、基于-FTRL-训练-FM-的算法流程" class="headerlink" title="三、基于 FTRL 训练 FM 的算法流程"></a>三、基于 FTRL 训练 FM 的算法流程</h2><p>用 <strong>FTRL</strong> 来训练 <strong>FM</strong> 模型，由于我们组习惯用 {0,1} 作为样本标签，则根据式 (2), (6), (10)，可以得到如下算法流程：</p>
 <h3 id="Algorithm-Ftrl-FM"><a href="#Algorithm-Ftrl-FM" class="headerlink" title="Algorithm Ftrl+FM"></a><strong>Algorithm</strong> Ftrl+FM</h3><img src="/2019/07/03/ftrl-fm/alg-ftrl-fm.png" title="用 FTRL 算法训练 FM 模型流程">
 <p><strong>FTRL</strong> 算法特别适合在线更新模型，即基于每条实时样本更新模型。但是出于性能和可靠性考虑，也可以稍加修改应用于离线训练或者近线批量训练。例如，离线训练任务，将每天/每小时的数据作为一个批次用来更新 <strong>FM</strong> 模型：在每轮迭代时，需要将一批次样本的所有梯度、损失等计算结果进行汇总（可以简单的用平均值来代替），再用汇总后的值更新模型。为了训练充分，可以对每个批次的样本迭代训练若干轮。训练完的模型需要将参数 $\boldsymbol{w}, \boldsymbol{s}, \boldsymbol{z}$ 保存起来，下次加载后再增量更新；而在线预测时，只需要加载参数 $\boldsymbol{w}$ 即可。</p>
