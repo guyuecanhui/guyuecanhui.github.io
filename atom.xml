@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://guyuecanhui.github.io/"/>
-  <updated>2019-07-03T14:28:24.710Z</updated>
+  <updated>2019-08-03T00:05:29.404Z</updated>
   <id>https://guyuecanhui.github.io/</id>
   
   <author>
@@ -15,6 +15,38 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>常用的特征选择方法之 Pearson 相关系数</title>
+    <link href="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/"/>
+    <id>https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/</id>
+    <published>2019-07-20T14:36:03.000Z</published>
+    <updated>2019-08-03T00:05:29.404Z</updated>
+    
+    <content type="html"><![CDATA[<p>众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。</p><p>但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。</p><p>随着深度网络的崛起，越来越多的未经复杂变换的原始特征被加入到了深度网络中，大家期待有用的特征能够被自动的抽取和组合出来。但是这并不意味着特征工程就不需要了，推荐系统的大牛 Xavier 在技术博客《Rules of Machine Learning: Best Practices for ML Engineering》中提到很多关于特征工程的建议，非常值得一读，其中包含的思想就是特征是随着系统的优化进程而逐步添加的，并非一蹴而就，要始终保证特征的简单、直观、可复用、可监控和可靠性，这意味着我们需要时常对系统中存量特征做测试和筛选。</p><p>特征选择通常有过滤法（Filter）、打包法（Wrap）和嵌入法（Embed），其中，后两者都是与模型相关的，需要具体问题具体对待，而过滤法是指对特征进行预处理，提前过滤掉一些对目标无益（即对模型无益）的特征，它只考虑任务目标，而与模型无关。</p><p>我打算把常用的特征选择方法都再回顾一遍，力争把每种方法都讲得通俗易懂。这篇文章先介绍 <strong>Pearson</strong> 相关系数。</p><h3 id="Pearson-相关系数的定义"><a href="#Pearson-相关系数的定义" class="headerlink" title="Pearson 相关系数的定义"></a>Pearson 相关系数的定义</h3><p><strong>Pearson</strong> 相关系数是用来检测两个<strong>连续型变量</strong>之间<strong>线性相关</strong>的程度，取值范围为 $[-1,1]$，正值表示正相关，负值表示负相关，绝对值越大表示线性相关程度越高。</p><p>两个变量之间的 <strong>Pearson</strong> 相关系数定义为两个变量之间的协方差和标准差的商：</p><script type="math/tex; mode=display">\rho_{\boldsymbol{x},\boldsymbol{y}}=\frac{\text{cov}(\boldsymbol{x},\boldsymbol{y})}{\sigma_\boldsymbol{x}\sigma_\boldsymbol{y}}=\frac{E[(\boldsymbol{x}-\mu_\boldsymbol{x},\boldsymbol{y}-\mu_\boldsymbol{y})]}{\sigma_\boldsymbol{x}\sigma_\boldsymbol{y}} \qquad(1)</script><p>上式定义了<strong>总体</strong>相关系数，常用希腊小写字母 $\rho$ 作为代表符号。估算样本的协方差和标准差，可得到<strong>样本 Pearson 相关系数</strong>，常用英文小写字母 $r$ 表示：</p><script type="math/tex; mode=display">r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol{y}_i - \overline{\boldsymbol{y}})}{\sqrt{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})^2} \sqrt{\sum ^n _{i=1}(\boldsymbol{y}_i - \overline{\boldsymbol{y}})^2}} \qquad(2)</script><h3 id="Pearson-相关系数的使用条件"><a href="#Pearson-相关系数的使用条件" class="headerlink" title="Pearson 相关系数的使用条件"></a>Pearson 相关系数的使用条件</h3><p>使用 <strong>Pearson</strong> 相关系数之前需要检查数据是否满足前置条件：</p><ol><li>两个变量间有线性关系；</li><li>变量是连续变量；</li><li>变量均符合正态分布，且二元分布也符合正态分布；</li><li>两变量独立；</li><li>两变量的方差不为 0；</li></ol><p>这些条件在实际中很容易被忽略。</p><p>例如，在视频推荐中，我们可以将用户对视频的播放完成度作为目标变量，检测其他连续型特征与它的相关性，或者将这些连续型特征做特定的变换后，检测其与播放完成度的相关性。</p><p>但是播放完成度实际上不是正态分布的，如下图所示（实际上大多数日志统计特征，如用户播放视频数、视频播放完成度等，也都不服从正态分布），因此实际上是不能使用 <strong>Pearson</strong> 相关系数的，这时候可以用 <strong>Spearman</strong> 或者 <strong>Kendall</strong> 相关系数来代替。</p><img src="/2019/07/20/feature-selection-pearson/play-ratio-distribution.png" title="图 1. 视频播放完成度分布"><p>另外要注意的是，如果两个变量本身就是线性的关系，那么 <strong>Pearson</strong> 系数绝对值越大相关性越强，绝对值越小相关性越弱；但在当两个变量关系未知情况下，<strong>Pearson</strong> 相关系数的大小就没有什么指导意义了，它的绝对值大小并不能表征变量间的相关性强弱，这个时候最好能够画图出来看看作为辅助判断。我会在下面的例子里再详细的说明这一点。</p><h3 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h3><p>我们举个例子来看如何计算 <strong>Pearson</strong> 系数（这里仅仅演示计算过程，实际上数据的分布也不满足使用 <strong>Pearson</strong> 系数的条件）。</p><p>考虑视频推荐场景下，假设我们的目标 (之一) 是最大化视频的播放完成度 $y$，播放完成度的取值范围是 $[0,1]$，我们需要分析哪些因素跟 $y$ 相关，例如有一维特征是表示用户对视频的偏好度，记为 $x$，它的取值范围也是 $[0,1]$，我们把几条样本中 $x$ 和 $y$ 的取值计算出来，并画成散点图，如下所示：</p><img src="/2019/07/20/feature-selection-pearson/ratio-preference.png" title="图 2. 用户对视频的偏好度与播放完成度的对应关系"><p>我们可以按照公式 (2) 来计算 $x$ 与 $y$ 的 <strong>Pearson</strong> 系数：</p><ol><li>计算变量平均值：$\overline{x} = 0.5,\ \overline{y}=0.55$；</li><li>计算平移后的变量：$\boldsymbol{x}=[-0.4,-0.3,-0.2,-0.1,0.1,0.2,0.3,0.4]$，$\boldsymbol{y}=[-0.45,-0.45,-0.35,0.05,0.15,0.25,0.35,0.45]$；</li><li>计算公式 (2) 的结果：$r=\frac{0.73}{\sqrt{0.6}\cdot\sqrt{ 0.94}}=0.972$； </li></ol><p>通过计算，我们发现，这个特征与目标变量之间的线性相关性非常高，这与我们看图得到的认知是一致的。因此我们可以把这一维特征作为有效特征加入。</p><p>但是，如果我们对这个例子稍加修改，将最后一个数据点 $(0.9,1.0)$ 改为 $(0.9,-1.0)$，如图 3 所示：</p><img src="/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png" title="图 3. 引入异常数据对 Pearson 相关系数的影响"><p>从我们的观察来看，最后一个数据点可能是噪声或者异常值，对我们判断两个变量的线性相关性应该不造成影响，但是实际上，我们再次计算一下这两个变量的 <strong>Pearson</strong> 相关系数，此时的值仅仅只有 $-0.0556$，可以说是几乎不线性相关了，这说明 <strong>Pearson</strong> 系数小并不代表线性相关性一定弱。在这种情况下，我们应该在数据清洗阶段把特征的异常值过滤或者平滑掉以后，再计算它与目标的相关系数。</p><p>反过来，<strong>Pearson</strong> 系数大也并不代表线性相关性一定强。<a href="https://en.wikiversity.org/wiki/Correlation" target="_blank" rel="noopener">图 4</a> 列举了几个 <strong>Pearson</strong> 相关系数均为 $0.816$ 的变量数据，其中有些变量间并非明显的线性相关，或者是明显的二次相关，只是 <strong>Pearson</strong> 系数恰好较大而已。</p><img src="/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png" title="图 4. 几组 Pearson 系数为 $0.816$ 的数据"><blockquote><p>附示例的 python 代码：</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>x = scipy.array([<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>y = scipy.array([<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1.0</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pearsonr(x, y)</span><br><span class="line">&gt; (<span class="number">0.97203814535663591</span>, <span class="number">5.3516208203873684e-05</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>z = scipy.array([<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">-1.0</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pearsonr(x, z)</span><br><span class="line">&gt; (<span class="number">-0.055618651039326214</span>, <span class="number">0.89592989552025337</span>)</span><br></pre></td></tr></table></figure><p>这里，<code>pearsonr</code> 返回的第二个结果是 p-value，其具体含义可参考<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html" target="_blank" rel="noopener">官方文档</a>。</p></blockquote><h3 id="Take-aways"><a href="#Take-aways" class="headerlink" title="Take-aways"></a>Take-aways</h3><p>本文简单的介绍了基于 <strong>Pearson</strong> 相关系数的特征选择方法，主要注意点总结如下：</p><ol><li>如果特征是连续型变量，并且分布服从正态分布，则考虑使用 <strong>Pearson</strong> 系数；</li><li><strong>Pearson</strong> 相关系数仅能度量变量间的线性相关性，如果变量间相关性未知，则 <strong>Pearson</strong> 系数的大小没有指导意义，此时需要借助可视化手段辅助判断；</li><li>如果两个变量是非线性相关，为了使用线性模型，可以先将特征变量进行非线性变换，使之与目标线性相关；</li><li><strong>Pearson</strong> 系数对异常值比较敏感，在数据清洗阶段需要将异常值过滤或者平滑处理。</li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。&lt;/p&gt;
+&lt;p&gt;但是实际上这种想法太
+      
+    
+    </summary>
+    
+      <category term="特征工程" scheme="https://guyuecanhui.github.io/categories/%E7%89%B9%E5%BE%81%E5%B7%A5%E7%A8%8B/"/>
+    
+    
+      <category term="特征" scheme="https://guyuecanhui.github.io/tags/%E7%89%B9%E5%BE%81/"/>
+    
+      <category term="特征选择" scheme="https://guyuecanhui.github.io/tags/%E7%89%B9%E5%BE%81%E9%80%89%E6%8B%A9/"/>
+    
+      <category term="特征过滤" scheme="https://guyuecanhui.github.io/tags/%E7%89%B9%E5%BE%81%E8%BF%87%E6%BB%A4/"/>
+    
+      <category term="Pearson" scheme="https://guyuecanhui.github.io/tags/Pearson/"/>
+    
+  </entry>
   
   <entry>
     <title>用 FTRL 训练 FM 模型</title>

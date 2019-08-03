@@ -1,0 +1,1285 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="特征,特征选择,特征过滤,Pearson,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="Looping" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。 但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。 随着深度网络的崛">
+<meta name="keywords" content="特征,特征选择,特征过滤,Pearson">
+<meta property="og:type" content="article">
+<meta property="og:title" content="常用的特征选择方法之 Pearson 相关系数">
+<meta property="og:url" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/index.html">
+<meta property="og:site_name" content="Looping">
+<meta property="og:description" content="众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。 但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。 随着深度网络的崛">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/play-ratio-distribution.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/ratio-preference.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png">
+<meta property="og:updated_time" content="2019-08-03T00:05:29.404Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="常用的特征选择方法之 Pearson 相关系数">
+<meta name="twitter:description" content="众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。 但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。 随着深度网络的崛">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/play-ratio-distribution.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/">
+
+
+
+
+
+  <title>常用的特征选择方法之 Pearson 相关系数 | Looping</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">Looping</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Watch, learn and practise</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Looping">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">常用的特征选择方法之 Pearson 相关系数</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-07-20T22:36:03+08:00">
+                2019-07-20
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/特征工程/" itemprop="url" rel="index">
+                    <span itemprop="name">特征工程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/07/20/feature-selection-pearson/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/20/feature-selection-pearson/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。</p>
+<p>但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。</p>
+<p>随着深度网络的崛起，越来越多的未经复杂变换的原始特征被加入到了深度网络中，大家期待有用的特征能够被自动的抽取和组合出来。但是这并不意味着特征工程就不需要了，推荐系统的大牛 Xavier 在技术博客《Rules of Machine Learning: Best Practices for ML Engineering》中提到很多关于特征工程的建议，非常值得一读，其中包含的思想就是特征是随着系统的优化进程而逐步添加的，并非一蹴而就，要始终保证特征的简单、直观、可复用、可监控和可靠性，这意味着我们需要时常对系统中存量特征做测试和筛选。</p>
+<p>特征选择通常有过滤法（Filter）、打包法（Wrap）和嵌入法（Embed），其中，后两者都是与模型相关的，需要具体问题具体对待，而过滤法是指对特征进行预处理，提前过滤掉一些对目标无益（即对模型无益）的特征，它只考虑任务目标，而与模型无关。</p>
+<p>我打算把常用的特征选择方法都再回顾一遍，力争把每种方法都讲得通俗易懂。这篇文章先介绍 <strong>Pearson</strong> 相关系数。</p>
+<h3 id="Pearson-相关系数的定义"><a href="#Pearson-相关系数的定义" class="headerlink" title="Pearson 相关系数的定义"></a>Pearson 相关系数的定义</h3><p><strong>Pearson</strong> 相关系数是用来检测两个<strong>连续型变量</strong>之间<strong>线性相关</strong>的程度，取值范围为 $[-1,1]$，正值表示正相关，负值表示负相关，绝对值越大表示线性相关程度越高。</p>
+<p>两个变量之间的 <strong>Pearson</strong> 相关系数定义为两个变量之间的协方差和标准差的商：</p>
+<script type="math/tex; mode=display">
+\rho_{\boldsymbol{x},\boldsymbol{y}}=\frac{\text{cov}(\boldsymbol{x},\boldsymbol{y})}{\sigma_\boldsymbol{x}\sigma_\boldsymbol{y}}=\frac{E[(\boldsymbol{x}-\mu_\boldsymbol{x},\boldsymbol{y}-\mu_\boldsymbol{y})]}{\sigma_\boldsymbol{x}\sigma_\boldsymbol{y}} \qquad(1)</script><p>上式定义了<strong>总体</strong>相关系数，常用希腊小写字母 $\rho$ 作为代表符号。估算样本的协方差和标准差，可得到<strong>样本 Pearson 相关系数</strong>，常用英文小写字母 $r$ 表示：</p>
+<script type="math/tex; mode=display">
+r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol{y}_i - \overline{\boldsymbol{y}})}{\sqrt{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})^2} \sqrt{\sum ^n _{i=1}(\boldsymbol{y}_i - \overline{\boldsymbol{y}})^2}} \qquad(2)</script><h3 id="Pearson-相关系数的使用条件"><a href="#Pearson-相关系数的使用条件" class="headerlink" title="Pearson 相关系数的使用条件"></a>Pearson 相关系数的使用条件</h3><p>使用 <strong>Pearson</strong> 相关系数之前需要检查数据是否满足前置条件：</p>
+<ol>
+<li>两个变量间有线性关系；</li>
+<li>变量是连续变量；</li>
+<li>变量均符合正态分布，且二元分布也符合正态分布；</li>
+<li>两变量独立；</li>
+<li>两变量的方差不为 0；</li>
+</ol>
+<p>这些条件在实际中很容易被忽略。</p>
+<p>例如，在视频推荐中，我们可以将用户对视频的播放完成度作为目标变量，检测其他连续型特征与它的相关性，或者将这些连续型特征做特定的变换后，检测其与播放完成度的相关性。</p>
+<p>但是播放完成度实际上不是正态分布的，如下图所示（实际上大多数日志统计特征，如用户播放视频数、视频播放完成度等，也都不服从正态分布），因此实际上是不能使用 <strong>Pearson</strong> 相关系数的，这时候可以用 <strong>Spearman</strong> 或者 <strong>Kendall</strong> 相关系数来代替。</p>
+<img src="/2019/07/20/feature-selection-pearson/play-ratio-distribution.png" title="图 1. 视频播放完成度分布">
+<p>另外要注意的是，如果两个变量本身就是线性的关系，那么 <strong>Pearson</strong> 系数绝对值越大相关性越强，绝对值越小相关性越弱；但在当两个变量关系未知情况下，<strong>Pearson</strong> 相关系数的大小就没有什么指导意义了，它的绝对值大小并不能表征变量间的相关性强弱，这个时候最好能够画图出来看看作为辅助判断。我会在下面的例子里再详细的说明这一点。</p>
+<h3 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h3><p>我们举个例子来看如何计算 <strong>Pearson</strong> 系数（这里仅仅演示计算过程，实际上数据的分布也不满足使用 <strong>Pearson</strong> 系数的条件）。</p>
+<p>考虑视频推荐场景下，假设我们的目标 (之一) 是最大化视频的播放完成度 $y$，播放完成度的取值范围是 $[0,1]$，我们需要分析哪些因素跟 $y$ 相关，例如有一维特征是表示用户对视频的偏好度，记为 $x$，它的取值范围也是 $[0,1]$，我们把几条样本中 $x$ 和 $y$ 的取值计算出来，并画成散点图，如下所示：</p>
+<img src="/2019/07/20/feature-selection-pearson/ratio-preference.png" title="图 2. 用户对视频的偏好度与播放完成度的对应关系">
+<p>我们可以按照公式 (2) 来计算 $x$ 与 $y$ 的 <strong>Pearson</strong> 系数：</p>
+<ol>
+<li>计算变量平均值：$\overline{x} = 0.5,\ \overline{y}=0.55$；</li>
+<li>计算平移后的变量：$\boldsymbol{x}=[-0.4,-0.3,-0.2,-0.1,0.1,0.2,0.3,0.4]$，$\boldsymbol{y}=[-0.45,-0.45,-0.35,0.05,0.15,0.25,0.35,0.45]$；</li>
+<li>计算公式 (2) 的结果：$r=\frac{0.73}{\sqrt{0.6}\cdot\sqrt{ 0.94}}=0.972$； </li>
+</ol>
+<p>通过计算，我们发现，这个特征与目标变量之间的线性相关性非常高，这与我们看图得到的认知是一致的。因此我们可以把这一维特征作为有效特征加入。</p>
+<p>但是，如果我们对这个例子稍加修改，将最后一个数据点 $(0.9,1.0)$ 改为 $(0.9,-1.0)$，如图 3 所示：</p>
+<img src="/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png" title="图 3. 引入异常数据对 Pearson 相关系数的影响">
+<p>从我们的观察来看，最后一个数据点可能是噪声或者异常值，对我们判断两个变量的线性相关性应该不造成影响，但是实际上，我们再次计算一下这两个变量的 <strong>Pearson</strong> 相关系数，此时的值仅仅只有 $-0.0556$，可以说是几乎不线性相关了，这说明 <strong>Pearson</strong> 系数小并不代表线性相关性一定弱。在这种情况下，我们应该在数据清洗阶段把特征的异常值过滤或者平滑掉以后，再计算它与目标的相关系数。</p>
+<p>反过来，<strong>Pearson</strong> 系数大也并不代表线性相关性一定强。<a href="https://en.wikiversity.org/wiki/Correlation" target="_blank" rel="noopener">图 4</a> 列举了几个 <strong>Pearson</strong> 相关系数均为 $0.816$ 的变量数据，其中有些变量间并非明显的线性相关，或者是明显的二次相关，只是 <strong>Pearson</strong> 系数恰好较大而已。</p>
+<img src="/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png" title="图 4. 几组 Pearson 系数为 $0.816$ 的数据">
+<blockquote>
+<p>附示例的 python 代码：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span>x = scipy.array([<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>y = scipy.array([<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1.0</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pearsonr(x, y)</span><br><span class="line">&gt; (<span class="number">0.97203814535663591</span>, <span class="number">5.3516208203873684e-05</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>z = scipy.array([<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">-1.0</span>])</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pearsonr(x, z)</span><br><span class="line">&gt; (<span class="number">-0.055618651039326214</span>, <span class="number">0.89592989552025337</span>)</span><br></pre></td></tr></table></figure>
+<p>这里，<code>pearsonr</code> 返回的第二个结果是 p-value，其具体含义可参考<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.pearsonr.html" target="_blank" rel="noopener">官方文档</a>。</p>
+</blockquote>
+<h3 id="Take-aways"><a href="#Take-aways" class="headerlink" title="Take-aways"></a>Take-aways</h3><p>本文简单的介绍了基于 <strong>Pearson</strong> 相关系数的特征选择方法，主要注意点总结如下：</p>
+<ol>
+<li>如果特征是连续型变量，并且分布服从正态分布，则考虑使用 <strong>Pearson</strong> 系数；</li>
+<li><strong>Pearson</strong> 相关系数仅能度量变量间的线性相关性，如果变量间相关性未知，则 <strong>Pearson</strong> 系数的大小没有指导意义，此时需要借助可视化手段辅助判断；</li>
+<li>如果两个变量是非线性相关，为了使用线性模型，可以先将特征变量进行非线性变换，使之与目标线性相关；</li>
+<li><strong>Pearson</strong> 系数对异常值比较敏感，在数据清洗阶段需要将异常值过滤或者平滑处理。</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/特征/" rel="tag"># 特征</a>
+          
+            <a href="/tags/特征选择/" rel="tag"># 特征选择</a>
+          
+            <a href="/tags/特征过滤/" rel="tag"># 特征过滤</a>
+          
+            <a href="/tags/Pearson/" rel="tag"># Pearson</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/07/03/ftrl-fm/" rel="next" title="用 FTRL 训练 FM 模型">
+                <i class="fa fa-chevron-left"></i> 用 FTRL 训练 FM 模型
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">古月残辉</p>
+              <p class="site-description motion-element" itemprop="description">总结心得</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">15</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:guyuecanhui@icloud.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Pearson-相关系数的定义"><span class="nav-number">1.</span> <span class="nav-text">Pearson 相关系数的定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Pearson-相关系数的使用条件"><span class="nav-number">2.</span> <span class="nav-text">Pearson 相关系数的使用条件</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#举例说明"><span class="nav-number">3.</span> <span class="nav-text">举例说明</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Take-aways"><span class="nav-number">4.</span> <span class="nav-text">Take-aways</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古月残辉</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">23.2k</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: '6du4Ppc2TvUuhcccRHSDNH2v-gzGzoHsz',
+        appKey: 'zOKNml4W1Bq3OTzEuLt5hUjI',
+        placeholder: '感谢阅读！欢迎评论！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
