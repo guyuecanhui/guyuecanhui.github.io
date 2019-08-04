@@ -84,16 +84,16 @@
 <meta name="description" content="上一篇里，我们简单的介绍了基于 Pearson 相关系数的特征选择方法，本篇介绍另一种使用更加广泛的相关系数：Spearman 秩相关系数，简称 Spearman 相关系数。Spearman 相关系数与 Pearson 相关系数、Kendall 相关系数并称统计学三大相关系数，足见其重要性。 有了 Pearson 相关系数，为什么还要用 Spearman 相关系数呢，主要是 Pearson 系数只">
 <meta name="keywords" content="特征,特征选择,特征过滤,Spearman">
 <meta property="og:type" content="article">
-<meta property="og:title" content="常用的特征选择方法之 Spearman 相关系数">
+<meta property="og:title" content="常用的特征选择方法之 Spearman 秩相关系数">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/07/28/feature-selection-spearman/index.html">
 <meta property="og:site_name" content="Looping">
 <meta property="og:description" content="上一篇里，我们简单的介绍了基于 Pearson 相关系数的特征选择方法，本篇介绍另一种使用更加广泛的相关系数：Spearman 秩相关系数，简称 Spearman 相关系数。Spearman 相关系数与 Pearson 相关系数、Kendall 相关系数并称统计学三大相关系数，足见其重要性。 有了 Pearson 相关系数，为什么还要用 Spearman 相关系数呢，主要是 Pearson 系数只">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/28/feature-selection-spearman/rank-correlation.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/28/feature-selection-spearman/pearson-vs-spearman.png">
-<meta property="og:updated_time" content="2019-08-04T14:24:37.468Z">
+<meta property="og:updated_time" content="2019-08-04T14:34:43.069Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="常用的特征选择方法之 Spearman 相关系数">
+<meta name="twitter:title" content="常用的特征选择方法之 Spearman 秩相关系数">
 <meta name="twitter:description" content="上一篇里，我们简单的介绍了基于 Pearson 相关系数的特征选择方法，本篇介绍另一种使用更加广泛的相关系数：Spearman 秩相关系数，简称 Spearman 相关系数。Spearman 相关系数与 Pearson 相关系数、Kendall 相关系数并称统计学三大相关系数，足见其重要性。 有了 Pearson 相关系数，为什么还要用 Spearman 相关系数呢，主要是 Pearson 系数只">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2019/07/28/feature-selection-spearman/rank-correlation.png">
 
@@ -131,7 +131,7 @@
 
 
 
-  <title>常用的特征选择方法之 Spearman 相关系数 | Looping</title>
+  <title>常用的特征选择方法之 Spearman 秩相关系数 | Looping</title>
   
 
 
@@ -317,7 +317,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">常用的特征选择方法之 Spearman 相关系数</h1>
+          <h1 class="post-title" itemprop="name headline">常用的特征选择方法之 Spearman 秩相关系数</h1>
         
 
         <div class="post-meta">
@@ -459,12 +459,9 @@
 </blockquote>
 <h3 id="Take-aways"><a href="#Take-aways" class="headerlink" title="Take-aways"></a>Take-aways</h3><p>本文简单介绍了 Spearman 相关系数，主要注意点总结如下：</p>
 <ol>
-<li><p><strong>Spearman</strong> 相关系数是度量两个<strong>连续型变量</strong>之间<strong>单调关系</strong>强弱的相关系数，它对数据的分布不作任何假设，能够容忍异常值，也不需要数据的取值是等距的；</p>
-</li>
-<li><p><strong>Spearman</strong> 相关系数实际上就是对数据做了秩次变换后的 <strong>Pearson</strong> 相关系数，只要能用 <strong>Pearson</strong> 相关系数的地方就能使用 <strong>Spearman</strong> 相关系数；</p>
-</li>
-<li><p><strong>Spearman</strong> 相关系数还需要对原始数据进行排序，因此计算复杂度高于 <strong>Pearson</strong> 相关系数，当数据满足 <strong>Pearson​</strong> 相关系数的使用条件时，优先考虑使用 <strong>Pearson</strong> 相关系数。</p>
-</li>
+<li><strong>Spearman</strong> 相关系数是度量两个<strong>连续型变量</strong>之间<strong>单调关系</strong>强弱的相关系数，它对数据的分布不作任何假设，能够容忍异常值，也不需要数据的取值是等距的；</li>
+<li><strong>Spearman</strong> 相关系数实际上就是对数据做了秩次变换后的 <strong>Pearson</strong> 相关系数，只要能用 <strong>Pearson</strong> 相关系数的地方就能使用 <strong>Spearman</strong> 相关系数；</li>
+<li><strong>Spearman</strong> 相关系数还需要对原始数据进行排序，因此计算复杂度高于 <strong>Pearson</strong> 相关系数，当数据满足 <strong>Pearson​</strong> 相关系数的使用条件时，优先考虑使用 <strong>Pearson</strong> 相关系数。</li>
 </ol>
 <hr>
 <blockquote>
@@ -597,7 +594,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -619,7 +616,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -703,7 +700,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">24.9k</span>
+    <span title="Site words total count">25k</span>
   
 </div>
 

@@ -93,7 +93,7 @@
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/ratio-preference.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png">
-<meta property="og:updated_time" content="2019-08-04T14:22:11.262Z">
+<meta property="og:updated_time" content="2019-08-04T14:49:53.125Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="常用的特征选择方法之 Pearson 相关系数">
 <meta name="twitter:description" content="众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。 但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。 随着深度网络的崛">
@@ -400,7 +400,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2.2k
+                  2.3k
                 </span>
               
 
@@ -447,7 +447,8 @@
 <script type="math/tex; mode=display">
 \rho_{\boldsymbol{x},\boldsymbol{y}}=\frac{\text{cov}(\boldsymbol{x},\boldsymbol{y})}{\sigma_\boldsymbol{x}\sigma_\boldsymbol{y}}=\frac{E[(\boldsymbol{x}-\mu_\boldsymbol{x},\boldsymbol{y}-\mu_\boldsymbol{y})]}{\sigma_\boldsymbol{x}\sigma_\boldsymbol{y}} \qquad(1)</script><p>上式定义了<strong>总体</strong>相关系数，常用希腊小写字母 $\rho$ 作为代表符号。估算样本的协方差和标准差，可得到<strong>样本 Pearson 相关系数</strong>，用英文小写字母 $r$ 表示：</p>
 <script type="math/tex; mode=display">
-r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol{y}_i - \overline{\boldsymbol{y}})}{\sqrt{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})^2} \sqrt{\sum ^n _{i=1}(\boldsymbol{y}_i - \overline{\boldsymbol{y}})^2}} \qquad(2)</script><h3 id="Pearson-相关系数的使用条件"><a href="#Pearson-相关系数的使用条件" class="headerlink" title="Pearson 相关系数的使用条件"></a>Pearson 相关系数的使用条件</h3><p>使用 <strong>Pearson</strong> 相关系数之前需要检查数据是否满足前置条件：</p>
+r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i - \overline{y})}{\sqrt{\sum ^n _{i=1}(x_i - \overline{x})^2} \sqrt{\sum ^n _{i=1}(y_i - \overline{y})^2}} \qquad(2)</script><p>记 $\boldsymbol{x}’=\boldsymbol{x}-\overline{x}$ 和 $\boldsymbol{y}’=\boldsymbol{y}-\overline{y}$ 表示对变量 $\boldsymbol{x}$ 和 $\boldsymbol{y}$ 进行 $0$ 均值化，则实际上 $\boldsymbol{x}$ 和 $\boldsymbol{y}$ 的 <strong>Pearson</strong> 相关系数就是 $\boldsymbol{x}’$ 和 $\boldsymbol{y}’$ 的 <strong>cosine</strong> 相似度：$r_{\boldsymbol{x},\boldsymbol{y}}=\cos(\boldsymbol{x}’,\boldsymbol{y}’)=\frac{\boldsymbol{x}’\cdot\boldsymbol{y}’}{|\boldsymbol{x}’|\cdot|\boldsymbol{y}’|}$。</p>
+<h3 id="Pearson-相关系数的使用条件"><a href="#Pearson-相关系数的使用条件" class="headerlink" title="Pearson 相关系数的使用条件"></a>Pearson 相关系数的使用条件</h3><p>使用 <strong>Pearson</strong> 相关系数之前需要检查数据是否满足前置条件：</p>
 <ol>
 <li>两个变量间有线性关系；</li>
 <li>变量是连续变量；</li>
@@ -482,8 +483,9 @@ r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol
 </blockquote>
 <h3 id="Take-aways"><a href="#Take-aways" class="headerlink" title="Take-aways"></a>Take-aways</h3><p>本文简单的介绍了基于 <strong>Pearson</strong> 相关系数的特征选择方法，主要注意点总结如下：</p>
 <ol>
-<li>如果特征是连续型变量，并且分布服从正态分布，则考虑使用 <strong>Pearson</strong> 相关系数；</li>
+<li><strong>Pearson</strong> 相关系数是用来检测两个<strong>连续型变量</strong>之间<strong>线性相关</strong>的程度，并且要求这两个变量分别分布服从正态分布；</li>
 <li><strong>Pearson</strong> 相关系数仅能度量变量间的线性相关性，如果变量间相关性未知，则 <strong>Pearson</strong> 相关系数的大小没有指导意义，此时需要借助可视化手段辅助判断；</li>
+<li>两变量的 <strong>Pearson</strong> 相关系数实际上是这两个变量 $0$ 均值化后的 <strong>cosine</strong> 相似度；</li>
 <li>如果两个变量是非线性相关，为了使用线性模型，可以先将特征变量进行非线性变换，使之与目标线性相关；</li>
 <li><strong>Pearson</strong> 相关系数对异常值比较敏感，在数据清洗阶段需要将异常值过滤或者平滑处理。</li>
 </ol>
@@ -530,8 +532,8 @@ r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/07/03/ftrl-fm/" rel="next" title="用 FTRL 训练 FM 模型">
-                <i class="fa fa-chevron-left"></i> 用 FTRL 训练 FM 模型
+              <a href="/2019/07/20/feature-selection-kendall/" rel="next" title="常用的特征选择方法之 Kendall 秩相关系数">
+                <i class="fa fa-chevron-left"></i> 常用的特征选择方法之 Kendall 秩相关系数
               </a>
             
           </div>
@@ -540,8 +542,8 @@ r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/28/feature-selection-spearman/" rel="prev" title="常用的特征选择方法之 Spearman 相关系数">
-                常用的特征选择方法之 Spearman 相关系数 <i class="fa fa-chevron-right"></i>
+              <a href="/2019/07/28/feature-selection-spearman/" rel="prev" title="常用的特征选择方法之 Spearman 秩相关系数">
+                常用的特征选择方法之 Spearman 秩相关系数 <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -622,7 +624,7 @@ r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">16</span>
+                  <span class="site-state-item-count">17</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -644,7 +646,7 @@ r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">37</span>
+                  <span class="site-state-item-count">38</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -728,7 +730,7 @@ r=\frac{\sum ^n _{i=1}(\boldsymbol{x}_i - \overline{\boldsymbol{x}})(\boldsymbol
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">24.9k</span>
+    <span title="Site words total count">25k</span>
   
 </div>
 
