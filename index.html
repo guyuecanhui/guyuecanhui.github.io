@@ -454,11 +454,14 @@
 <p>这里，<code>spearmanr</code> 返回的第二个结果是 p-value，其具体含义可参考<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.spearmanr.html" target="_blank" rel="noopener">官方文档</a>。</p>
 </blockquote>
 <h3 id="Take-aways"><a href="#Take-aways" class="headerlink" title="Take-aways"></a>Take-aways</h3><p>本文简单介绍了 Spearman 相关系数，主要注意点总结如下：</p>
-<ul>
-<li><strong>Spearman</strong> 相关系数是度量两个<strong>连续型变量</strong>之间<strong>单调关系</strong>强弱的相关系数，它对数据的分布不作任何假设，能够容忍异常值，也不需要数据的取值是等距的；</li>
-<li><strong>Spearman</strong> 相关系数实际上就是对数据做了秩次变换后的 <strong>Pearson</strong> 相关系数，只要能用 <strong>Pearson</strong> 相关系数的地方就能使用 <strong>Spearman</strong> 相关系数；</li>
-<li><strong>Spearman</strong> 相关系数还需要对原始数据进行排序，因此计算复杂度高于 <strong>Pearson</strong> 相关系数，当数据满足 <strong>Pearson​</strong> 相关系数的使用条件时，优先考虑使用 <strong>Pearson</strong> 相关系数。</li>
-</ul>
+<ol>
+<li><p><strong>Spearman</strong> 相关系数是度量两个<strong>连续型变量</strong>之间<strong>单调关系</strong>强弱的相关系数，它对数据的分布不作任何假设，能够容忍异常值，也不需要数据的取值是等距的；</p>
+</li>
+<li><p><strong>Spearman</strong> 相关系数实际上就是对数据做了秩次变换后的 <strong>Pearson</strong> 相关系数，只要能用 <strong>Pearson</strong> 相关系数的地方就能使用 <strong>Spearman</strong> 相关系数；</p>
+</li>
+<li><p><strong>Spearman</strong> 相关系数还需要对原始数据进行排序，因此计算复杂度高于 <strong>Pearson</strong> 相关系数，当数据满足 <strong>Pearson​</strong> 相关系数的使用条件时，优先考虑使用 <strong>Pearson</strong> 相关系数。</p>
+</li>
+</ol>
 <hr>
 <blockquote>
 <h4 id="这是特征选择系列文章的第二篇，其他文章可参考："><a href="#这是特征选择系列文章的第二篇，其他文章可参考：" class="headerlink" title="这是特征选择系列文章的第二篇，其他文章可参考："></a>这是特征选择系列文章的第二篇，其他文章可参考：</h4><ol>
