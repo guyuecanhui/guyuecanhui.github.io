@@ -297,7 +297,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/08/03/feature-selection-kendall/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="古月残辉">
@@ -316,7 +316,7 @@
         
           <h1 class="post-title" itemprop="name headline">
                 
-                <a class="post-title-link" href="/2019/08/03/feature-selection-kendall/" itemprop="url">常用的特征选择方法之 Kendall 秩相关系数</a></h1>
+                <a class="post-title-link" href="/2019/08/10/feature-selection-kendall/" itemprop="url">常用的特征选择方法之 Kendall 秩相关系数</a></h1>
         
 
         <div class="post-meta">
@@ -328,8 +328,8 @@
               
                 <span class="post-meta-item-text">发表于</span>
               
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-03T22:36:03+08:00">
-                2019-08-03
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-10T22:44:41+08:00">
+                2019-08-10
               </time>
             
 
@@ -369,8 +369,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/08/03/feature-selection-kendall/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/03/feature-selection-kendall/" itemprop="commentCount"></span>
+                <a href="/2019/08/10/feature-selection-kendall/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/10/feature-selection-kendall/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -392,7 +392,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  885
+                  888
                 </span>
               
 
@@ -435,13 +435,13 @@
 <h3 id="Kendall-秩相关系数的定义"><a href="#Kendall-秩相关系数的定义" class="headerlink" title="Kendall 秩相关系数的定义"></a>Kendall 秩相关系数的定义</h3><p><strong>Kendall</strong> 秩相关系数是一个非参数性质（与分布无关）的秩统计参数，是用来度量两个<strong>有序变量</strong>之间<strong>单调关系</strong>强弱的相关系数，它的取值范围是 $[-1,1]$，绝对值越大，表示单调相关性越强，取值为 $0$ 时表示完全不相关。</p>
 <p>原始的 <strong>Kendall</strong> 秩相关系数定义在<strong>一致对</strong> (<strong>concordant pairs</strong>) 和<strong>分歧对</strong> (<strong>discordant pairs</strong>) 的概念上。所谓一致对，就是两个变量取值的相对关系一致；分歧对则是指它们的相对关系不一致。这么说有点难以理解，我们举个例子。</p>
 <p>假设我们为很多不同年龄的用户推送了一条社保相关的视频，然后回收了这些用户的播放完成度，如下表所示：</p>
-<img src="/2019/08/03/feature-selection-kendall/age-value-pairs.png" title="图 1. 用户年龄与播放完成度的关系">
+<img src="/2019/08/10/feature-selection-kendall/age-value-pairs.png" title="图 1. 用户年龄与播放完成度的关系">
 <p>我们想用 <strong>Kendall</strong> 秩相关系数来分析用户年龄与该社保视频的播放情况是否相关。为此，我们将年龄和播放完成度分别排序后，对样本中取值进行排序和编号，分别得到 <code>年龄序号</code> 和 <code>播放序号</code>。这时，对于样本 $3$ 和样本 $4$，它们的年龄序号是 $[3,4]$，播放序号是 $[2,4]$，虽然序号不同，但是变化趋势是相同的，因此它们是一致的；对于样本 $2$ 和样本 $3$，它们的年龄序号是 $[2,3]$，播放序号是 $[5,2]$，它们的变化趋势是相反的，因此它们是分歧的。</p>
 <p>进一步的，我们观察可以发现，当样本已经按年龄升序排列后，对于每个样本，我们可以简单的数一下该样本后续样本中播放序号大于该样本的样本数量，作为该样本引入的一致对数 (该样本之前的样本与该样本也可能一致，但是已经算过一次了)，将所有样本引入的一致对数加起来就能得到所有样本的一致对数，记为 $c$。</p>
 <p>同样的，对于每个样本，我们可以简单的数一下该样本后续样本中播放序号小于该样本的样本数量，作为该样本引入的分歧对数，累加后得到所有样本的分歧对数，记为 $d$。</p>
 <p>则原始的 <strong>Kendall</strong> 秩相关系数定义为：</p>
 <script type="math/tex; mode=display">
-\tau_a=\frac{c-d}{c+d}=\frac{c-d}{\frac{1}{2}n(n-1)}\qquad (1)</script><p>其中，$m=\frac{n(n-1)}{2}$ 表示所有样本两两组合的数量，在变量没有重复取值的情况下，$m=c+d$。定义 $(1)$ 也被称为 <a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient" target="_blank" rel="noopener"><strong>Tau-a</strong></a>，从定义也容易看出，它不能处理变量有相同取值的情况。</p>
+\tau_a=\frac{c-d}{c+d}=\frac{c-d}{\frac{1}{2}\cdot n\cdot (n-1)}\qquad (1)</script><p>其中，$m=\frac{n\cdot (n-1)}{2}$ 表示所有样本两两组合的数量，在变量没有重复取值的情况下，$m=c+d$。定义 $(1)$ 也被称为 <a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient" target="_blank" rel="noopener"><strong>Tau-a</strong></a>，从定义也容易看出，它不能处理变量有相同取值的情况。</p>
 <p>为了处理变量有相同取值的情况，我们还要将每个变量中相同取值的数量考虑进来，从而得到扩展的定义：</p>
 <script type="math/tex; mode=display">
 \tau_b=\frac{c-d}{\sqrt{(c+d+t_x)(c+d+t_y)}}\qquad (2)</script><p>其中，$c$ 在计算的时候只能算 <script type="math/tex">a_i<a_j</script> 且 <script type="math/tex">b_i<b_j</script> 的对数，$d$ 也只能算 <script type="math/tex">a_i<a_j</script> 且 <script type="math/tex">b_i>b_j</script> 的对数 (<script type="math/tex">i<j</script>)；$t_x$，$t_y$ 分别表示变量 $x$，$y$ 取值中序号相同的样本对数排除共同平局的部分 (在下一小节举例说明)。式 <script type="math/tex">(2)</script> 通常又被称为 <strong>Tau-b</strong>，是实际中应用最广泛的定义 (另外还有 <strong>Tau-c</strong> 的变种这里就不介绍了)。在 <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html" target="_blank" rel="noopener"><strong>scipy 1.3.0</strong></a> 版本的实现中，同时支持式 $(1)$ 和式 $(2)$。</p>
@@ -453,7 +453,7 @@
 </ol>
 <p>因此，年龄与播放社保视频的时长呈现强相关性，基于这个分析我们就可以尝试对更多年龄大一些的用户推送此视频。</p>
 <p>在工程实现的时候，用户的年龄通常会被划分成不同的区间，而播放完成度只有超过一定阈值 (如 $0.3$) 我们才算作有效播放。因此，图 $1$ 的数据我们又可以转换成下面的离散情况：</p>
-<img src="/2019/08/03/feature-selection-kendall/age-discrete-pairs.png" title="图 2. 离散化的用户年龄与播放完成度的关系">
+<img src="/2019/08/10/feature-selection-kendall/age-discrete-pairs.png" title="图 2. 离散化的用户年龄与播放完成度的关系">
 <p>可以发现，年龄段序号和有效播放序号存在大量的重复数据，因此我们基于式 $(2)$ 来计算：</p>
 <ol>
 <li>将样本按年龄段升序排列，相同的年龄段按是否有效播放排序，对年龄段和是否有效播放进行编号，如图 $2$ 所示；</li>
