@@ -74,7 +74,7 @@
 
 
 
-  <link rel="alternate" href="/atom.xml" title="Looping" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
 
 
 
@@ -84,13 +84,13 @@
 <meta name="description" content="总结心得">
 <meta name="keywords" content="feature, model, algorithm">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Looping">
+<meta property="og:title" content="HCigmoid">
 <meta property="og:url" content="https://guyuecanhui.github.io/page/2/index.html">
-<meta property="og:site_name" content="Looping">
+<meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="总结心得">
 <meta property="og:locale" content="default">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Looping">
+<meta name="twitter:title" content="HCigmoid">
 <meta name="twitter:description" content="总结心得">
 
 
@@ -127,7 +127,7 @@
 
 
 
-  <title>Looping</title>
+  <title>HCigmoid</title>
   
 
 
@@ -158,7 +158,7 @@
     <div class="custom-logo-site-title">
       <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
-        <span class="site-title">Looping</span>
+        <span class="site-title">HCigmoid</span>
         <span class="logo-line-after"><i></i></span>
       </a>
     </div>
@@ -297,6 +297,213 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/04/12/itemcf/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/04/12/itemcf/" itemprop="url">可能是最好懂的ItemCF解释了</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-04-12T13:56:07+08:00">
+                2019-04-12
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/04/12/itemcf/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/12/itemcf/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.3k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。</p>
+<h2 id="ItemCF-推导过程"><a href="#ItemCF-推导过程" class="headerlink" title="ItemCF 推导过程"></a>ItemCF 推导过程</h2><p>首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因而有很大的相似度。</p>
+<p>从这个假设出发，我们可以认为两个视频相似表现在它们被很多用户同时观看，两个物品共同观看的人数越多，说明它们的相似度越高，用公式来表达就是：</p>
+<script type="math/tex; mode=display">
+s_{i,j}=|N(i)\cap N(j)| \qquad (1)</script><p>其中，$N(i)$ 表示观看视频 $i$ 的人群集合，$|N(i)\cap N(j)|$ 表示同时播放过 $i,j$ 的人数。但是由于热点视频可能并不代表用户的真实兴趣（有可能是运营推送，或者仅仅是由于追热心理），因此需要惩罚那些热点的视频，可以通过将共同观看人数除以与视频总观看数相关的系数来实现，例如使用以下方式：</p>
+<script type="math/tex; mode=display">
+s_{i,j}=\frac{|N(i)\cap N(j)|}{\sqrt{|N(i)|\cdot|N(j)|}} \qquad (2)</script><p>但是仅仅惩罚热点视频也还不够，有些人就是闲的无聊，有什么看什么，这种情况下他表现出来的就未必是真实的兴趣了（就不满足我们的隐含假设），他的行为也就不太能作为我们的协同的依据，因此需要对这种人做降权，例如使用以下方式：</p>
+<script type="math/tex; mode=display">
+s_{i,j}=\frac{\sum_{u\in N(i)\cap N(j)}\frac{1}{log(1+|M(u)|)}}{\sqrt{|N(i)|\cdot|N(j)|}} \qquad (3)</script><p>其中，$M(u)$ 表示用户 $u$ 观看的视频集合。另外，如果用户对视频 $i$ 观看了 80%，而对视频 $j$ 只看了 10%，那用户对这两个视频的喜欢程度也是不相同的，因此我们还可以对用户对两个视频观看的完成度差异做降权，差异越大，相似度也越低，例如使用以下方式：</p>
+<script type="math/tex; mode=display">
+s_{i,j}=\frac{\sum_{u\in N(i)\cap N(j)}\frac{\cos(r_u(i),r_u(j))}{log(1+|M(u)|)}}{\sqrt{|N(i)|\cdot|N(j)|}} \qquad (4)</script><p>其中，$r_u(i)$ 表示用户 $u$ 对视频 $i$ 的观看完成度。最后，将所有视频与其他视频的相似度做 $max$ 归一化，得到：</p>
+<script type="math/tex; mode=display">
+s_{i,j}'=\frac{s_{i,j}}{\max_j s_{i,j}} \qquad (5)</script><p>归一化使得所有物品的相似度取值都在 (0,1] 之间，这个相似度已经可以直接用于相关推荐场景。另外，有研究表明，这种归一化可以提高 ItemCF 用于个性化推荐时的准确度、覆盖率和多样性。</p>
+<p>那基于 ItemCF 如何进行个性化推荐呢？主要是考虑推荐与用户的观看历史最相似的视频，即计算每个视频与用户观看视频集合的相似度作为作为是否观看该视频的预测值：</p>
+<script type="math/tex; mode=display">
+p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qquad (6)</script><p>最后，再根据预测值从大到小选取 TopN 个视频作为推荐结果。</p>
+<h2 id="优化与讨论"><a href="#优化与讨论" class="headerlink" title="优化与讨论"></a>优化与讨论</h2><p>其实从第 1 部分的介绍来看，基于 ItemCF 的思想可以做很多改进。例如：</p>
+<ol>
+<li>如果感觉算出来的结果仍然偏向热门视频时，可以增加式 (4) 的分母大小；</li>
+<li>如果觉得用户只有观看完完成度很高时才是真实兴趣，那可以将式 (4) 的 $cos(\cdot)$ 部分改成类似 $r_u(i)\cdot r_u(j)$ 的形式；</li>
+<li>如果觉得需要更多的考虑用户的短期兴趣，做即时的推荐，那可以将式 (6) 中的用户观看历史限制在最近几次，甚至一次；</li>
+</ol>
+<p>如果把用户-视频考虑成一个二部图，ItemCF 实际上是基于图的结构，执行了一次从用户到视频的兴趣扩散过程。可以考虑下图中的视频 $v_1,v_3$，它们没有直接的共同观看，因此用 ItemCF 算出来的相似度为 0，但是实际上 $u_1,u_2$ 都观看了 $v_2$，因此可以认为用户 $u_1,u_2$ 存在一定的相似性，因此如果执行一次视频-用户-视频的兴趣扩散过程就能够捕获 $v_1,v_3$ 的相似度了。</p>
+<img src="/2019/04/12/itemcf/itemcf-f1.png" title="用户观影行为示例">
+<p>后面一种思路实际上就是 SimRank，但是由于需要执行多次兴趣扩散（即对二部图做多次迭代计算），SimRank 的计算复杂度相当高，在业务数据量大的情况下需要强大的算力支持，以后会再讨论下我在 SimRank 模型上的尝试。</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/02/10/confidence-interval/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -306,7 +513,7 @@
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Looping">
+      <meta itemprop="name" content="HCigmoid">
     </span>
 
     
@@ -502,7 +709,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Looping">
+      <meta itemprop="name" content="HCigmoid">
     </span>
 
     
@@ -730,7 +937,7 @@ w_i=w_i-\frac{\eta}{\sqrt{G_i}} g_i
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Looping">
+      <meta itemprop="name" content="HCigmoid">
     </span>
 
     
@@ -939,7 +1146,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Looping">
+      <meta itemprop="name" content="HCigmoid">
     </span>
 
     
@@ -1145,7 +1352,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Looping">
+      <meta itemprop="name" content="HCigmoid">
     </span>
 
     
@@ -1362,7 +1569,7 @@ f(A\cup \{i\})-f(A)\ge f(B\cup \{i\})-f(B), \quad \forall A\subseteq B\subseteq 
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Looping">
+      <meta itemprop="name" content="HCigmoid">
     </span>
 
     
@@ -1629,7 +1836,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Looping">
+      <meta itemprop="name" content="HCigmoid">
     </span>
 
     
@@ -1851,7 +2058,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">17</span>
+                  <span class="site-state-item-count">18</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -1862,7 +2069,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
               
               <div class="site-state-item site-state-categories">
                 <a href="/categories/index.html">
-                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-count">7</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
               </div>
@@ -1873,7 +2080,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">38</span>
+                  <span class="site-state-item-count">46</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -1941,7 +2148,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">25.9k</span>
+    <span title="Site words total count">28.5k</span>
   
 </div>
 

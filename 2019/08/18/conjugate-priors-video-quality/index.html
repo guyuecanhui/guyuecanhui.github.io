@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="统计,概率,分布,贝叶斯,先验,后验,共轭,Beta分布,二项分布,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。 问题背景如何评估一个视频的质量是视频推荐中非常重要但是又很让人头疼的事情。尤其是在短视频场景下，每天新增大量的短视频，我们需要迅速判断一个新短视频的质量：如果">
+<meta name="keywords" content="统计,概率,分布,贝叶斯,先验,后验,共轭,Beta分布,二项分布">
+<meta property="og:type" content="article">
+<meta property="og:title" content="例解共轭分布之视频质量评估">
+<meta property="og:url" content="https://guyuecanhui.github.io/2019/08/18/conjugate-priors-video-quality/index.html">
+<meta property="og:site_name" content="HCigmoid">
+<meta property="og:description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。 问题背景如何评估一个视频的质量是视频推荐中非常重要但是又很让人头疼的事情。尤其是在短视频场景下，每天新增大量的短视频，我们需要迅速判断一个新短视频的质量：如果">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/08/18/conjugate-priors-video-quality/beta-pdf.png">
+<meta property="og:updated_time" content="2019-09-08T14:01:12.395Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="例解共轭分布之视频质量评估">
+<meta name="twitter:description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。 问题背景如何评估一个视频的质量是视频推荐中非常重要但是又很让人头疼的事情。尤其是在短视频场景下，每天新增大量的短视频，我们需要迅速判断一个新短视频的质量：如果">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/08/18/conjugate-priors-video-quality/beta-pdf.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://guyuecanhui.github.io/2019/08/18/conjugate-priors-video-quality/">
+
+
+
+
+
+  <title>例解共轭分布之视频质量评估 | HCigmoid</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HCigmoid</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Watch, learn and practise</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/08/18/conjugate-priors-video-quality/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">例解共轭分布之视频质量评估</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-18T10:47:06+08:00">
+                2019-08-18
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/18/conjugate-priors-video-quality/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/18/conjugate-priors-video-quality/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.6k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  9
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (<strong>conjugate prior</strong>) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。</p>
+<h3 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h3><p>如何评估一个视频的质量是视频推荐中非常重要但是又很让人头疼的事情。尤其是在短视频场景下，每天新增大量的短视频，我们需要迅速判断一个新短视频的质量：如果质量很好，我们可以将它向更多的人推荐；如果质量不好，我们可能不再主动推荐该视频。这里判断的时效很重要，因为如果没有及时发现一个垃圾视频，它可能就会通过推荐系统祸害很多的用户 =.=!</p>
+<p>由于视频非常多，我们无法人工对每个视频进行准确的质量评估，而且用户在短视频的观看行为呈现出更加多元的兴趣，因此小编们也无法代表所有用户的口味。因此，要评估一个短视频好不好，还是得看它在用户中的表现 (可以用完播率、点赞率、分享率等统计指标来度量)。</p>
+<p>假设我们只考虑用完播率 $r$ 来度量一个视频的质量 (后面交替使用完播率和视频质量)，它表示一个视频被播放完 (或者播放超过一定比例) 的数量 $m$ 与它展现给用户的次数 $n$ 的比例：</p>
+<script type="math/tex; mode=display">
+r=\frac{m}{n} \qquad(1)</script><p>这个指标的优点是计算非常方便，而且能够在一定程度上表达业务诉求。但是实际应用的时候，往往会因为视频的展示次数过少而对某个视频进行错误的评价。例如，视频 $v_1$ 只展示了 $10$ 次，有 $5$ 次完播；视频 $v_2$ 展示了 $10000$ 次，有 $4900$ 次完播，相较而言，$v_1$ 和 $v_2$ 哪个质量更好呢？</p>
+<p>很难说！我们只是比较确信 $v_2$ 的完播率稳定在了 $49\%$ 左右，而对于 $v_1$ 的评估就非常不确定了：有可能它再展示 $10$ 次以后，一次都没人看；也有可能它再展示 $10$ 次每次都完播了。这两种情况下我们对视频质量的评估将发生非常大的变化。</p>
+<h3 id="模型假设-先验分布"><a href="#模型假设-先验分布" class="headerlink" title="模型假设 (先验分布)"></a>模型假设 (先验分布)</h3><p>从根本上来讲，我们简单的用式 $(1)$ 来计算完播率忽略了事件过少时候的不确定性。为了引入这种不确定性，我们可以用一个概率分布来表示视频的质量 (这就是贝叶斯学派的观点，$r$ 并不是一个固定的值，而是满足一定的概率分布)，也就是说，给定 $m$ 和 $n$，我们要来估计这个视频的质量呈现一个什么样的分布。这个分布的形状是我们在看到数据之前<strong>根据经验</strong>去假定的，因此我们也叫它<strong>先验分布</strong>。</p>
+<p>我们的直观想法是，如果一个视频的完播率为 $r=\frac{m}{n}$，那么它质量的真实分布 $\theta$ 中，概率最大的点也应该是 $\frac{m}{n}$，并且与 $\frac{m}{n}$ 相差越多概率也越小。</p>
+<p>根据这个想法，我们可以用 <strong>Beta</strong> 分布来进行建模，将 $\alpha=m$ 和 $\beta=n-m$ 作为 <strong>Beta</strong> 分布的参数 (<strong>Beta</strong> 分布的详细介绍可以参考 Wiki)。在我们的例子中，随着 $n$ 的增加，<strong>Beta</strong> 分布的概率密度越集中于 $r=\frac{m}{n}$。下图表示随着 $m$ 和 $n$ 变化，保持 $r=0.5$ 不变的情况下，<strong>Beta</strong> 分布的概率密度函数：</p>
+<img src="/2019/08/18/conjugate-priors-video-quality/beta-pdf.png" title="图 1. 不同参数下 Beta 分布的形状">
+<p>可以看到，当 $n$ 很小的时候，视频的质量是高度不确定的；而当 $n$ 很大的时候，视频的质量已经集中分布于 $r=\frac{m}{n}$ 附近了。因此，我们选的这个先验分布是能够满足我们的直观想法和假设要求的。这样，我们用式 $(2)$ 来代替式 $(1)$ 对视频质量进行初步的评估：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+p(\theta;\alpha,\beta)=Beta(\theta;\alpha,\beta)
+&=\frac{\Gamma(\alpha+\beta)}{\Gamma(\alpha)\Gamma(\beta)}\theta^{\alpha-1}(1-\theta)^{\beta-1}\\
+&=\frac{1}{B(\alpha,\beta)}\theta^{\alpha-1}(1-\theta)^{\beta-1}
+\end{align} \qquad(2)</script><p>其中，$\Gamma(n)=(n-1)!$ 表示伽玛函数 (这个场景下参数都为整数)；$B(\alpha,\beta)$ 可以看成是归一化项，使得所有概率累加和为 $1$。</p>
+<h3 id="更新模型-后验分布"><a href="#更新模型-后验分布" class="headerlink" title="更新模型 (后验分布)"></a>更新模型 (后验分布)</h3><p>问题才解决了一半，由于视频在不断的推荐给用户，我们的统计数据也在发生变化。因此另外一个至关重要的问题是，我们怎么根据新增的数据来更新我们对视频质量的评估。</p>
+<p>例如，对于某个视频 $v$，假设我们已经收集到一些反馈数据，并统计出 $\alpha=m$，$\beta=n-m$，我们根据式 $(2)$ 对视频质量分布 $\theta$ 有了一个初步的估计。现在我们又将这个视频推荐给其他用户，并想看看放量以后，视频质量评估是否准确。假设这个视频又展示了 $b$ 次，完播了 $a$ 次，则我们根据先验假设，视频的质量应该是围绕 $r’=\frac{m+a}{n+b}$ 的钟形分布，并且比之前的分布更陡峭一些。为了实现这个过程，我们需要对模型进行更新。</p>
+<p>由于用户的反馈只包含完播和未完播两类，因此很容易想到用二项分布的似然估计来估计这 $b$ 次展示中有 $a$ 次会完播的概率：</p>
+<script type="math/tex; mode=display">
+p(x=a|\theta)=C_b^a\theta^{a}(1-\theta)^{(b-a)} \qquad(3)</script><p>由于式 $(3)$ 中的 $\theta$ 实际上是满足式 $(2)$ 中的分布 (<em>注意，这里 $\theta$ 虽然仍然是一个分布，但是我们在这一步假设它是已知的</em>)，代入后可以算出 $a$ 次完播的概率为 $\theta$ 取所有可能值时式 $(3)$ 的积分：</p>
+<script type="math/tex; mode=display">
+p(x=a)=\int_0^1 p(x=a;\theta)p(\theta)d\theta \qquad(4)</script><p>这里我们要用最基础的贝叶斯公式，来基于初始的视频质量评估和增量收集来的统计数据，去修正我们在式 $(2)$ 中做出的视频质量评估，得到一个更加可靠的估计。贝叶斯公式如下：</p>
+<script type="math/tex; mode=display">
+p(\theta;X)=\frac{p(X;\theta)p(\theta)}{p(X)} \qquad(5)</script><p>其中，$p(\theta)$ 是我们对这个视频质量的初始评估，即先验分布，用式 $(2)$ 来计算；$p(X;\theta)$ 表示我们基于初始的评估结果，进一步估计事件 $X$ 发生的概率，即似然估计，用式 $(3)$ 来计算；$p(X)$ 表示 $\theta$ 取不同值时事件 $X$ 发生的概率之和，主要是用于做归一化，用式 $(4)$ 来计算；$p(\theta;X)$ 则表示基于先验分布和似然估计，得到的后验分布。</p>
+<p>全部代入后，我们可以得到下面的简单推导：</p>
+<script type="math/tex; mode=display">
+\begin{align}
+p(\theta;x=a)
+&=\frac{p(x=a;\theta)p(\theta)}{\int_0^1 p(x=a;\theta)p(\theta)d(\theta)}\\
+&=\frac{C_b^a\theta^{a}(1-\theta)^{(b-a)} \frac{1}{B(\alpha,\beta)}\theta^{\alpha-1}(1-\theta)^{\beta-1}}{\int_0^1 C_b^a\theta^{a}(1-\theta)^{(b-a)}\frac{1}{B(\alpha,\beta)}\theta^{\alpha-1}(1-\theta)^{\beta-1}d\theta}\\
+&=\frac{\theta^{\alpha+a-1}(1-\theta)^{\beta+b-a-1}}{\int_0^1\theta^{\alpha+a-1}(1-\theta)^{\beta+b-a-1}d\theta}\\
+&=\frac{1}{B(\alpha+a,\beta+b-a)}\theta^{\alpha+a-1}(1-\theta)^{\beta+b-a-1}\\
+&=Beta(\theta;\alpha+a,\beta+b-a)
+\end{align} \qquad(6)</script><p>也就是说，经过了这一轮的推荐以后，我们对这个视频的质量评估仅仅使模型的参数发了变化，而模型的形式不变，仍然为 <strong>Beta</strong> 分布！至此，我们终于触及本文的核心概念：共轭性。</p>
+<blockquote>
+<p> <strong>模型的先验分布与后验分布具有相同的函数形式，这个性质就叫做共轭性。</strong></p>
+</blockquote>
+<h3 id="共轭性"><a href="#共轭性" class="headerlink" title="共轭性"></a>共轭性</h3><p>共轭性给我们带来了什么样的好处呢？比较式 $(6)$ 和式 $(2)$，我们发现，在观察到 $b$ 次推荐中有 $a$ 次完播事件后，我们可以简单的将模型从 $Beta(\theta;\alpha,\beta)$ 更新为 $Beta(\theta;\alpha+a,\beta+b-a)$，即我们只需要更新如下模型参数：</p>
+<script type="math/tex; mode=display">
+\begin{cases}\begin{align}
+\alpha&=\alpha+a \\
+\beta&=\beta+b-a
+\end{align}\end{cases}</script><p>它的最大意义在于简化了模型更新的过程，使得模型更新的实时性得到了保证。</p>
+<p>一开始，我们基于先验知识对视频质量进行建模，但是由于数据量较少，我们对视频质量的估计置信度较低；随着用户反馈的数据越来越多，我们可以直接基于这些新增的数据去快速更新模型的参数；随着参数数值的增大，我们对视频质量的估计置信度越来越高，直到我们已经有充足的把握认定这个视频是不是高质量视频。</p>
+<p>这里的置信度还体现在，当数据量较少的时候，少量的观测结果就会导致我们对视频质量评估发生巨大的变化；而当数据量充足的时候，即使再收集到很多数据，也很难改变我们的评估。</p>
+<h3 id="Take-aways"><a href="#Take-aways" class="headerlink" title="Take-aways"></a>Take-aways</h3><p>至此，我们用视频质量评估的例子说明了共轭性和共轭分布是什么含义。一些关键点总结如下：</p>
+<ol>
+<li>共轭性是指模型的先验分布和后验分布有相同的形式，满足共轭性的分布称为共轭分布。例如：<strong>Beta</strong> 分布与二项分布是共轭分布，且 <strong>Beta</strong> 分布是 $\theta$ 的共轭先验；</li>
+<li>共轭性极大的方便了我们基于增量观测的数据对模型进行更新；</li>
+<li>在推导共轭性的时候，我们使用了贝叶斯公式，总结起来就是：后验分布=先验分布*似然函数/归一化因子；</li>
+</ol>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/统计/" rel="tag"># 统计</a>
+          
+            <a href="/tags/概率/" rel="tag"># 概率</a>
+          
+            <a href="/tags/分布/" rel="tag"># 分布</a>
+          
+            <a href="/tags/贝叶斯/" rel="tag"># 贝叶斯</a>
+          
+            <a href="/tags/先验/" rel="tag"># 先验</a>
+          
+            <a href="/tags/后验/" rel="tag"># 后验</a>
+          
+            <a href="/tags/共轭/" rel="tag"># 共轭</a>
+          
+            <a href="/tags/Beta分布/" rel="tag"># Beta分布</a>
+          
+            <a href="/tags/二项分布/" rel="tag"># 二项分布</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/08/10/feature-selection-kendall/" rel="next" title="常用的特征选择方法之 Kendall 秩相关系数">
+                <i class="fa fa-chevron-left"></i> 常用的特征选择方法之 Kendall 秩相关系数
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">古月残辉</p>
+              <p class="site-description motion-element" itemprop="description">总结心得</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">18</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">7</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">46</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:guyuecanhui@icloud.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#问题背景"><span class="nav-number">1.</span> <span class="nav-text">问题背景</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型假设-先验分布"><span class="nav-number">2.</span> <span class="nav-text">模型假设 (先验分布)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#更新模型-后验分布"><span class="nav-number">3.</span> <span class="nav-text">更新模型 (后验分布)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#共轭性"><span class="nav-number">4.</span> <span class="nav-text">共轭性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Take-aways"><span class="nav-number">5.</span> <span class="nav-text">Take-aways</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古月残辉</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">28.5k</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: '6du4Ppc2TvUuhcccRHSDNH2v-gzGzoHsz',
+        appKey: 'zOKNml4W1Bq3OTzEuLt5hUjI',
+        placeholder: '感谢阅读！欢迎评论！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
