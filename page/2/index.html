@@ -297,6 +297,226 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/05/10/simrankpp/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/10/simrankpp/" itemprop="url">从 SimRank 到 SimRank++</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-10T22:42:18+08:00">
+                2019-05-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/10/simrankpp/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/10/simrankpp/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <h2 id="从-SimRank-到-SimRank"><a href="#从-SimRank-到-SimRank" class="headerlink" title="从 SimRank 到 SimRank++"></a>从 SimRank 到 SimRank++</h2><p>上一篇博客<a href="https://guyuecanhui.github.io/2019/04/29/simrank/">《SimRank与视频相似度计算》</a> 介绍了 <strong>SimRank</strong>$^{[1]}$ 及其在视频推荐中的应用，这一篇再谈谈 <strong>SimRank++</strong>。顾名思义，<strong>SimRank++</strong> 是在 <strong>SimRank</strong> 的基础上做了一些优化，在文献 [2] 中提出时是为了解决搜索词改写的问题，本质上也就是计算搜索词的相似度。作者发现，当需要考虑二部图的边权信息时，原始的 <strong>SimRank</strong> 模型难以评估物品间相似度的可信度，这篇博客从视频推荐的角度来阐释作者的优化点。</p>
+<h3 id="从用户到用户群"><a href="#从用户到用户群" class="headerlink" title="从用户到用户群"></a>从用户到用户群</h3><p>由于我们影片的观众量级在千万级，而影片的数量在十万级，因此使用 <strong>SimRank</strong> 模型来计算视频相似度时，最大的计算和存储瓶颈在于<code>用户相似矩阵</code>、<code>用户-视频转移矩阵</code>及<code>视频-用户转移矩阵</code>。但是从使用场景上来讲，我们在这里实际上并不需要度量用户之间的相似度（尽管它们可以用来做用户协同推荐），用户仅仅是用来传递视频间的相似度。因此，为了减少计算和存储的开销，我们可以对用户进行聚类，使用用户组来代替用户完成视频相似度的传递。</p>
+<p>基于这个想法，我们可以使用各种聚类的方法：按用户性别、年龄、地域等；我是直接基于历史行为进行用户聚类。具体的做法是基于用户最近 $N$ 天的播放、收藏、分享等行为生成用户的表征向量（可以用 AutoEncoder、PCA 等方法），然后基于表征向量执行 KMeans（直接 KMeans 可能跑不出来），这里的用户群数量需要根据实际场景调试，我们希望类内最大距离越小越好。然后再将用户的行为聚合到用户组，例如有效播放次数累加、总播放时长的累加、总播放占比的累加、平均 CTR 等。这样我们就从<code>用户-视频二部图</code>切换到了<code>用户组-视频</code>二部图，整个网络的规模降低了 2 个数量级。</p>
+<h3 id="SimRank-的优化"><a href="#SimRank-的优化" class="headerlink" title="SimRank++ 的优化"></a>SimRank++ 的优化</h3><p>我们将用户聚成了用户组，丢失了大量的网络信息，虽然用户组作为网络中的一个节点，我们看不出它的出边是来自哪些用户，但是好在我们保留了这个组里有多少用户看了某个视频。而由于这一组用户又是相似的，因此我们期望通过充分利用边权来最小化网络信息的丢失。</p>
+<p><strong>SimRank++</strong> 正好满足我们的需求，它在 <strong>SimRank</strong> 的基础上增加了两项优化：</p>
+<h4 id="1-两个节点共同节点越多，则这两个节点相似度的可信度越高"><a href="#1-两个节点共同节点越多，则这两个节点相似度的可信度越高" class="headerlink" title="1. 两个节点共同节点越多，则这两个节点相似度的可信度越高"></a>1. 两个节点共同节点越多，则这两个节点相似度的可信度越高</h4><p>这一条很容易理解，如果很多人同时看了两部视频，那这两部视频的相似度也就越可信（注意，共同观看越多并不意味着相似度越高）。例如下图所示，视频 $v_1,v_2$ 与 $v_3,v_4$ 相比同时被更多的用户组同时观看，因此 $v_1,v_2$ 根据 <strong>SimRank</strong> 模型算出来的相似度应该比 $v_3,v_4$ 的相似度更可信。</p>
+<img src="/2019/05/10/simrankpp/group-watch-1.png" title="共同节点越多，相似度可信度越高">
+<p>我们用 $E(i,j)$ 来表示节点 $i,j$ 相似度的可信度，论文 [2] 中推荐使用 $E<em>v(v_i,v_j)=\sum</em>{k=1}^{|I(v_i)\cap I(v_j)|} \frac{1}{2^k}$ 或者 $E_v(v_i,v_j)=1-e^{|I(v_i)\cap I(v_j)|}$ 来评估该权重（用户侧的同理），则：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+s(u,u')=c_1\cdot E_u(u,u')\cdot \sum_{i\in O(u)}\sum_{j\in O(u')}W_{uv}(u,i)\cdot W_{uv}(u',j)\cdot s(i, j) \\
+s(v,v')=c_2\cdot E_v(v,v')\cdot \sum_{i\in I(v)}\sum_{j\in I(v')}W_{vu}(v,i)\cdot W_{vu}(v',j)\cdot s(i, j)
+\end{cases} \qquad (1)</script><h4 id="2-节点边权越大、差异越小，则它的邻居节点相似度的权重越高"><a href="#2-节点边权越大、差异越小，则它的邻居节点相似度的权重越高" class="headerlink" title="2. 节点边权越大、差异越小，则它的邻居节点相似度的权重越高"></a>2. 节点边权越大、差异越小，则它的邻居节点相似度的权重越高</h4><p>如下图所示，我们用用户播放数来表示边权（如上所述，并非只有这一种权重表示方法）。不考虑边权时，$s(v_1,v_2)$ 和 $s(v_3,v_4)$ 完全相同。但是实际上，由于用户组 1 中有 100 个人看了 $v_1$ 和 $v_2$，可以认为用户组 1 中很多人都同时喜欢 $v_1,v_2$；而用户组 2 中有 100 个人看了 $v_3$，但只有 1 个人看了 $v_4$，因此 $v_3$ 和 $v_4$ 显然相似度应该比 $v_1,v_2$ 的低。</p>
+<img src="/2019/05/10/simrankpp/group-watch-2.png" title="边权越大、差异越小，相似度越高">
+<p>我们用新的权重 $P(i,j)$ 来表示节点 $i,j$ 的相似度传导权重，则：</p>
+<script type="math/tex; mode=display">
+P(i,j)=e^{-var(j)}\frac{w(i,j)}{\sum_{k\in N(i)}w(i,k)}\quad (2)</script><p>其中，$e^{-var(i)}$ 用来度量节点 $i$ 的边权差异，边权差异越大，该系数越小；$\frac{w(i,j)}{\sum_{k\in N(i)}w(i,k)}$ 则是用来计算归一化的权重。</p>
+<h3 id="SimRank-模型的矩阵描述"><a href="#SimRank-模型的矩阵描述" class="headerlink" title="SimRank++ 模型的矩阵描述"></a>SimRank++ 模型的矩阵描述</h3><p>基于式 (1) 和 式 (2)，我们可以写出 <strong>SimRank++</strong> 的矩阵描述：</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+S_u^{k+1} = c_1\cdot E_u\circ P_{vu}^T\cdot S_v^k \cdot P_{vu} + (I - diag(c_1\cdot E_u\circ P_{vu}^T\cdot S_v^k \cdot P_{vu})) \\
+S_v^{k+1} = c_2\cdot E_v\circ P_{uv}^T\cdot S_u^k \cdot P_{uv} + (I-diag(c_2\cdot E_v\circ P_{uv}^T\cdot S_u^k \cdot P_{uv}))
+\end{cases}\quad (3)</script><p>其中，</p>
+<script type="math/tex; mode=display">
+\begin{cases}
+E_u(u,u')=1-e^{-|O(u)\cap O(u')|}\\
+E_v(v,v')=1-e^{-|I(v)\cap I(v')|}
+\end{cases}\quad (4)</script><script type="math/tex; mode=display">
+\begin{cases}
+P_{uv}(u,v)=e^{-var(v)}\frac{w(u,v)}{\sum_{i\in O(u)}w(u,i)} \\
+P_{vu}(v,u)=e^{-var(u)}\frac{w(v,u)}{\sum_{i\in I(v)}w(v,i)}
+\end{cases} \qquad(5)</script><p>但是使用数据进行验证时，发现该模型对用户聚类的效果和权重的设置十分敏感，这两项没调好的话，很容易导致算出来的视频相似列表趋同或者有其他的问题。具体来说，用户聚类的原则是类内用户的行为越相似越好；权重的话则没有很明显的规律，需要根据业务场景来尝试了。</p>
+<h3 id="发散讨论：扩散算法"><a href="#发散讨论：扩散算法" class="headerlink" title="发散讨论：扩散算法"></a>发散讨论：扩散算法</h3><p>前几天跟其他同学交流的时候，有人提过之前做过用热传导算法来算用户的个性化推荐结果，据说效果也很不错。这里顺便扒一扒热传导算法和 <strong>SimRank</strong> 算法的区别和联系。</p>
+<p>首先，它们都属于扩散算法，都是基于对物理世界现象的观察和模拟。典型的扩散有两类：一类是物质或者能量的扩散，满足守恒律，常称作为<strong>物质扩散</strong>，最终稳定下来后，总量是不变的；另一类是热的扩散，一般由一个或多个恒温热源驱动，不满足守恒律，常被称作为<strong>热传导</strong>。SimRank 是属于热传导（物品与自己的相似度恒定为 1）。</p>
+<p>相比而言，物质扩散倾向于推荐比较流行的物品，而热传导倾向于推荐比较冷门的物品。更详细的讨论可以参考文献 [3]。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Jeh, G., &amp; Widom, J. (2002, July). SimRank: a measure of structural-context similarity. In <em>Proceedings of the eighth ACM SIGKDD international conference on Knowledge discovery and data mining</em> (pp. 538-543). ACM.</p>
+<p>[2] Antonellis, I., Molina, H. G., &amp; Chang, C. C. (2008). Simrank++: query rewriting through link analysis of the click graph. <em>Proceedings of the VLDB Endowment</em>, <em>1</em>(1), 408-421.</p>
+<p>[3] 推荐算法整理 — 扩散算法. <em><a href="https://www.zybuluo.com/chanvee/note/21053" target="_blank" rel="noopener">https://www.zybuluo.com/chanvee/note/21053</a>.</em></p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/04/29/simrank/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2278,205 +2498,11 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2018/02/21/word2vec/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="古月残辉">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="HCigmoid">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/21/word2vec/" itemprop="url">白话 Word2Vec</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-21T22:00:53+08:00">
-                2018-02-21
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
-                    <span itemprop="name">推荐系统</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/21/word2vec/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/21/word2vec/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.8k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  6
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>这两天学习了下Word2Vector的理论和实现，原理什么的网上很多，就不搬运了，推荐看参考文献[1-3]，这里主要讲下我对几个关键点的理解。</p>
-<h2 id="1、词向量的意义"><a href="#1、词向量的意义" class="headerlink" title="1、词向量的意义"></a>1、词向量的意义</h2><p>为什么要生成词向量，或者说词向量解决原来哪个领域什么方法的哪些不足？我的理解是这玩意主要就是为了解决如何让计算机理解自然语言中单词含义的问题。当然，现在随着 word2vec 用法的推广，这里已经不仅仅是自然语言中单词的理解了，还可以是各种现实生活中计算机本来没有办法理解的概念，比如用户的观影行为、图片的主题等等，把这些计算机一脸蒙逼的东西转换为它们最喜欢的浮点向量，然后把理解这个计算机一脸蒙逼的行为转换成向量的运算，这样实际就是完成了人类世界各种概念向计算机世界的映射/翻译，为人工智能占领世界打下了坚实的基础（扯远了）。那词向量比之前的方法好在哪呢？给我印象最深的就是含义相近的词能用距离相近的向量来表示！至于其他的一些数学处理上的好处，感觉只是副产品。文献 [1-2] 提供了一种能专门训练词向量的方法，一份好的词向量是可以直接用于翻译等应用的，所以感觉当我们自己数据量不足的时候，可以考虑直接用别人训练出来的词向量。</p>
-<h2 id="2、训练过程"><a href="#2、训练过程" class="headerlink" title="2、训练过程"></a>2、训练过程</h2><p>Mikolov 等人提出了两种模型（CBOW 和 Skip-gram）、两种目标函数（Hierarchical Softmax, HS 和 Negative Sampling, NS），所以乘一下就是4个训练过程，但是其实理解起来都是差不多的。</p>
-<p>先整体讲一下它们的关系，CBOW 模型是根据一个词 $w$ 的上下文 $U$ 来预测 $w$，Skip-gram是 根据一个词 $w$ 来预测上下文 $U$。初看时我是一脸蒙逼的，预测啥？后来才发现，实际上这里讲预测有点歧义，就是一个训练网络参数的过程。下文的理解需要有点基础知识，比如Huffman 编码之类的。</p>
-<h3 id="基于-HS-的-CBOW-模型和-Skip-gram-模型"><a href="#基于-HS-的-CBOW-模型和-Skip-gram-模型" class="headerlink" title="基于 HS 的 CBOW 模型和 Skip-gram 模型"></a>基于 HS 的 CBOW 模型和 Skip-gram 模型</h3><p>基于HS的CBOW模型实际上就是给定一个词 $w$ 的上下文 $U$ 中所有词的词向量 $v_u$ （$u \in U$），输出一个 Huffman 树，使得网络根据这些 $v_u$ 的和 $x_U$ 能顺着这个 Huffman 树一路找到词 $w$。这里的 Huffman 树是根据所有词的词频生成的，它的每个叶节点表示一个词 $i$，并记录该词的词向量 $v_i$，非叶节点针对每个单词 $w$ 都会生成一个参数向量 $\theta_w$）。那什么叫顺着 Huffman 树一路找到词 $w$呢？我们知道 Huffman 树是一棵二叉树，在任何一个非叶节点 $j$ 决定是往左走还是往右走的时候，实际上是用 $x_U^T\cdot \theta_w^j$ 来决定的，这类似于二分类问题，因此需要加一个激活函数（用的是 sigmoid 函数），但是这不重要，重要的是它要根据 $x_U^T\cdot \theta_w^j$ 来判断是往左走还是往右走。因此，整个 CBOW 模型实际上就是在计算如何给定 $x_U$ 来在 Huffman 树上一步一步找到 $w$ 所在的叶节点。这个框架定了，剩下就是把这个思路转换成优化方程，然后用 GD 的方法来迭代求解，求解的过程中会不断更新 $\theta_w$ 和 $v_u$。注意，CBOW 模型虽然说是根据 $w$ 的上下文 $U$ 来预测 $w$，但是它更新的是 $w$ 的上下文 $U$ 中词的词向量。</p>
-<p>基于 HS 的 Skip-gram 模型也是一样的道理，但是它的输入是 $v_w$，目标是在 Huffman 树中找到 $w$ 的所有上下文 $u$ 所在的叶节点（把每次查找都乘起来就 OK 了）。然后又是一堆计算，得到一个迭代方程组，来更新 $\theta_u$ 和 $v_w$（跟上面的类似，$\theta_u^j$ 是用来控制根据 $v_w$ 决定在每个非叶节点 $j$ 是往左走还是往右走才能找到 $u$ 所在的叶节点）。</p>
-<p>基于 HS 的目标函数有一个小问题，就是所有非叶节点 $i$ 会对所有的词 $w$ 训练参数向量 $\theta_w^i$，因此需要很大的数据量，而且存储量也很大。基于 NS 的目标函数就能大大减少参数的个数，下面详细讨论下。</p>
-<h3 id="基于-NS-的-CBOW-模型和-Skip-gram-模型"><a href="#基于-NS-的-CBOW-模型和-Skip-gram-模型" class="headerlink" title="基于 NS 的 CBOW 模型和 Skip-gram 模型"></a>基于 NS 的 CBOW 模型和 Skip-gram 模型</h3><p>前面讲了，基于 HS 的模型生成的是 Huffman 树，每次训练是最大化找到某个词（根据上下文找一个词，或者根据词找它的上下文）的概率。而基于 NS 的模型则是最大化正确分类某个词的概率。前面提到了，在 Huffman 树上往下走的时候，相当于是一个二分类问题，那为什么不用更加直观的分类呢？</p>
-<p>什么是更直观的分类呢？给定一个样本，比如说一个词 $w$ 及其上下文 $U$，这时候再从词库里随便挑一些小伙伴出来，目标就是区分 $w$ 和这些新伙伴谁是 $U$ 的那个他（CBOW 模型），或者区分 $U$ 和这些新伙伴，谁是 $w$ 的上下文（Skip-gram 模型）？当然，这些小伙伴也不是随机选的，用的是随机负采样（所以叫 Negtive Sampling），本质上就是一种带权采样，也就是出现次数越多的词采到的概率越大。</p>
-<p>基于 NS 的 CBOW 模型输入还是一个词 $w$ 的上下文 $U$ 中所有词的词向量之和 $x_U$，以及随机选的小伙伴们 $F$，分类是对每个 $p\in {w} \cup F$，训练一个参数向量 $\theta_p$，然后根据 $x_U^T\cdot \theta_p$（借助 sigmoid 函数分类）来判断 $p$ 到底是不是 $w$？因此设置的目标函数就是最大化分对的概率同时最小化分错的概率，然后再用 GD 列出一堆迭代方程来求解。从这里可以看到，HS 是对 Huffman 树上到 $w$ 的每个非叶节点训练一个参数向量，而这里是对 $p\in {w} \cup F$ 训练参数向量，参数向量的个数少了很多（$(N-1)\cdot N$ vs. $N$），但是训练时间却不一定。文献 [2] 给出的数据是 $\mid F\mid=5$ 时，NS 方法快，$\mid F\mid=15$ 时，HS 方法快。</p>
-<p>基于 NS 的 Skip-gram 模型也是类似，就是给定 $w$ 的词向量及其上下文，再选一群小伙伴，最大化把 $w$ 的上下文正确分出来并且最小化分错的概率。</p>
-<h2 id="3、词向量的应用"><a href="#3、词向量的应用" class="headerlink" title="3、词向量的应用"></a>3、词向量的应用</h2><h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Mikolov T, Chen K, Corrado G, et al. Efficient estimation of word representations in vector space[J]. arXiv preprint arXiv:1301.3781, 2013.<br>[2] Mikolov T, Sutskever I, Chen K, et al. Distributed representations of words and phrases and their compositionality[C]//Advances in neural information processing systems. 2013: 3111-3119.<br>[3] peghoty. word2vec 中的数学原理详解. <a href="http://www.cnblogs.com/peghoty/p/3857839.html" target="_blank" rel="noopener">http://www.cnblogs.com/peghoty/p/3857839.html</a>.</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="extend next" rel="next" href="/page/3/"><i class="fa fa-angle-right"></i></a>
   </nav>
 
 
@@ -2522,7 +2548,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">20</span>
+                  <span class="site-state-item-count">21</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2544,7 +2570,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">49</span>
+                  <span class="site-state-item-count">50</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2612,7 +2638,7 @@ c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">30.5k</span>
+    <span title="Site words total count">30.6k</span>
   
 </div>
 

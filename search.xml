@@ -1,9 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[paper-2019-google-mmoe-bias]]></title>
+    <url>%2F2019%2F11%2F16%2Fpaper-2019-google-mmoe-bias%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
     <title><![CDATA[MMoE 论文精读]]></title>
     <url>%2F2019%2F11%2F16%2Fpaper-2018-google-mmoe%2F</url>
-    <content type="text"><![CDATA[论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” the 24th ACM SIGKDD International Conference ACM, 2018. 本文是 Google 发表在 KDD 2018 的论文，提出了一种多专家子网的结构，显式的从数据中学习多个任务之间的关系，并能够通过门限网络对每个任务进行单独的优化。与传统的 share-bottom 结构相比，这种结构在任务之间关联较弱时，仍然能够取得比较好的效果。 近年来，在推荐领域逐渐引入多任务学习来减轻一些使用单个模型指标可能带来的负面影响。例如在视频推荐中，只考虑点击转化率时，会倾向推荐包含标题党、擦边海报的视频；只考虑完成度时，会倾向推荐时间比较短的视频等等。而这些倾向都会影响用户体验，并且可能导致业务长期目标的下降。因此，大家开始尝试引入多个相互关联但又不一致的目标来进行综合考虑建模，并且实践表示，多任务学习在推荐系统中能够提升上下文推荐的效果。 传统的基于神经网络的多任务学习大致分为两类，一共是底层参数共享，即共享输入到中间层的参数，上层再分别对各个任务建模；一类是参数软共享，并不显式的共享底层参数，而是通过正则等对多个任务的参数进行相互约束。目前看到的比较多的是第一种，如下图 (a) 所示。而这种方式一般都假设多个任务的数据分布和目标都是相似的，当任务间差异变大时，对某些任务的预测性能就会产生较大的影响。然而实际任务的相关性都是难以度量的，因此效果实际上无法事先评估，只能靠不断尝试。 本文的作者受到 MoE 网络$^{[1]}$的启发，在多任务学习中引入 MoE 层，来显式的对多个任务的关系进行建模，或者理解成学习所有任务的不同方面；再对每个任务学习一个门限网络，这个门限网络可以理解成这个任务在各个方面的特点。整体结构如上图 (c) 所示。其中，每个共享的子网称为一个 Expert，文章中的 Expert 都使用前馈网络，它的输入是原始特征（也可以是一个共享的隐含层，直接使用原始特征效果会更好，但是维度可能过高），输出为各个 Gate 的权重分布（softmax），可以理解成是这个 Expert 对不同任务的影响程度。研究已经表明在 DNN 中，使用这种集成模型和集成子网络的方式有助于提高模型的性能。 文章在公开数据集和 Google 数据上进行了大量的对比实验，结果表明： MMoE 在任务相关性变弱的情况下，性能影响较小； MMoE 的训练误差收敛更快更稳定，即可训练性更好；这也与近年研究得出的结论一致，即 Modulation and gating mechanisms can improve the trainability in training non-convex deep nurual networks。 参考文献 Jacobs, Robert A. , et al. “Adaptive Mixtures of Local Experts.” Neural Computation 3.1(1991):79-87. keras-mmoe: https://github.com/drawbridge/keras-mmoe.]]></content>
+    <content type="text"><![CDATA[论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” the 24th ACM SIGKDD International Conference ACM, 2018. 本文是 Google 发表在 KDD 2018 的论文，不过感觉少了一些工程的加持，内容略显单薄。文章主要提出了一种多专家子网的结构，显式的从数据中学习多个任务之间的关系，并能够通过门限网络对每个任务进行单独的优化。与传统的 share-bottom 结构相比，这种结构在任务之间关联较弱时，仍然能够取得比较好的效果。 近年来，在推荐领域逐渐引入多任务学习来减轻一些使用单个模型指标可能带来的负面影响。例如在视频推荐中，只考虑点击转化率时，会倾向推荐包含标题党、擦边海报的视频；只考虑完成度时，会倾向推荐时间比较短的视频等等。而这些倾向都会影响用户体验，并且可能导致业务长期目标的下降。因此，大家开始尝试引入多个相互关联但又不一致的目标来进行综合考虑建模，并且实践表示，多任务学习在推荐系统中能够提升上下文推荐的效果。 传统的基于神经网络的多任务学习大致分为两类，一共是底层参数共享，即共享输入到中间层的参数，上层再分别对各个任务建模；一类是参数软共享，并不显式的共享底层参数，而是通过正则等对多个任务的参数进行相互约束。目前看到的比较多的是第一种，如下图 (a) 所示。而这种方式一般都假设多个任务的数据分布和目标都是相似的，当任务间差异变大时，对某些任务的预测性能就会产生较大的影响。然而实际任务的相关性都是难以度量的，因此效果实际上无法事先评估，只能靠不断尝试。 本文的作者受到 MoE 网络$^{[1]}$的启发，在多任务学习中引入 MoE 层，来显式的对多个任务的关系进行建模，或者理解成学习所有任务的不同方面；再对每个任务学习一个门限网络，这个门限网络可以理解成这个任务在各个方面的特点。整体结构如上图 (c) 所示。其中，每个共享的子网称为一个 Expert，文章中的 Expert 都使用前馈网络，它的输入是原始特征（也可以是一个共享的隐含层，直接使用原始特征效果会更好，但是维度可能过高），输出为各个 Gate 的权重分布（softmax），可以理解成是这个 Expert 对不同任务的影响程度。研究已经表明在 DNN 中，使用这种集成模型和集成子网络的方式有助于提高模型的性能。 文章在公开数据集和 Google 数据上进行了大量的对比实验，结果表明： MMoE 在任务相关性变弱的情况下，性能影响较小，因此实用性也更强； MMoE 的训练误差收敛更快更稳定，即可训练性更好；这也与近年研究得出的结论一致，即 Modulation and gating mechanisms can improve the trainability in training non-convex deep nurual networks。 参考文献 Jacobs, Robert A. , et al. “Adaptive Mixtures of Local Experts.” Neural Computation 3.1(1991):79-87. keras-mmoe: https://github.com/drawbridge/keras-mmoe.]]></content>
       <categories>
         <category>论文精读</category>
       </categories>
@@ -11,8 +16,7 @@
         <tag>推荐</tag>
         <tag>排序</tag>
         <tag>多任务</tag>
-        <tag>样本偏差</tag>
-        <tag>数据稀疏</tag>
+        <tag>MoE</tag>
       </tags>
   </entry>
   <entry>
