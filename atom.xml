@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://guyuecanhui.github.io/"/>
-  <updated>2019-11-10T14:35:05.447Z</updated>
+  <updated>2019-11-16T03:30:11.404Z</updated>
   <id>https://guyuecanhui.github.io/</id>
   
   <author>
@@ -17,20 +17,54 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
-    <title>ESMM 论文精读</title>
-    <link href="https://guyuecanhui.github.io/2019/11/09/paper-2018-ali-esmm/"/>
-    <id>https://guyuecanhui.github.io/2019/11/09/paper-2018-ali-esmm/</id>
-    <published>2019-11-09T12:16:34.000Z</published>
-    <updated>2019-11-10T14:35:05.447Z</updated>
+    <title>MMoE 论文精读</title>
+    <link href="https://guyuecanhui.github.io/2019/11/16/paper-2018-google-mmoe/"/>
+    <id>https://guyuecanhui.github.io/2019/11/16/paper-2018-google-mmoe/</id>
+    <published>2019-11-16T01:42:59.000Z</published>
+    <updated>2019-11-16T03:30:11.404Z</updated>
     
-    <content type="html"><![CDATA[<blockquote><p>论文引用：Ma, Xiao, et al. “Entire space multi-task model: An effective approach for estimating post-click conversion rate.” The 41st International ACM SIGIR Conference on Research &amp; Development in Information Retrieval. ACM, 2018.</p></blockquote><p>本文是阿里发表在 <strong>SIGIR 2018</strong> 年的短文，主要解决了精确预估 <strong>CVR</strong> 的问题。<strong>CVR</strong> 预估是最大化场景商品交易总额 (<strong>GMV</strong>=<code>流量×点击率×转化率×客单价</code>) 的重要因子，它可以用于 <strong>OCPC</strong> 模式下动态调整出价来使平台和广告主共同受益；并且从用户体验的角度来说，准确预估的 <strong>CVR</strong> 被用来平衡用户的点击偏好与购买偏好。文章认为当前的 <strong>CVR</strong> 预估主要存在两个问题：</p><ol><li><strong>Sample Selection Bias (SSB)</strong>：当前 <strong>CVR</strong> 预估是基于 <code>点击-&gt;转化</code> 数据进行训练的，而有点击的展示数据只是所有展示数据中的一小部分 (如下图所示)，这部分数据的分布与整体的分布通常并不一致。而在实际 serving 的时候，模型又是对整个空间中的所有样本进行预测，因此模型的泛化效果会受到影响。</li><li><strong>Data Sparsity (DS)</strong>：与前一个问题的根因相同，只使用点击数据会存在严重的数据稀疏问题。</li></ol><img src="/2019/11/09/paper-2018-ali-esmm/esmm-ssb.png" title="用户展示-点击-转化行为关系示意"><p>业界也提出过一些解决这两个问题的方案：</p><ol><li><strong>SSB Solution</strong>：<strong>AMAN 方法</strong> 将所有展示未点击的数据也作为负样本进行训练，但是这种方法天然会导致 CVR 被低估 (因为对于一些展示未点击的物品，可能是因为用户并没有关注到，或者用户已经点击了其他的条目而遗漏，并非是真正不会产生转化的物品)；<strong>无偏估计方法</strong> 通过拒绝采样的方法来保证预估的 CVR 与真实的观察一致，但是这种方法在计算过程中会除以一个很小的数，因此可能导致数值不稳定的问题。</li><li><strong>DS Solution</strong>：<strong>分层建模方法</strong>使用不同的特征构建多个预估模型，然后使用 <strong>LR</strong> 等模型将这些模型的结果汇总，这种方法需要比较可靠的先验知识来构建分层模型，在数据量大的推荐场景下难以实现；<strong>过采样方法</strong>将数据量少的类别样本进行过采样，但是对采样参数十分敏感。</li></ol><p>文章在已有工作的基础上，提出使用多任务学习的框架，使用所有 <code>展示-&gt;点击-&gt;转化</code> 数据进行训练，将 <strong>CVR</strong> 预测问题转变为同时预测 <strong>CTR</strong> 和 <strong>CTCVR</strong> 的问题。由于使用所有展示样本，因此不存在 <strong>SSB</strong> 问题；在多任务学习下共享 embedding 向量，实际上是一种参数迁移学习，可以有效的解决 <strong>DS</strong> 问题。</p><p>具体来讲，将一个样本记为 $(\boldsymbol{x},y\rightarrow z)$，其中，$\boldsymbol{x}$ 表示样本特征，$y$ 表示是否点击，$z$ 表示是否转化。则：</p><script type="math/tex; mode=display">\begin{cases}pCTCVR = p(z=1,y=1|\boldsymbol{x}) = pCTR\times pCVR \\pCTR = p(y=1|\boldsymbol{x})\\pCVR = p(z=1|\boldsymbol{x},y=1)\end{cases}</script><p>由于这三个变量的自由度为 2，因此损失函数只需要计算其中两个即可。文章将损失函数设计为 <strong>CTR</strong> 和 <strong>CTCVR</strong> 的预测损失，如下所示：</p><script type="math/tex; mode=display">L(\theta_{cvr},\theta_{ctr}) = \sum_{i=1}^N l(y_i, f(\boldsymbol{x}_i;\theta_{ctr})) + \sum_{i=1}^N l(y_i\&z_i, f(\boldsymbol{x}_i;\theta_{ctr})\times f(\boldsymbol{x}_i;\theta_{cvr}))</script><p>整体网络架构如下图所示：</p><img src="/2019/11/09/paper-2018-ali-esmm/esmm-architect.png" title="ESMM 网络整体架构"><p>可以看到，两个任务共享底层 embedding，同时通过顶层的 <strong>Dot</strong> 算子进行关联。文章没有将 <strong>pCVR</strong> 作为最终输出的结果，是因为 $pCVR = \frac{pCTCVR}{pCTR}$，如果将 <strong>pCVR</strong> 作为最终输出，则最后一步为除法算子，而除法具有数值不稳定性，可能会得出 $pCVR&gt;1$ 的情况，因此将 <strong>pCTCVR</strong> 作为最终输出的结果，这样能够保证 <strong>pCVR</strong> 的结果在 $[0,1]$ 范围内，避免了数值不稳定的问题。</p><p>文章在淘宝数据上与现有解决 <strong>SSB</strong> 和 <strong>DS</strong> 问题的几个策略进行了对比验证，发现基于 <strong>ESSM</strong> 模型的 <strong>CVR</strong> 和 <strong>CTCVR</strong> 预估任务的 <strong>AUC</strong> 是最高的。而且文章还发表了一个 mini 公开数据集，诚意满满~</p><h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol><li><strong>XDL ESSM</strong>: <a href="https://github.com/alibaba/x-deeplearning/tree/master/xdl-algorithm-solution/ESMM" target="_blank" rel="noopener">https://github.com/alibaba/x-deeplearning/tree/master/xdl-algorithm-solution/ESMM</a></li><li><strong>完整空间多任务模型：CVR预估的有效方法</strong>: <a href="http://xudongyang.coding.me/esmm/" target="_blank" rel="noopener">http://xudongyang.coding.me/esmm/</a></li><li><strong>构建分布式Tensorflow模型系列之CVR预估案例ESMM模型</strong>: <a href="http://xudongyang.coding.me/esmm-1/" target="_blank" rel="noopener">http://xudongyang.coding.me/esmm-1/</a></li></ol>]]></content>
+    <content type="html"><![CDATA[<blockquote><p>论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” <em>the 24th ACM SIGKDD International Conference</em> ACM, 2018.</p></blockquote><p>本文是 Google 发表在 KDD 2018 的论文，提出了一种多专家子网的结构，显式的从数据中学习多个任务之间的关系，并能够通过门限网络对每个任务进行单独的优化。与传统的 share-bottom 结构相比，这种结构在任务之间关联较弱时，仍然能够取得比较好的效果。</p><p>近年来，在推荐领域逐渐引入多任务学习来减轻一些使用单个模型指标可能带来的负面影响。例如在视频推荐中，只考虑点击转化率时，会倾向推荐包含标题党、擦边海报的视频；只考虑完成度时，会倾向推荐时间比较短的视频等等。而这些倾向都会影响用户体验，并且可能导致业务长期目标的下降。因此，大家开始尝试引入多个相互关联但又不一致的目标来进行综合考虑建模，并且实践表示，多任务学习在推荐系统中能够提升上下文推荐的效果。</p><p>传统的基于神经网络的多任务学习大致分为两类，一共是底层参数共享，即共享输入到中间层的参数，上层再分别对各个任务建模；一类是参数软共享，并不显式的共享底层参数，而是通过正则等对多个任务的参数进行相互约束。目前看到的比较多的是第一种，如下图 (a) 所示。而这种方式一般都假设多个任务的数据分布和目标都是相似的，当任务间差异变大时，对某些任务的预测性能就会产生较大的影响。然而实际任务的相关性都是难以度量的，因此效果实际上无法事先评估，只能靠不断尝试。</p><img src="/2019/11/16/paper-2018-google-mmoe/mmoe.png" title="MMOE 架构比较"><p>本文的作者受到 MoE 网络$^{[1]}$的启发，在多任务学习中引入 MoE 层，来显式的对多个任务的关系进行建模，或者理解成学习所有任务的不同方面；再对每个任务学习一个门限网络，这个门限网络可以理解成这个任务在各个方面的特点。整体结构如上图 (c) 所示。其中，每个共享的子网称为一个 Expert，文章中的 Expert 都使用前馈网络，它的输入是原始特征（也可以是一个共享的隐含层，直接使用原始特征效果会更好，但是维度可能过高），输出为各个 Gate 的权重分布（softmax），可以理解成是这个 Expert 对不同任务的影响程度。研究已经表明在 DNN 中，使用这种集成模型和集成子网络的方式有助于提高模型的性能。</p><p>文章在公开数据集和 Google 数据上进行了大量的对比实验，结果表明：</p><ol><li>MMoE 在任务相关性变弱的情况下，性能影响较小；</li><li>MMoE 的训练误差收敛更快更稳定，即可训练性更好；这也与近年研究得出的结论一致，即 Modulation and gating mechanisms can improve the trainability in training non-convex deep nurual networks。</li></ol><h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol><li>Jacobs, Robert A. , et al. “Adaptive Mixtures of Local Experts.” <em>Neural Computation</em> 3.1(1991):79-87.</li><li>keras-mmoe: <a href="https://github.com/drawbridge/keras-mmoe" target="_blank" rel="noopener">https://github.com/drawbridge/keras-mmoe</a>.</li></ol>]]></content>
     
     <summary type="html">
     
       
       
         &lt;blockquote&gt;
-&lt;p&gt;论文引用：Ma, Xiao, et al. “Entire space multi-task model: An effective approach for estimating post-click conversion rate.” The 
+&lt;p&gt;论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” &lt;em&gt;the 24
+      
+    
+    </summary>
+    
+      <category term="论文精读" scheme="https://guyuecanhui.github.io/categories/%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/"/>
+    
+    
+      <category term="推荐" scheme="https://guyuecanhui.github.io/tags/%E6%8E%A8%E8%8D%90/"/>
+    
+      <category term="排序" scheme="https://guyuecanhui.github.io/tags/%E6%8E%92%E5%BA%8F/"/>
+    
+      <category term="多任务" scheme="https://guyuecanhui.github.io/tags/%E5%A4%9A%E4%BB%BB%E5%8A%A1/"/>
+    
+      <category term="样本偏差" scheme="https://guyuecanhui.github.io/tags/%E6%A0%B7%E6%9C%AC%E5%81%8F%E5%B7%AE/"/>
+    
+      <category term="数据稀疏" scheme="https://guyuecanhui.github.io/tags/%E6%95%B0%E6%8D%AE%E7%A8%80%E7%96%8F/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>ESMM 论文精读</title>
+    <link href="https://guyuecanhui.github.io/2019/11/09/paper-2018-ali-esmm/"/>
+    <id>https://guyuecanhui.github.io/2019/11/09/paper-2018-ali-esmm/</id>
+    <published>2019-11-09T12:16:34.000Z</published>
+    <updated>2019-11-16T01:47:27.694Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>论文引用: Ma, Xiao, et al. “Entire space multi-task model: An effective approach for estimating post-click conversion rate.” The 41st International ACM SIGIR Conference on Research &amp; Development in Information Retrieval. ACM, 2018.</p></blockquote><p>本文是阿里发表在 <strong>SIGIR 2018</strong> 年的短文，主要解决了精确预估 <strong>CVR</strong> 的问题。<strong>CVR</strong> 预估是最大化场景商品交易总额 (<strong>GMV</strong>=<code>流量×点击率×转化率×客单价</code>) 的重要因子，它可以用于 <strong>OCPC</strong> 模式下动态调整出价来使平台和广告主共同受益；并且从用户体验的角度来说，准确预估的 <strong>CVR</strong> 被用来平衡用户的点击偏好与购买偏好。文章认为当前的 <strong>CVR</strong> 预估主要存在两个问题：</p><ol><li><strong>Sample Selection Bias (SSB)</strong>：当前 <strong>CVR</strong> 预估是基于 <code>点击-&gt;转化</code> 数据进行训练的，而有点击的展示数据只是所有展示数据中的一小部分 (如下图所示)，这部分数据的分布与整体的分布通常并不一致。而在实际 serving 的时候，模型又是对整个空间中的所有样本进行预测，因此模型的泛化效果会受到影响。</li><li><strong>Data Sparsity (DS)</strong>：与前一个问题的根因相同，只使用点击数据会存在严重的数据稀疏问题。</li></ol><img src="/2019/11/09/paper-2018-ali-esmm/esmm-ssb.png" title="用户展示-点击-转化行为关系示意"><p>业界也提出过一些解决这两个问题的方案：</p><ol><li><strong>SSB Solution</strong>：<strong>AMAN 方法</strong> 将所有展示未点击的数据也作为负样本进行训练，但是这种方法天然会导致 CVR 被低估 (因为对于一些展示未点击的物品，可能是因为用户并没有关注到，或者用户已经点击了其他的条目而遗漏，并非是真正不会产生转化的物品)；<strong>无偏估计方法</strong> 通过拒绝采样的方法来保证预估的 CVR 与真实的观察一致，但是这种方法在计算过程中会除以一个很小的数，因此可能导致数值不稳定的问题。</li><li><strong>DS Solution</strong>：<strong>分层建模方法</strong>使用不同的特征构建多个预估模型，然后使用 <strong>LR</strong> 等模型将这些模型的结果汇总，这种方法需要比较可靠的先验知识来构建分层模型，在数据量大的推荐场景下难以实现；<strong>过采样方法</strong>将数据量少的类别样本进行过采样，但是对采样参数十分敏感。</li></ol><p>文章在已有工作的基础上，提出使用多任务学习的框架，使用所有 <code>展示-&gt;点击-&gt;转化</code> 数据进行训练，将 <strong>CVR</strong> 预测问题转变为同时预测 <strong>CTR</strong> 和 <strong>CTCVR</strong> 的问题。由于使用所有展示样本，因此不存在 <strong>SSB</strong> 问题；在多任务学习下共享 embedding 向量，实际上是一种参数迁移学习，可以有效的解决 <strong>DS</strong> 问题。</p><p>具体来讲，将一个样本记为 $(\boldsymbol{x},y\rightarrow z)$，其中，$\boldsymbol{x}$ 表示样本特征，$y$ 表示是否点击，$z$ 表示是否转化。则：</p><script type="math/tex; mode=display">\begin{cases}pCTCVR = p(z=1,y=1|\boldsymbol{x}) = pCTR\times pCVR \\pCTR = p(y=1|\boldsymbol{x})\\pCVR = p(z=1|\boldsymbol{x},y=1)\end{cases}</script><p>由于这三个变量的自由度为 2，因此损失函数只需要计算其中两个即可。文章将损失函数设计为 <strong>CTR</strong> 和 <strong>CTCVR</strong> 的预测损失，如下所示：</p><script type="math/tex; mode=display">L(\theta_{cvr},\theta_{ctr}) = \sum_{i=1}^N l(y_i, f(\boldsymbol{x}_i;\theta_{ctr})) + \sum_{i=1}^N l(y_i\&z_i, f(\boldsymbol{x}_i;\theta_{ctr})\times f(\boldsymbol{x}_i;\theta_{cvr}))</script><p>整体网络架构如下图所示：</p><img src="/2019/11/09/paper-2018-ali-esmm/esmm-architect.png" title="ESMM 网络整体架构"><p>可以看到，两个任务共享底层 embedding，同时通过顶层的 <strong>Dot</strong> 算子进行关联。文章没有将 <strong>pCVR</strong> 作为最终输出的结果，是因为 $pCVR = \frac{pCTCVR}{pCTR}$，如果将 <strong>pCVR</strong> 作为最终输出，则最后一步为除法算子，而除法具有数值不稳定性，可能会得出 $pCVR&gt;1$ 的情况，因此将 <strong>pCTCVR</strong> 作为最终输出的结果，这样能够保证 <strong>pCVR</strong> 的结果在 $[0,1]$ 范围内，避免了数值不稳定的问题。</p><p>文章在淘宝数据上与现有解决 <strong>SSB</strong> 和 <strong>DS</strong> 问题的几个策略进行了对比验证，发现基于 <strong>ESSM</strong> 模型的 <strong>CVR</strong> 和 <strong>CTCVR</strong> 预估任务的 <strong>AUC</strong> 是最高的。而且文章还发表了一个 mini 公开数据集，诚意满满~</p><h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><ol><li><strong>XDL ESSM</strong>: <a href="https://github.com/alibaba/x-deeplearning/tree/master/xdl-algorithm-solution/ESMM" target="_blank" rel="noopener">https://github.com/alibaba/x-deeplearning/tree/master/xdl-algorithm-solution/ESMM</a></li><li><strong>完整空间多任务模型：CVR预估的有效方法</strong>: <a href="http://xudongyang.coding.me/esmm/" target="_blank" rel="noopener">http://xudongyang.coding.me/esmm/</a></li><li><strong>构建分布式Tensorflow模型系列之CVR预估案例ESMM模型</strong>: <a href="http://xudongyang.coding.me/esmm-1/" target="_blank" rel="noopener">http://xudongyang.coding.me/esmm-1/</a></li></ol>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;论文引用: Ma, Xiao, et al. “Entire space multi-task model: An effective approach for estimating post-click conversion rate.” The
       
     
     </summary>
