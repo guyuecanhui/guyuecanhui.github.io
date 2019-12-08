@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://guyuecanhui.github.io/"/>
-  <updated>2019-11-17T02:25:29.104Z</updated>
+  <updated>2019-12-08T15:17:18.737Z</updated>
   <id>https://guyuecanhui.github.io/</id>
   
   <author>
@@ -15,6 +15,45 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>DICM with AMS 论文精读</title>
+    <link href="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/"/>
+    <id>https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/</id>
+    <published>2019-11-24T13:50:20.000Z</published>
+    <updated>2019-12-08T15:17:18.737Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).</p></blockquote><p>本文是阿里发表在 <strong>CIKM 2018</strong> 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 <strong>CTR</strong> 预估时就能够估计用户对广告图片的喜好，从而提升 <strong>CTR</strong> 预估的准确率。由于用户在商品页面行为历史通常较为丰富，因此训练样本中会包含大量的图片特征，这些特征使用传统的 PS 架构无法有效训练，因此文章提出了 <strong>AMS</strong> (<em>Advanced Model Server</em>) 架构，能够平衡存储和通信开销，使得天级更新模型成为可能。这篇文章主要的贡献也是在工程实现方面。</p><h3 id="背景和动机"><a href="#背景和动机" class="headerlink" title="背景和动机"></a>背景和动机</h3><p>广告 <strong>CTR</strong> 预估是广告系统中至关重要的环节，传统的 (非多模态) 预估模型，主要是使用一些 <strong>ID</strong> 和交叉统计之类的特征，但是由于 <strong>ID</strong> 没有语义，我们无法判断两个 <strong>ID</strong> 是不是有相关性，因此这些模型对于出现频次少或者新出现的 <strong>ID</strong> 无法充分训练，即存在冷启动的问题。</p><p>解决冷启动问题通常会想到引入内容特征，而在电商领域，图片就是能够描述广告/商品的最直观且最受用户关注的内容特征。用户在购买商品的时候，通常会点击、浏览商品的图片，结合商品的描述、评论等其他信息来决定是否购买，因此用户曾经点击过的图片能够在很大程度上表征用户的兴趣。而用户是否点击广告，图片、标题等信息是影响最大的因素。因此，文章就考虑使用用户点击过的图片来建立用户的兴趣模型，再与广告的图片进行匹配，从而估计用户在视觉层面是否对该广告有兴趣；将这方面的估计与传统的基于 <strong>ID</strong> 等特征的估计相结合，来提升 <strong>CTR</strong> 估计的性能。基于这个思路，文章提出了 <strong>DICM</strong> (<em>Deep Image CTR Model</em>)。 </p><p>使用用户图片历史来建立用户视觉偏好主要的问题就是数据传输和存储，如果使用传统的 <strong>PS</strong> 架构，图片数据是保存在 <strong>KV Store</strong> 里（也就是参数服务器），谁用谁来查一下，而图片的数量和数据量都是相对较大的，因此这种方式十分消耗资源，并且这种方式也难以针对 <strong>CTR</strong> 预估任务对预训练的图片特征进行进一步的组合和压缩，即图片数据不是目标相关的。文章针对这个问题，提出了一种扩展 <strong>PS</strong> 架构，称为 <strong>AMS</strong> 架构。下面就详细的介绍这两方面的工作。</p><h3 id="AMS-架构"><a href="#AMS-架构" class="headerlink" title="AMS 架构"></a>AMS 架构</h3><p>基于上述分析，文章在实现 <strong>DICM</strong> 模型时，实际上是基于 <strong>AMS</strong> 架构的。<strong>AMS</strong> 架构整体如图 1 右图所示：</p><img src="/2019/11/24/paper-2018-ali-dicm/ams-architecture.png" title="AMS 架构及基于 AMS 架构实现的 DICM 模型"><p><strong>AMS</strong> 将节点分为 <strong>Worker</strong> 和 <strong>Server</strong> 组：</p><ul><li><strong>Server 组</strong>：保存图片原始特征数据（考虑到端到端训练和推理的时延，这里取的是预训练模型的低阶隐层输出），并且负责将图片原始特征数据映射到任务空间的高阶表达，实际上就是学一个 Tower 模型，这个 Tower 模型是所有 Server 共享的。使用这个图片 <strong>EmbedTower</strong>，可以将图片原始特征数据极大的压缩（文章使用 $4096\times 256\times 64\times 12$ 的 Tower，可以将数据量减少 340 多倍），Worker 查询的时候传输数据量就大大减少了。</li><li><strong>Worker 组</strong>：从 <strong>Server 组</strong>查询样本的各维特征（包括 <strong>ID</strong> embedding 和图片的高阶 embedding 等），将特征组合后进行推理；训练时还要将损失梯度传回 Server，用来更新图片 <strong>EmbedTower</strong>。</li></ul><p>这样分与传统 <strong>PS</strong> 架构最大的差别就在于，<strong>Server 组</strong>内的节点也是有通信的，也是需要更新模型的了 (更详细的比较可以参考文献 [1]，说的很清楚)。好处是，当图片的数据量非常大的时候：</p><ol><li>每个图片原始特征只保存在单个 Server 上，节约了存储；</li><li>每个图片的 embedding 只需要计算一次，而且可以通过预计算，缓存以后供多个 Worker 查询；</li><li>压缩后的图片 embedding 数据量小，减小了数据传输消耗；</li></ol><p>文章号称在他们的场景下能节省 31 倍的存储开销和 340 倍的传输开销，而推理的时延仅仅增加了 3 毫秒。不过大家在各自具体场景中可能需要权衡一下性价比。</p><h3 id="DICM-模型"><a href="#DICM-模型" class="headerlink" title="DICM 模型"></a>DICM 模型</h3><p>从图 1 左图来看，<strong>DICM</strong> 模型整体就是一个简单的 Embedding + MLP 架构。其中，最关键的部分实际上就是用户视觉偏好抽取的部分（后面简称为 <strong>VisualPrefExtractor</strong>），也就是图片 <strong>EmbedTower</strong> 和基于用户图片历史和当前广告图片生成兴趣特征向量的部分。</p><p><strong>EmbedTower</strong> 前面简单介绍过了，这里需要说明的是，文章在保存图片原始特征的时候，并不是使用原始的像素值，而是经过预训练的 <strong>VGG16</strong> 第 14 层的 <strong>FC-4096</strong> 作为原始特征（如图 2 所示）。虽然 <strong>VGG16</strong> 的训练目标是图像分类的任务，但是这种任务学到的语义特征有比较好的泛化性能，而且由于是逐层处理，取靠前的参数实际上使用的是图像的一些基础元素的特征，这些特征再进一步通过广告 <strong>CTR</strong> 预估任务进行训练，这样就能够得到有用的高阶特征。文章也尝试了使用其他层的输出作为图片的原始特征：太靠近输出会损失性能；而越靠近输入端，参数越多，并且边际效益递减，因此这也只是一种权衡。另外，淘宝主要是买商品，使用 <strong>ImageNet</strong> 的预训练模型可能比较契合，我们在视频场景下就会发现，<strong>VGG16</strong> 对于人物的识别权重很低，因此可能又不太适用。</p><img src="/2019/11/24/paper-2018-ali-dicm/vgg16.png" title="使用配置 D (VGG16) 中第 1 个 FC-4096 作为图片的原始特征，该配置参考文献 [2]"><p><img src="/Users/CalvinHu/Documents/hcigmoid/source/_posts/paper-2018-ali-dicm/vgg16.png" alt="image-20191208225728860"></p><p>而为了抽取用户的视觉偏好，我们需要从用户图片历史序列中抽取出有效的特征。在用户行为非常丰富的场景，比如淘宝，用户的兴趣是多元化的，用户是不是点击某件 T-恤的广告，主要取决他历史上对衣服款式的喜好，而受他买零食、饮料、矿泉水的影响较小，因此需要引入注意力机制来针对不同的广告从用户图片历史中抽取出不同的特征表达。</p><img src="/2019/11/24/paper-2018-ali-dicm/attentive-pooling.png" title="几种 Pooling 方式的比较，文章使用 (d) 所示的 AttentivePooling"><p><img src="/Users/CalvinHu/Documents/hcigmoid/source/_posts/paper-2018-ali-dicm/attentive-pooling.png" alt="image-20191207112733947"></p><p>文章使用的注意力机制还是比较简单的，如图 3 右图所示，就是将广告图片特征和用户每条历史图片特征拼接后，经过一个 $64\times 16\times 1$ 的 Tower，用来计算每条历史图片的权重，然后再加权对所有历史图片特征计算 sum pooling，得到用户视觉偏好表达。这里的广告图片特征和用户历史图片特征都是经过 <strong>EmbedTower</strong> 映射后的高阶表达。为了增强记忆能力，文章还使用了 <strong>ID</strong> 行为列表来做相似的处理，将得到的 embedding 与图像偏好的 embedding 拼接，即实现了 <strong>MultiQueryAttentivePooling</strong>，两者互为补充，效果得到进一步提升。</p><p>这种方式很容易扩展，比如可以简单的添加 <strong>TextPrefExtractor</strong>、<strong>AudioPrefExtractor</strong> 等其他多模态的偏好模型，而且由于这些多模态数据不与其他特征进行交叉，因此训练与推理都是相对独立的。<strong>VisualPrefExtractor</strong> 也可以作为子模型嵌入到双塔结构里做召回，或者嵌入其他复杂排序模型，如 <strong>DIN</strong> 等，作为特征抽取器。</p><p>根据这篇文章的说明，该模型至少在当时是承接了淘宝的主流量，因此在多模态方面还是十分值得借鉴的。</p><h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] 一图胜千言: 解读阿里的Deep Image CTR Model. <a href="https://zhuanlan.zhihu.com/p/57056588" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/57056588</a>.</p><p>[2] Karen Simonyan and Andrew Zisserman. Very deep convolutional networks for large-scale image recognition. arXiv preprint arXiv:1409.1556 (2014).</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).&lt;/p&gt;
+&lt;/bloc
+      
+    
+    </summary>
+    
+      <category term="论文精读" scheme="https://guyuecanhui.github.io/categories/%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/"/>
+    
+    
+      <category term="推荐" scheme="https://guyuecanhui.github.io/tags/%E6%8E%A8%E8%8D%90/"/>
+    
+      <category term="排序" scheme="https://guyuecanhui.github.io/tags/%E6%8E%92%E5%BA%8F/"/>
+    
+      <category term="多模态" scheme="https://guyuecanhui.github.io/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/"/>
+    
+      <category term="预排序" scheme="https://guyuecanhui.github.io/tags/%E9%A2%84%E6%8E%92%E5%BA%8F/"/>
+    
+      <category term="图片" scheme="https://guyuecanhui.github.io/tags/%E5%9B%BE%E7%89%87/"/>
+    
+      <category term="分布式" scheme="https://guyuecanhui.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+      <category term="注意力" scheme="https://guyuecanhui.github.io/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B/"/>
+    
+  </entry>
   
   <entry>
     <title>MMoE-PosBias 论文精读</title>
@@ -613,40 +652,6 @@
       <category term="method" scheme="https://guyuecanhui.github.io/tags/method/"/>
     
       <category term="function" scheme="https://guyuecanhui.github.io/tags/function/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>SVD++ 论文精读</title>
-    <link href="https://guyuecanhui.github.io/2018/02/24/svdpp/"/>
-    <id>https://guyuecanhui.github.io/2018/02/24/svdpp/</id>
-    <published>2018-02-24T12:16:34.000Z</published>
-    <updated>2019-07-03T14:28:09.414Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>论文引用：Koren, Y. . (2008). Factorization meets the neighborhood : a multifaceted collaborative filtering model. Proceedings of the 14th ACM SIGKDD International Conference of Knowledge Discovery and Data Mining, 2008. ACM Press.</p></blockquote><p>本文对协同过滤中最主要的两种方法（基于邻域的方法和基于隐特征模型的方法）分别提出了优化方案，并且设计了一个联合模型将两种方法统一，从而达到更好的效果。为了进行区分，本文将对 SVD 进行优化的方案称为 SVD+，将联合模型的方法称为 SVD++。</p><h1 id="研究背景"><a href="#研究背景" class="headerlink" title="研究背景"></a>研究背景</h1><p>Koren 在做 Netflix 的比赛过程中，发现基于邻域的方法和基于隐特征模型的方法各有所长：</p><div class="table-container"><table><thead><tr><th>比较</th><th>基于邻域的方法</th><th>基于隐特征模型的方法</th></tr></thead><tbody><tr><td>主要思想</td><td>核心在于计算用户/物品的相似度，将相似用户的喜好推荐给用户，或将用户喜欢物品的相似仿物品推荐给用户</td><td>假设真正描述用户评分矩阵性质的内存特征（可能未知）其实只有少数几个，将用户和物品都映射到这些隐特征层，从而使得用户和物品直接关联起来</td></tr><tr><td>挖掘信息特征</td><td>能够对局部强相关的关系更敏感，而无法捕捉全局弱相关的关系</td><td>能够估计关联所有物品/用户的整体结构，但是难以反映局部强相关的关系</td></tr></tbody></table></div><p>因此，这两种方法存在天然的互补关系。另外，Koren 还发现，使用隐式反馈的数据能够提高推荐的准确性，而这两种方法都不支持使用隐式反馈的数据。基于这些发现，Koren 先分别将隐式反馈集成到两个模型中去，得到两个优化的模型，再提出一种联合模型，将这两个优化的模型进一步融合，从而得到更好的效果。</p><h1 id="模型推导"><a href="#模型推导" class="headerlink" title="模型推导"></a>模型推导</h1><p>文章从 Baseline 的模型，通过加入各种考虑因素，推导出基于邻域和基于隐特征的两个模型，再推导出联合模型。</p><h2 id="1、Baseline模型"><a href="#1、Baseline模型" class="headerlink" title="1、Baseline模型"></a>1、Baseline模型</h2><p>Baseline 模型就是基于历史数据的简单统计，主要看用户 $u$ 的平均评分 $b_u$、电影 $i$ 的平均评分 $b_i$ 和所有电影的平均评分 $\mu$：</p><script type="math/tex; mode=display">b_{ui} = \mu + b_u + b_i</script><p>所有后面的模型都是对这个基准模型的修正。这个基准模型中的参数都是可以离线计算的，用的方法也是本文通用的参数估计方法，先定义损失函数 $l(P)$：</p><script type="math/tex; mode=display">l(p_1,p_2,\cdots) = \sum_{(u,i)\in \kappa} (r_{ui} - \hat{r_{ui}})^2 + \lambda(\sum_{p_1} p_1^2 + \sum_{p_2} p_2^2 + \cdots)</script><p>其中，<script type="math/tex">P=\{p_1,p_2,\cdots\}</script> 表示待估计的参数，$\kappa$ 表示所有显式反馈的组合（即用户 $u$ 对物品 $i$ 进行过评分），<script type="math/tex">r_{ui}</script> 表示评分的实际值，<script type="math/tex">\hat{r_{ui}}</script> 表示评分的预测值，$\lambda$ 为超参，根据经验设置，然后求最小化 $l(P)$ 下各参数的值，通常使用最小二乘法，或者文中使用的梯度下降法（效率更高）。比如这个地方，参数就 $b_u$ 和 $b_i$，可以根据下式进行参数估计：</p><script type="math/tex; mode=display">\min_{b_*}\sum_{(u,i)\in \kappa} (r_{ui} - \hat{r_{ui}})^2 + \lambda(\sum_{p_1} p_1^2 + \sum_{p_2} p_2^2 + \cdots)</script><h2 id="2、推广到基于邻域的模型"><a href="#2、推广到基于邻域的模型" class="headerlink" title="2、推广到基于邻域的模型"></a>2、推广到基于邻域的模型</h2><p>本文主要考虑 ItemCF，对于两个物品 $i$ 和 $j$，它们的相似性 <script type="math/tex">s_{ij}</script> 是基于 Pearson 相关系数 <script type="math/tex">\rho_{ij}</script> 计算得到：</p><script type="math/tex; mode=display">s_{ij} = \frac{n_{ij}}{n_{ij}+\lambda_2}\rho_{ij}, \\ \rho_{ij}=\frac{E((x-\mu_x)(y-\mu_y))}{\sigma_x\sigma_y}</script><p>其中，$n_{ij}$ 表示同时对 $i$ 和 $j$ 进行评分的用户数，$\lambda_2$ 应该是防止 $i$ 和 $j$ 比较冷门的情况下，恰好有个别用户同时对它们进行了评分，这时候它们的相关性实际是看不出来的，属于偶然情况，通常 $\lambda_2=100$。之前的 ItemCF 进一步利用用户 $u$ 评过分的与 $i$ 最相关的 $k$ 个物品 $S^k(i;u)$ 来估计用户 $u$ 对 $i$ 的评分：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + \frac{\sum_{j\in S^k(i;u)} s_{ij}(r_{uj} - b_{uj})}{\sum_{j\in S^k(i;u)} s_{ij}}</script><p>但是如果 $u$ 没有对与 $i$ 相似的物品评过分，那上式就主要取决于 <script type="math/tex">b_{ui}</script> 了。为了解决这个小问题，有方案先计算插值权重 $\theta_{ij}^u$ 来取代实际的评分：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + \sum_{j\in S^k(i;u)} \theta_{ij}^u (r_{uj} - b_{uj})</script><p>但是以上模型都只考虑了用户 $u$，而对全局结构没有一个很好的理解，因此 Koren 提出不仅仅使用用户 $u$ 的对 $i$ 最相关的 $k$ 个物品的评分数据，而是使用所有 $u$ 的评分数据，因此引入一个参数 <script type="math/tex">\omega_{ij}</script> 来表示 $j$ 的评分对 $i$ 评分的影响，并且这个 $\omega_{ij}$ 是基于所有用户对 $i$ 和 $j$ 评分估计出来的：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + \sum_{j\in R(u)} (r_{uj} - b_{uj})\omega_{ij}</script><p>分析这个式子，当 $i$ 和 $j$ 越相关，说明 $j$ 对 $i$ 的影响越大，即 <script type="math/tex">w_{ij}</script> 越大，这时候如果 <script type="math/tex">(r_{uj} - b_{uj})</script> 较大，则估计的评分相对于 <script type="math/tex">b_{ui}</script> 的偏移也就越多；反之，当 <script type="math/tex">w_{ij}</script> 较小时，无论 $j$ 的评分如何都对偏移影响不大。</p><p>在此基础上，进一步引入隐式反馈的数据：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + \sum_{j\in R(u)} (r_{uj} - b_{uj})\omega_{ij} +\sum_{j\in N(u)} c_{ij}</script><p>其中，<script type="math/tex">c_{ij}</script> 表示隐式反馈对基准估计的偏移影响，当 $j$ 与 $i$ 的评分强相关时，$c_{ij}$ 较大。这个式子的主要问题是，它对重度用户的推荐和对轻度用户的推荐结果相差较大，因为重度用户的显式反馈和隐式反馈都很多，因此偏移项值较大。Koren 发现，做一下正则化以后，效果会更好：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + \mid R(u)\mid ^{-1/2}\sum_{j\in R(u)} (r_{uj} - b_{uj})\omega_{ij} +\mid N(u)\mid ^{-1/2}\sum_{j\in N(u)} c_{ij}</script><p>为了降低上式的计算复杂度，可以只考虑对 $i$ 影响最大的 $k$ 个物品，记 $R^k(i;u)=R(u)\cap S^k(i)$ 表示 $u$ 评分过的物品中属于 $i$ 最相似的 TopK 物品，类似的，记 $N^k(i;u)=N(u)\cap S^k(i)$，这两个集合的元素个数通常是小于 $k$ 的（而如果 $u$ 对至少 $k$ 个物品评过分的话，$\mid S^k(i;u)\mid = k$）。则最终的模型为：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + \mid R^k(i;u)\mid ^{-1/2}\sum_{j\in R(u)} (r_{uj} - b_{uj})\omega_{ij} +\mid N^k(i;u)\mid ^{-1/2}\sum_{j\in N(u)} c_{ij}</script><p>使用之前提到的最小化 <script type="math/tex">f(b_u, b_i, w_{ij}, c_{ij})</script> 的方法来估计这些参数的取值。记 <script type="math/tex">e_{ui}=r_{ui} - \hat{r_{ui}}</script>，则使用梯度下降法得到的迭代公式如下：</p><script type="math/tex; mode=display">\begin{cases}b_u \leftarrow b_u+\gamma\cdot (e_{ui} - \lambda_4\cdot b_u) \\b_i \leftarrow b_i+\gamma\cdot (e_{ui} - \lambda_4\cdot b_i) \\\omega_{ij} \leftarrow \omega_{ij} + \gamma\cdot(\mid R^k(i;u)\mid ^{-1/2}\cdot e_{ui}\cdot (r_{uj} - b_{uj})-\lambda_4\cdot \omega_{ij}), \forall j \in R^k(i;u) \\c_{ij} \leftarrow c_{ij} + \gamma\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\lambda_4\cdot c_{ij}), \forall j \in N^k(i;u)\end{cases}</script><p>对于 Netflix 数据集，Koren 推荐取 $\gamma=0.005$，$\lambda_4=0.002$，对所有数据集进行 15 轮训练。从实际效果来看 $k$ 越大，推荐的效果越好。这个模型的计算主要集中在参数训练上，一旦模型训练出来了，就可以快速的进行在线的预测。</p><h2 id="3、推广到基于隐特征的模型"><a href="#3、推广到基于隐特征的模型" class="headerlink" title="3、推广到基于隐特征的模型"></a>3、推广到基于隐特征的模型</h2><p>原始的 SVD 是将用户和物品映射到一个隐特征集合：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + p_u^T\cdot q_i</script><p>由于用户的规模通常远大于物品的规模，因此考虑用 $u$ 喜欢的物品来对 $u$ 进行建模，再加上隐式反馈的数据，可以得到 Asymmetric-SVD 模型：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + q_i^T(\mid R(u)\mid ^{-1/2}\sum_{j\in R(u)} (r_{uj} - b_{uj})x_j +\mid N(u)\mid ^{-1/2}\sum_{j\in N(u)} y_j)</script><p>其中，<script type="math/tex">x_j</script> 和 <script type="math/tex">y_j</script> 是用来控制显式反馈和隐式反馈重要性比例的参数。用最小化 <script type="math/tex">f(b_u,b_i,q_i,x_j,y_j)</script> 来估计这些参数值。由于这里用 <script type="math/tex">(r_{uj} - b_{uj})x_j</script> 来替代原来的用户隐特征，因此数据量少了很多。该模型具有比较好的可解释性，并且对于新用户来讲，只要他做了一些反馈，即更新了 <script type="math/tex">r_{uj}</script> 后，就可以立即算出估计值；但是如果新上线一个物品，由于 <script type="math/tex">q_i^T</script> 需要重新估计，因此对新物品的冷启动需要一定的反应时间。</p><p>如果对于计算不是很 care 的话，当然可以不用这种简化处理，还是对用户直接进行建模（$p_u$），这样的效果会更好一些，但是可解释性之类的就要差一些：</p><script type="math/tex; mode=display">\hat{r_{ui}} = b_{ui} + q_i^T(p_u +\mid N(u)\mid ^{-1/2}\sum_{j\in N(u)} y_j)</script><h2 id="4、联合模型"><a href="#4、联合模型" class="headerlink" title="4、联合模型"></a>4、联合模型</h2><p>如果把上面两个模型看成是 <code>预测值=基准估计+偏移量</code> 的话，那么这两个模型就可以混合到一起，变成：</p><script type="math/tex; mode=display">\begin{align}\hat{r_{ui}} &= b_{ui} \\&+ q_i^T(p_u +\mid N(u)\mid ^{-1/2}\sum_{j\in N(u)} y_j) \\&+ \mid R^k(i;u)\mid ^{-1/2}\sum_{j\in R(u)} (r_{uj} - b_{uj})\omega_{ij} +\mid N^k(i;u)\mid ^{-1/2}\sum_{j\in N(u)} c_{ij}\end{align}</script><p>其中，第一项为基准估计，第二项 provides the interaction between the user profile and the item profile. In our example, it may find that “The Sixth Sense” and Joe are rated high on the Psychological Thrillers scale. 第三项 contributes fine grained adjustments that are hard to profile, such as the fact that Joe rated low the related movie “Signs”.</p><p>使用梯度下降法得到的迭代公式如下：</p><script type="math/tex; mode=display">\begin{cases}b_u \leftarrow b_u+\gamma_1\cdot (e_{ui} - \lambda_6\cdot b_u) \\b_i \leftarrow b_i+\gamma_1\cdot (e_{ui} - \lambda_6\cdot b_i) \\q_i \leftarrow q_i+ \gamma_2\cdot(e_{ui}\cdot(p_u+\mid N(u)\mid ^{-1/2}\sum_{j\in N(u)} y_j)-\lambda_7\cdot q_i) \\p_u \leftarrow p_u + \gamma_2\cdot(e_{ui}\cdot q_i - \lambda_7\cdot p_u) \\y_j \leftarrow y_j+\gamma_2\cdot(e_{ui} \cdot\mid N(u)\mid ^{-1/2} \cdot q_i - \lambda_7\cdot y_j) \\\omega_{ij} \leftarrow \omega_{ij} + \gamma_3\cdot(\mid R^k(i;u)\mid ^{-1/2}\cdot e_{ui}\cdot (r_{uj} - b_{uj})-\lambda_8\cdot \omega_{ij}),\ \forall j \in R^k(i;u) \\c_{ij} \leftarrow c_{ij} + \gamma_3\cdot(\mid N^k(i;u)\mid ^{-1/2}\cdot e_{ui}-\lambda_8\cdot c_{ij}),\ \forall j \in N^k(i;u)\end{cases}</script><p>在 Netflix 的数据集上，建议参数为 <script type="math/tex">\gamma_1=\gamma_2=0.007</script>，<script type="math/tex">\gamma_3=0.001</script>，<script type="math/tex">\lambda_6=0.005</script>，<script type="math/tex">\lambda_7=\lambda_8=0.015</script>，整体迭代约 30 轮收敛，每一轮训练时，可以将 <script type="math/tex">\gamma_*</script> 减少 10%。而 $k=300$，再大也不会有明显的性能提升。</p><p>最后，Koren 还设计了一个比较巧妙的实验，解答了我一直以来一个疑问：RMSE 的提升是否也意味着推荐效果的提升。他们设计了一个针对 TopN 推荐的测试，主要的思想是先找出所有 5-star 的评分，认为这些评分意味着该用户喜欢这部电影，然后对所有这些 $(u,i)$，随机再选 1000 部电影，估计 $u$ 对这些电影的评分，看用户对这些电影里所有的 5-star 电影排名情况，然后对不同的算法进行比较，发现 RMSE 越小的算法，将 5-star 排到前面的概率也越大，从而说明了在这种情况下，RMSE 的提升也意味着推荐效果的提升。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;blockquote&gt;
-&lt;p&gt;论文引用：Koren, Y. . (2008). Factorization meets the neighborhood : a multifaceted collaborative filtering model. Proceedings of
-      
-    
-    </summary>
-    
-      <category term="论文精读" scheme="https://guyuecanhui.github.io/categories/%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/"/>
-    
-    
-      <category term="推荐" scheme="https://guyuecanhui.github.io/tags/%E6%8E%A8%E8%8D%90/"/>
-    
-      <category term="协同过滤" scheme="https://guyuecanhui.github.io/tags/%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4/"/>
-    
-      <category term="算法" scheme="https://guyuecanhui.github.io/tags/%E7%AE%97%E6%B3%95/"/>
-    
-      <category term="召回" scheme="https://guyuecanhui.github.io/tags/%E5%8F%AC%E5%9B%9E/"/>
-    
-      <category term="矩阵分解" scheme="https://guyuecanhui.github.io/tags/%E7%9F%A9%E9%98%B5%E5%88%86%E8%A7%A3/"/>
     
   </entry>
   

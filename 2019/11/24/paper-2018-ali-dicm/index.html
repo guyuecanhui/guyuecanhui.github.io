@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="推荐,排序,多模态,预排序,图片,分布式,注意力,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
+<meta name="keywords" content="推荐,排序,多模态,预排序,图片,分布式,注意力">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DICM with AMS 论文精读">
+<meta property="og:url" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/index.html">
+<meta property="og:site_name" content="HCigmoid">
+<meta property="og:description" content="论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/ams-architecture.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/vgg16.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/Users/CalvinHu/Documents/hcigmoid/source/_posts/paper-2018-ali-dicm/vgg16.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/attentive-pooling.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/Users/CalvinHu/Documents/hcigmoid/source/_posts/paper-2018-ali-dicm/attentive-pooling.png">
+<meta property="og:updated_time" content="2019-12-08T15:17:18.737Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="DICM with AMS 论文精读">
+<meta name="twitter:description" content="论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/ams-architecture.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/">
+
+
+
+
+
+  <title>DICM with AMS 论文精读 | HCigmoid</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HCigmoid</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Watch, learn and practise</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">DICM with AMS 论文精读</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-24T21:50:20+08:00">
+                2019-11-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/论文精读/" itemprop="url" rel="index">
+                    <span itemprop="name">论文精读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/11/24/paper-2018-ali-dicm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/11/24/paper-2018-ali-dicm/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p>论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).</p>
+</blockquote>
+<p>本文是阿里发表在 <strong>CIKM 2018</strong> 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 <strong>CTR</strong> 预估时就能够估计用户对广告图片的喜好，从而提升 <strong>CTR</strong> 预估的准确率。由于用户在商品页面行为历史通常较为丰富，因此训练样本中会包含大量的图片特征，这些特征使用传统的 PS 架构无法有效训练，因此文章提出了 <strong>AMS</strong> (<em>Advanced Model Server</em>) 架构，能够平衡存储和通信开销，使得天级更新模型成为可能。这篇文章主要的贡献也是在工程实现方面。</p>
+<h3 id="背景和动机"><a href="#背景和动机" class="headerlink" title="背景和动机"></a>背景和动机</h3><p>广告 <strong>CTR</strong> 预估是广告系统中至关重要的环节，传统的 (非多模态) 预估模型，主要是使用一些 <strong>ID</strong> 和交叉统计之类的特征，但是由于 <strong>ID</strong> 没有语义，我们无法判断两个 <strong>ID</strong> 是不是有相关性，因此这些模型对于出现频次少或者新出现的 <strong>ID</strong> 无法充分训练，即存在冷启动的问题。</p>
+<p>解决冷启动问题通常会想到引入内容特征，而在电商领域，图片就是能够描述广告/商品的最直观且最受用户关注的内容特征。用户在购买商品的时候，通常会点击、浏览商品的图片，结合商品的描述、评论等其他信息来决定是否购买，因此用户曾经点击过的图片能够在很大程度上表征用户的兴趣。而用户是否点击广告，图片、标题等信息是影响最大的因素。因此，文章就考虑使用用户点击过的图片来建立用户的兴趣模型，再与广告的图片进行匹配，从而估计用户在视觉层面是否对该广告有兴趣；将这方面的估计与传统的基于 <strong>ID</strong> 等特征的估计相结合，来提升 <strong>CTR</strong> 估计的性能。基于这个思路，文章提出了 <strong>DICM</strong> (<em>Deep Image CTR Model</em>)。 </p>
+<p>使用用户图片历史来建立用户视觉偏好主要的问题就是数据传输和存储，如果使用传统的 <strong>PS</strong> 架构，图片数据是保存在 <strong>KV Store</strong> 里（也就是参数服务器），谁用谁来查一下，而图片的数量和数据量都是相对较大的，因此这种方式十分消耗资源，并且这种方式也难以针对 <strong>CTR</strong> 预估任务对预训练的图片特征进行进一步的组合和压缩，即图片数据不是目标相关的。文章针对这个问题，提出了一种扩展 <strong>PS</strong> 架构，称为 <strong>AMS</strong> 架构。下面就详细的介绍这两方面的工作。</p>
+<h3 id="AMS-架构"><a href="#AMS-架构" class="headerlink" title="AMS 架构"></a>AMS 架构</h3><p>基于上述分析，文章在实现 <strong>DICM</strong> 模型时，实际上是基于 <strong>AMS</strong> 架构的。<strong>AMS</strong> 架构整体如图 1 右图所示：</p>
+<img src="/2019/11/24/paper-2018-ali-dicm/ams-architecture.png" title="AMS 架构及基于 AMS 架构实现的 DICM 模型">
+<p><strong>AMS</strong> 将节点分为 <strong>Worker</strong> 和 <strong>Server</strong> 组：</p>
+<ul>
+<li><strong>Server 组</strong>：保存图片原始特征数据（考虑到端到端训练和推理的时延，这里取的是预训练模型的低阶隐层输出），并且负责将图片原始特征数据映射到任务空间的高阶表达，实际上就是学一个 Tower 模型，这个 Tower 模型是所有 Server 共享的。使用这个图片 <strong>EmbedTower</strong>，可以将图片原始特征数据极大的压缩（文章使用 $4096\times 256\times 64\times 12$ 的 Tower，可以将数据量减少 340 多倍），Worker 查询的时候传输数据量就大大减少了。</li>
+<li><strong>Worker 组</strong>：从 <strong>Server 组</strong>查询样本的各维特征（包括 <strong>ID</strong> embedding 和图片的高阶 embedding 等），将特征组合后进行推理；训练时还要将损失梯度传回 Server，用来更新图片 <strong>EmbedTower</strong>。</li>
+</ul>
+<p>这样分与传统 <strong>PS</strong> 架构最大的差别就在于，<strong>Server 组</strong>内的节点也是有通信的，也是需要更新模型的了 (更详细的比较可以参考文献 [1]，说的很清楚)。好处是，当图片的数据量非常大的时候：</p>
+<ol>
+<li>每个图片原始特征只保存在单个 Server 上，节约了存储；</li>
+<li>每个图片的 embedding 只需要计算一次，而且可以通过预计算，缓存以后供多个 Worker 查询；</li>
+<li>压缩后的图片 embedding 数据量小，减小了数据传输消耗；</li>
+</ol>
+<p>文章号称在他们的场景下能节省 31 倍的存储开销和 340 倍的传输开销，而推理的时延仅仅增加了 3 毫秒。不过大家在各自具体场景中可能需要权衡一下性价比。</p>
+<h3 id="DICM-模型"><a href="#DICM-模型" class="headerlink" title="DICM 模型"></a>DICM 模型</h3><p>从图 1 左图来看，<strong>DICM</strong> 模型整体就是一个简单的 Embedding + MLP 架构。其中，最关键的部分实际上就是用户视觉偏好抽取的部分（后面简称为 <strong>VisualPrefExtractor</strong>），也就是图片 <strong>EmbedTower</strong> 和基于用户图片历史和当前广告图片生成兴趣特征向量的部分。</p>
+<p><strong>EmbedTower</strong> 前面简单介绍过了，这里需要说明的是，文章在保存图片原始特征的时候，并不是使用原始的像素值，而是经过预训练的 <strong>VGG16</strong> 第 14 层的 <strong>FC-4096</strong> 作为原始特征（如图 2 所示）。虽然 <strong>VGG16</strong> 的训练目标是图像分类的任务，但是这种任务学到的语义特征有比较好的泛化性能，而且由于是逐层处理，取靠前的参数实际上使用的是图像的一些基础元素的特征，这些特征再进一步通过广告 <strong>CTR</strong> 预估任务进行训练，这样就能够得到有用的高阶特征。文章也尝试了使用其他层的输出作为图片的原始特征：太靠近输出会损失性能；而越靠近输入端，参数越多，并且边际效益递减，因此这也只是一种权衡。另外，淘宝主要是买商品，使用 <strong>ImageNet</strong> 的预训练模型可能比较契合，我们在视频场景下就会发现，<strong>VGG16</strong> 对于人物的识别权重很低，因此可能又不太适用。</p>
+<img src="/2019/11/24/paper-2018-ali-dicm/vgg16.png" title="使用配置 D (VGG16) 中第 1 个 FC-4096 作为图片的原始特征，该配置参考文献 [2]">
+<p><img src="/Users/CalvinHu/Documents/hcigmoid/source/_posts/paper-2018-ali-dicm/vgg16.png" alt="image-20191208225728860"></p>
+<p>而为了抽取用户的视觉偏好，我们需要从用户图片历史序列中抽取出有效的特征。在用户行为非常丰富的场景，比如淘宝，用户的兴趣是多元化的，用户是不是点击某件 T-恤的广告，主要取决他历史上对衣服款式的喜好，而受他买零食、饮料、矿泉水的影响较小，因此需要引入注意力机制来针对不同的广告从用户图片历史中抽取出不同的特征表达。</p>
+<img src="/2019/11/24/paper-2018-ali-dicm/attentive-pooling.png" title="几种 Pooling 方式的比较，文章使用 (d) 所示的 AttentivePooling">
+<p><img src="/Users/CalvinHu/Documents/hcigmoid/source/_posts/paper-2018-ali-dicm/attentive-pooling.png" alt="image-20191207112733947"></p>
+<p>文章使用的注意力机制还是比较简单的，如图 3 右图所示，就是将广告图片特征和用户每条历史图片特征拼接后，经过一个 $64\times 16\times 1$ 的 Tower，用来计算每条历史图片的权重，然后再加权对所有历史图片特征计算 sum pooling，得到用户视觉偏好表达。这里的广告图片特征和用户历史图片特征都是经过 <strong>EmbedTower</strong> 映射后的高阶表达。为了增强记忆能力，文章还使用了 <strong>ID</strong> 行为列表来做相似的处理，将得到的 embedding 与图像偏好的 embedding 拼接，即实现了 <strong>MultiQueryAttentivePooling</strong>，两者互为补充，效果得到进一步提升。</p>
+<p>这种方式很容易扩展，比如可以简单的添加 <strong>TextPrefExtractor</strong>、<strong>AudioPrefExtractor</strong> 等其他多模态的偏好模型，而且由于这些多模态数据不与其他特征进行交叉，因此训练与推理都是相对独立的。<strong>VisualPrefExtractor</strong> 也可以作为子模型嵌入到双塔结构里做召回，或者嵌入其他复杂排序模型，如 <strong>DIN</strong> 等，作为特征抽取器。</p>
+<p>根据这篇文章的说明，该模型至少在当时是承接了淘宝的主流量，因此在多模态方面还是十分值得借鉴的。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] 一图胜千言: 解读阿里的Deep Image CTR Model. <a href="https://zhuanlan.zhihu.com/p/57056588" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/57056588</a>.</p>
+<p>[2] Karen Simonyan and Andrew Zisserman. Very deep convolutional networks for large-scale image recognition. arXiv preprint arXiv:1409.1556 (2014).</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+            <a href="/tags/排序/" rel="tag"># 排序</a>
+          
+            <a href="/tags/多模态/" rel="tag"># 多模态</a>
+          
+            <a href="/tags/预排序/" rel="tag"># 预排序</a>
+          
+            <a href="/tags/图片/" rel="tag"># 图片</a>
+          
+            <a href="/tags/分布式/" rel="tag"># 分布式</a>
+          
+            <a href="/tags/注意力/" rel="tag"># 注意力</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/16/paper-2019-google-mmoe-bias/" rel="next" title="MMoE-PosBias 论文精读">
+                <i class="fa fa-chevron-left"></i> MMoE-PosBias 论文精读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">古月残辉</p>
+              <p class="site-description motion-element" itemprop="description">总结心得</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">22</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">56</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:guyuecanhui@icloud.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#背景和动机"><span class="nav-number">1.</span> <span class="nav-text">背景和动机</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#AMS-架构"><span class="nav-number">2.</span> <span class="nav-text">AMS 架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DICM-模型"><span class="nav-number">3.</span> <span class="nav-text">DICM 模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">4.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古月残辉</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">34.3k</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: '6du4Ppc2TvUuhcccRHSDNH2v-gzGzoHsz',
+        appKey: 'zOKNml4W1Bq3OTzEuLt5hUjI',
+        placeholder: '感谢阅读！欢迎评论！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

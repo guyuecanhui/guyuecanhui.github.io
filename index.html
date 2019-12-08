@@ -297,6 +297,221 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/11/24/paper-2018-ali-dicm/" itemprop="url">DICM with AMS 论文精读</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-11-24T21:50:20+08:00">
+                2019-11-24
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/论文精读/" itemprop="url" rel="index">
+                    <span itemprop="name">论文精读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/11/24/paper-2018-ali-dicm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/11/24/paper-2018-ali-dicm/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <blockquote>
+<p>论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).</p>
+</blockquote>
+<p>本文是阿里发表在 <strong>CIKM 2018</strong> 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 <strong>CTR</strong> 预估时就能够估计用户对广告图片的喜好，从而提升 <strong>CTR</strong> 预估的准确率。由于用户在商品页面行为历史通常较为丰富，因此训练样本中会包含大量的图片特征，这些特征使用传统的 PS 架构无法有效训练，因此文章提出了 <strong>AMS</strong> (<em>Advanced Model Server</em>) 架构，能够平衡存储和通信开销，使得天级更新模型成为可能。这篇文章主要的贡献也是在工程实现方面。</p>
+<h3 id="背景和动机"><a href="#背景和动机" class="headerlink" title="背景和动机"></a>背景和动机</h3><p>广告 <strong>CTR</strong> 预估是广告系统中至关重要的环节，传统的 (非多模态) 预估模型，主要是使用一些 <strong>ID</strong> 和交叉统计之类的特征，但是由于 <strong>ID</strong> 没有语义，我们无法判断两个 <strong>ID</strong> 是不是有相关性，因此这些模型对于出现频次少或者新出现的 <strong>ID</strong> 无法充分训练，即存在冷启动的问题。</p>
+<p>解决冷启动问题通常会想到引入内容特征，而在电商领域，图片就是能够描述广告/商品的最直观且最受用户关注的内容特征。用户在购买商品的时候，通常会点击、浏览商品的图片，结合商品的描述、评论等其他信息来决定是否购买，因此用户曾经点击过的图片能够在很大程度上表征用户的兴趣。而用户是否点击广告，图片、标题等信息是影响最大的因素。因此，文章就考虑使用用户点击过的图片来建立用户的兴趣模型，再与广告的图片进行匹配，从而估计用户在视觉层面是否对该广告有兴趣；将这方面的估计与传统的基于 <strong>ID</strong> 等特征的估计相结合，来提升 <strong>CTR</strong> 估计的性能。基于这个思路，文章提出了 <strong>DICM</strong> (<em>Deep Image CTR Model</em>)。 </p>
+<p>使用用户图片历史来建立用户视觉偏好主要的问题就是数据传输和存储，如果使用传统的 <strong>PS</strong> 架构，图片数据是保存在 <strong>KV Store</strong> 里（也就是参数服务器），谁用谁来查一下，而图片的数量和数据量都是相对较大的，因此这种方式十分消耗资源，并且这种方式也难以针对 <strong>CTR</strong> 预估任务对预训练的图片特征进行进一步的组合和压缩，即图片数据不是目标相关的。文章针对这个问题，提出了一种扩展 <strong>PS</strong> 架构，称为 <strong>AMS</strong> 架构。下面就详细的介绍这两方面的工作。</p>
+<h3 id="AMS-架构"><a href="#AMS-架构" class="headerlink" title="AMS 架构"></a>AMS 架构</h3><p>基于上述分析，文章在实现 <strong>DICM</strong> 模型时，实际上是基于 <strong>AMS</strong> 架构的。<strong>AMS</strong> 架构整体如图 1 右图所示：</p>
+<img src="/2019/11/24/paper-2018-ali-dicm/ams-architecture.png" title="AMS 架构及基于 AMS 架构实现的 DICM 模型">
+<p><strong>AMS</strong> 将节点分为 <strong>Worker</strong> 和 <strong>Server</strong> 组：</p>
+<ul>
+<li><strong>Server 组</strong>：保存图片原始特征数据（考虑到端到端训练和推理的时延，这里取的是预训练模型的低阶隐层输出），并且负责将图片原始特征数据映射到任务空间的高阶表达，实际上就是学一个 Tower 模型，这个 Tower 模型是所有 Server 共享的。使用这个图片 <strong>EmbedTower</strong>，可以将图片原始特征数据极大的压缩（文章使用 $4096\times 256\times 64\times 12$ 的 Tower，可以将数据量减少 340 多倍），Worker 查询的时候传输数据量就大大减少了。</li>
+<li><strong>Worker 组</strong>：从 <strong>Server 组</strong>查询样本的各维特征（包括 <strong>ID</strong> embedding 和图片的高阶 embedding 等），将特征组合后进行推理；训练时还要将损失梯度传回 Server，用来更新图片 <strong>EmbedTower</strong>。</li>
+</ul>
+<p>这样分与传统 <strong>PS</strong> 架构最大的差别就在于，<strong>Server 组</strong>内的节点也是有通信的，也是需要更新模型的了 (更详细的比较可以参考文献 [1]，说的很清楚)。好处是，当图片的数据量非常大的时候：</p>
+<ol>
+<li>每个图片原始特征只保存在单个 Server 上，节约了存储；</li>
+<li>每个图片的 embedding 只需要计算一次，而且可以通过预计算，缓存以后供多个 Worker 查询；</li>
+<li>压缩后的图片 embedding 数据量小，减小了数据传输消耗；</li>
+</ol>
+<p>文章号称在他们的场景下能节省 31 倍的存储开销和 340 倍的传输开销，而推理的时延仅仅增加了 3 毫秒。不过大家在各自具体场景中可能需要权衡一下性价比。</p>
+<h3 id="DICM-模型"><a href="#DICM-模型" class="headerlink" title="DICM 模型"></a>DICM 模型</h3><p>从图 1 左图来看，<strong>DICM</strong> 模型整体就是一个简单的 Embedding + MLP 架构。其中，最关键的部分实际上就是用户视觉偏好抽取的部分（后面简称为 <strong>VisualPrefExtractor</strong>），也就是图片 <strong>EmbedTower</strong> 和基于用户图片历史和当前广告图片生成兴趣特征向量的部分。</p>
+<p><strong>EmbedTower</strong> 前面简单介绍过了，这里需要说明的是，文章在保存图片原始特征的时候，并不是使用原始的像素值，而是经过预训练的 <strong>VGG16</strong> 第 14 层的 <strong>FC-4096</strong> 作为原始特征（如图 2 所示）。虽然 <strong>VGG16</strong> 的训练目标是图像分类的任务，但是这种任务学到的语义特征有比较好的泛化性能，而且由于是逐层处理，取靠前的参数实际上使用的是图像的一些基础元素的特征，这些特征再进一步通过广告 <strong>CTR</strong> 预估任务进行训练，这样就能够得到有用的高阶特征。文章也尝试了使用其他层的输出作为图片的原始特征：太靠近输出会损失性能；而越靠近输入端，参数越多，并且边际效益递减，因此这也只是一种权衡。另外，淘宝主要是买商品，使用 <strong>ImageNet</strong> 的预训练模型可能比较契合，我们在视频场景下就会发现，<strong>VGG16</strong> 对于人物的识别权重很低，因此可能又不太适用。</p>
+<img src="/2019/11/24/paper-2018-ali-dicm/vgg16.png" title="使用配置 D (VGG16) 中第 1 个 FC-4096 作为图片的原始特征，该配置参考文献 [2]">
+<p><img src="/Users/CalvinHu/Documents/hcigmoid/source/_posts/paper-2018-ali-dicm/vgg16.png" alt="image-20191208225728860"></p>
+<p>而为了抽取用户的视觉偏好，我们需要从用户图片历史序列中抽取出有效的特征。在用户行为非常丰富的场景，比如淘宝，用户的兴趣是多元化的，用户是不是点击某件 T-恤的广告，主要取决他历史上对衣服款式的喜好，而受他买零食、饮料、矿泉水的影响较小，因此需要引入注意力机制来针对不同的广告从用户图片历史中抽取出不同的特征表达。</p>
+<img src="/2019/11/24/paper-2018-ali-dicm/attentive-pooling.png" title="几种 Pooling 方式的比较，文章使用 (d) 所示的 AttentivePooling">
+<p><img src="/Users/CalvinHu/Documents/hcigmoid/source/_posts/paper-2018-ali-dicm/attentive-pooling.png" alt="image-20191207112733947"></p>
+<p>文章使用的注意力机制还是比较简单的，如图 3 右图所示，就是将广告图片特征和用户每条历史图片特征拼接后，经过一个 $64\times 16\times 1$ 的 Tower，用来计算每条历史图片的权重，然后再加权对所有历史图片特征计算 sum pooling，得到用户视觉偏好表达。这里的广告图片特征和用户历史图片特征都是经过 <strong>EmbedTower</strong> 映射后的高阶表达。为了增强记忆能力，文章还使用了 <strong>ID</strong> 行为列表来做相似的处理，将得到的 embedding 与图像偏好的 embedding 拼接，即实现了 <strong>MultiQueryAttentivePooling</strong>，两者互为补充，效果得到进一步提升。</p>
+<p>这种方式很容易扩展，比如可以简单的添加 <strong>TextPrefExtractor</strong>、<strong>AudioPrefExtractor</strong> 等其他多模态的偏好模型，而且由于这些多模态数据不与其他特征进行交叉，因此训练与推理都是相对独立的。<strong>VisualPrefExtractor</strong> 也可以作为子模型嵌入到双塔结构里做召回，或者嵌入其他复杂排序模型，如 <strong>DIN</strong> 等，作为特征抽取器。</p>
+<p>根据这篇文章的说明，该模型至少在当时是承接了淘宝的主流量，因此在多模态方面还是十分值得借鉴的。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] 一图胜千言: 解读阿里的Deep Image CTR Model. <a href="https://zhuanlan.zhihu.com/p/57056588" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/57056588</a>.</p>
+<p>[2] Karen Simonyan and Andrew Zisserman. Very deep convolutional networks for large-scale image recognition. arXiv preprint arXiv:1409.1556 (2014).</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/11/16/paper-2019-google-mmoe-bias/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2310,282 +2525,6 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/05/11/terminology/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="古月残辉">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="HCigmoid">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/05/11/terminology/" itemprop="url">符号约定与常用公式</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-11T21:51:23+08:00">
-                2019-05-11
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/数学/" itemprop="url" rel="index">
-                    <span itemprop="name">数学</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/05/11/terminology/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/11/terminology/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  780
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <h2 id="一、推荐系统常用符号含义"><a href="#一、推荐系统常用符号含义" class="headerlink" title="一、推荐系统常用符号含义"></a>一、推荐系统常用符号含义</h2><div class="table-container">
-<table>
-<thead>
-<tr>
-<th style="text-align:left">符号表示</th>
-<th style="text-align:left">含义</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td style="text-align:left">$\boldsymbol{x}$</td>
-<td style="text-align:left">输入变量，一般为特征向量</td>
-</tr>
-<tr>
-<td style="text-align:left">$\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$</td>
-<td style="text-align:left">第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x_i$ 表示样本的第 $i$ 维特征</td>
-</tr>
-<tr>
-<td style="text-align:left"><script type="math/tex">\mathcal{X}=\{\boldsymbol{x}_1,\cdots,\boldsymbol{x}_N\}</script></td>
-<td style="text-align:left">输入实例集合</td>
-</tr>
-<tr>
-<td style="text-align:left"><script type="math/tex">(x_j^{(i)})^k</script></td>
-<td style="text-align:left">第 $j$ 个输入变量的第 $i$ 维特征取值的 $k$ 次方</td>
-</tr>
-<tr>
-<td style="text-align:left">$y$</td>
-<td style="text-align:left">输出变量，一般为样本标签</td>
-</tr>
-<tr>
-<td style="text-align:left">$y_i$</td>
-<td style="text-align:left">第 $i$ 个输出变量的取值</td>
-</tr>
-<tr>
-<td style="text-align:left">$\mathcal{Y}={y_1,\cdots,y_N}$</td>
-<td style="text-align:left">输出实例集合</td>
-</tr>
-<tr>
-<td style="text-align:left">$(\boldsymbol{x}_i,y_i)$</td>
-<td style="text-align:left">第 $i$ 个样本点</td>
-</tr>
-<tr>
-<td style="text-align:left">$\mathcal{T}={(\boldsymbol{x}_1,y_1),\cdots,(\boldsymbol{x}_N,y_N)}$</td>
-<td style="text-align:left">训练数据集</td>
-</tr>
-<tr>
-<td style="text-align:left">$\boldsymbol{w}=(w_1,\cdots,w_n)$</td>
-<td style="text-align:left">权重向量</td>
-</tr>
-<tr>
-<td style="text-align:left">$w_i^t$</td>
-<td style="text-align:left">第 $i$ 维特征的权重在第 $t$ 轮迭代的取值</td>
-</tr>
-<tr>
-<td style="text-align:left">$\parallel \boldsymbol{w} \parallel_i^j$</td>
-<td style="text-align:left">权重向量 $\boldsymbol{w}$ 的 Li 范数的 $j$ 次方，例如 L1 范数：$\parallel \boldsymbol{w} \parallel_1$，L2 范数： $\parallel \boldsymbol{w} \parallel_2^2$</td>
-</tr>
-<tr>
-<td style="text-align:left">$\boldsymbol{g}=(g_1,\cdots,g_n)$</td>
-<td style="text-align:left">梯度向量</td>
-</tr>
-<tr>
-<td style="text-align:left">$\psi(\boldsymbol{w})$</td>
-<td style="text-align:left">正则化函数</td>
-</tr>
-</tbody>
-</table>
-</div>
-<h2 id="二、常用定理"><a href="#二、常用定理" class="headerlink" title="二、常用定理"></a>二、常用定理</h2><h3 id="中心极限定理"><a href="#中心极限定理" class="headerlink" title="中心极限定理"></a>中心极限定理</h3><ol>
-<li>样本的平均值约等于总体的平均值。</li>
-<li>给定一个任意分布的总体，从中随机抽取 $N$ 个样本，抽取 $k$ 次，这 $k$ 组抽样平均值的分布接近正态分布。</li>
-<li>经验表明，当每组抽样数量 $N\ge 30$ 时就服从中心极限定理。</li>
-</ol>
-<h3 id="极大似然估计"><a href="#极大似然估计" class="headerlink" title="极大似然估计"></a>极大似然估计</h3><p><strong>前提假设：</strong>训练样本的分布能代表样本的真实分布；每个样本集中的样本都是所谓独立同分布的随机变量，且有充分的训练样本。</p>
-<p><strong>最大似然估计的目的是：</strong>利用已知的样本结果，反推最有可能（最大概率）导致这样结果的参数值。换句话说，极大似然估计提供了一种给定观察数据来评估模型参数的方法，即：<strong>模型已定，参数未知</strong>。</p>
-<p>ML估计的求解方法：</p>
-<script type="math/tex; mode=display">
-\hat{\theta} = \arg \max_{\theta} l(\theta) = \arg \max_{\theta}\prod_{i=1}^N p(\boldsymbol{x}_i|\theta)</script><p>为了便于分析，定义对数似然函数 $H(\theta) = \ln l(\theta)$，则：</p>
-<script type="math/tex; mode=display">
-\hat{\theta} = \arg \max_{\theta} \ln l(\theta) = \arg \max_{\theta}\sum_{i=1}^N \ln p(\boldsymbol{x}_i|\theta)</script><p>当 $H(\theta)$ 连续可微的情况下，可以通过求导（单个未知参数）或者求梯度（多个未知参数）的方式求解方程。</p>
-<h2 id="三、常用的函数和公式"><a href="#三、常用的函数和公式" class="headerlink" title="三、常用的函数和公式"></a>三、常用的函数和公式</h2><h3 id="Sigmoid-函数"><a href="#Sigmoid-函数" class="headerlink" title="Sigmoid 函数"></a>Sigmoid 函数</h3><ul>
-<li>表达式：$\pi(x)=\frac{1}{1+e^{-x}}=\frac{e^x}{1+e^x}$；</li>
-<li>导数：$\pi’(x)=\pi(x)\big(1-\pi(x)\big)$；</li>
-</ul>
-<h3 id="LogLoss"><a href="#LogLoss" class="headerlink" title="LogLoss"></a>LogLoss</h3><ul>
-<li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_{l}(\boldsymbol{x},y)=\ln(1+e^{f(\boldsymbol{x})})-yf(\boldsymbol{x})$</li>
-<li>导数：$l_l’(\boldsymbol{x},y)=\Big(\pi\big(f(\boldsymbol{x})\big)-y\Big)\cdot f’(\boldsymbol{x})$</li>
-<li>使用极大似然估计，标签值为 {0,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li>
-</ul>
-<h3 id="SigmoidLoss"><a href="#SigmoidLoss" class="headerlink" title="SigmoidLoss"></a>SigmoidLoss</h3><ul>
-<li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_s(\boldsymbol{x},y)=\ln(1+e^{-yf(\boldsymbol{x})})$</li>
-<li>导数：$l_s’(\boldsymbol{x},y)=y\Big(\pi\big(y\cdot f(\boldsymbol{x})\big)-1\Big)\cdot f’(\boldsymbol{x})$</li>
-<li>使用极大似然估计，标签值为 {-1,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li>
-</ul>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2636,7 +2575,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">21</span>
+                  <span class="site-state-item-count">22</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2658,7 +2597,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">51</span>
+                  <span class="site-state-item-count">56</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2726,7 +2665,7 @@ H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">32.1k</span>
+    <span title="Site words total count">34.3k</span>
   
 </div>
 
