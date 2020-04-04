@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="推荐,指标,AUC,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它怎样灵活的使用，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。 AUC (Area Under the Curve) 的概念AUC（Area">
+<meta name="keywords" content="推荐,指标,AUC">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AUC 理解与应用">
+<meta property="og:url" content="https://guyuecanhui.github.io/2020/04/04/auc/index.html">
+<meta property="og:site_name" content="HCigmoid">
+<meta property="og:description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它怎样灵活的使用，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。 AUC (Area Under the Curve) 的概念AUC（Area">
+<meta property="og:locale" content="default">
+<meta property="og:updated_time" content="2020-04-04T14:26:09.883Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AUC 理解与应用">
+<meta name="twitter:description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它怎样灵活的使用，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。 AUC (Area Under the Curve) 的概念AUC（Area">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://guyuecanhui.github.io/2020/04/04/auc/">
+
+
+
+
+
+  <title>AUC 理解与应用 | HCigmoid</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HCigmoid</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Watch, learn and practise</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2020/04/04/auc/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AUC 理解与应用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-04T21:54:19+08:00">
+                2020-04-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/特征工程/" itemprop="url" rel="index">
+                    <span itemprop="name">特征工程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/04/04/auc/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/04/04/auc/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p><strong>AUC</strong> 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它怎样灵活的使用，却知之甚少。这篇文章就再唠叨一下 <strong>AUC</strong> 的概念、计算过程以及它如何应用于特征选择上。</p>
+<h2 id="AUC-Area-Under-the-Curve-的概念"><a href="#AUC-Area-Under-the-Curve-的概念" class="headerlink" title="AUC (Area Under the Curve) 的概念"></a>AUC (Area Under the Curve) 的概念</h2><p><strong>AUC</strong>（Area Under Curve）被定义为 ROC 曲线下与坐标轴围成的面积。<strong>AUC</strong> 主要用来评估二分类问题的准确率，即随机给定一个正样本和一个负样本，分类器预测该正样本的得分比预测该负样本的得分大的概率。</p>
+<p><strong>AUC</strong> 越接近 1 表明这个分类器的性能越好，随机猜测的 <strong>AUC</strong> 接近 0.5，如果一个分类器的 <strong>AUC</strong> 低于 0.5，只需要将它的结果取反就能一下子提高模型性能。</p>
+<h2 id="AUC-的计算"><a href="#AUC-的计算" class="headerlink" title="AUC 的计算"></a>AUC 的计算</h2><p>根据 <strong>AUC</strong> 的含义，给定样本的真实标签和预测标签，计算分类器的 <strong>AUC</strong> 指标，主要有两种方法：穷举法和序数法。</p>
+<h3 id="穷举法"><a href="#穷举法" class="headerlink" title="穷举法"></a>穷举法</h3><p>穷举法就是穷举样本中所有的正负样本对并计数，从而计算这些样本对中正样本预测得分大于负样本预测得分的比例。假设正例集合为 $N<em>{pos}$，正例数量为 $n</em>{pos}$；负例集合为 $N<em>{neg}$，负例数量为 $n</em>{neg}$，则：</p>
+<script type="math/tex; mode=display">
+AUC = \frac{\sum I(\hat{y}_{pos}, \hat{y}_{neg})}{n_{pos}\cdot n_{neg}}</script><p>其中，$I(.,.)$ 是指示函数：</p>
+<script type="math/tex; mode=display">
+I(\hat{y}_{pos}, \hat{y}_{neg})=\begin{cases}
+1, \qquad &\hat{y}_{pos} > \hat{y}_{neg} \\
+0.5, \qquad &\hat{y}_{pos} = \hat{y}_{neg} \\
+0, \qquad &\hat{y}_{pos} < \hat{y}_{neg}
+\end{cases}</script><p>举个例子：假设有 6 条样本，某个分类器对每个样本的预测得分 $\hat{y}$ 及其真实标签 $y$ 如下表所示：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">ID</th>
+<th style="text-align:center">$\hat{y}$</th>
+<th style="text-align:center">$y$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">A</td>
+<td style="text-align:center">0.1</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">0.3</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">0.5</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">D</td>
+<td style="text-align:center">0.5</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">E</td>
+<td style="text-align:center">0.7</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">F</td>
+<td style="text-align:center">0.9</td>
+<td style="text-align:center">1</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>这个例子中有 3 个正例 (BDF) 和 3 个负例 (ACE)，一共有 $3\times 3=9$ 种组合，每种组合的得分如下：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">负正样本对</th>
+<th style="text-align:center">指示函数得分</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">AB</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">AD</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">AF</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">CB</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">CD</td>
+<td style="text-align:center">0.5</td>
+</tr>
+<tr>
+<td style="text-align:center">CF</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">EB</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">ED</td>
+<td style="text-align:center">0</td>
+</tr>
+<tr>
+<td style="text-align:center">EF</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">合计</td>
+<td style="text-align:center">5.5</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>因此，该分类器的 $AUC=\frac{5.5}{9}=0.61$，是个相当差的分类器了。</p>
+<h3 id="序数法"><a href="#序数法" class="headerlink" title="序数法"></a>序数法</h3><p>穷举法比较适合小数据量情况下的计算，但是其实其中有很多比较是重复的。例如当我们按上例中 $\hat{y}$ 将样本排好序以后，对某个正样本而言，它上面的所有负样本数就是它的得分，没必要再穷举其他的样本对。因此我们考虑将样本排序后，基于样本序数来计算 <strong>AUC</strong>，这里略去推导过程，直接给出计算方法：</p>
+<script type="math/tex; mode=display">
+AUC=\frac{\sum_{i\in N_{pos}}r_i - \frac{n_{neg}(1+n_{neg})}{2}}{n_{pos}\cdot n_{neg}}</script><p>其中，$r_i$ 就是按 $\hat{y}$ 排序后，第 $i$ 个样本的序号，如果有多个样本预测得分相同，则这些样本的序号直接求平均。例如对于上例，我们可以对这些样本做如下的编号：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">ID</th>
+<th style="text-align:center">$\hat{y}$</th>
+<th style="text-align:center">$y$</th>
+<th style="text-align:center">$r$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">A</td>
+<td style="text-align:center">0.1</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">1</td>
+</tr>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">0.3</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">2</td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">0.5</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">3.5</td>
+</tr>
+<tr>
+<td style="text-align:center">D</td>
+<td style="text-align:center">0.5</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">3.5</td>
+</tr>
+<tr>
+<td style="text-align:center">E</td>
+<td style="text-align:center">0.7</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">5</td>
+</tr>
+<tr>
+<td style="text-align:center">F</td>
+<td style="text-align:center">0.9</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">6</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>其中，CD 的预测得分相同，因此它们的编号为 $\frac{3+4}{2}=3.5$。根据式 $(3)$ 我们可以算出所有正样本的序数和为 $2+3.5+6=11.5$，$AUC=\frac{11.5-3\times 4\div 2}{3\times 3}=0.61$。</p>
+<h2 id="单特征-AUC-的计算"><a href="#单特征-AUC-的计算" class="headerlink" title="单特征 AUC 的计算"></a>单特征 AUC 的计算</h2><p>特征选择中一个重要的技术就是单特征 <strong>AUC</strong> 的计算，它体现了这维特征正确划分样本的能力。单特征 <strong>AUC</strong> 越高，这维特征也就越重要，尤其是在线性模型中。</p>
+<h3 id="单值离散特征的-AUC-计算"><a href="#单值离散特征的-AUC-计算" class="headerlink" title="单值离散特征的 AUC 计算"></a>单值离散特征的 AUC 计算</h3><p>单值离散特征是指特征取值是离散特征，而且每个样本中该特征取值只有一个，例如用户的城市、性别等。我们基于训练数据和测试数据可以使用以下算法高效的计算该特征的 <strong>AUC</strong> (推导过程参考<a href="https://blog.csdn.net/u013019431/article/details/92851053" target="_blank" rel="noopener">这里</a>)：</p>
+<ol>
+<li>计算这维特征的每个特征值在训练数据中的正样本占比；</li>
+<li>在测试数据中，用第 1 步计算的结果作为样本的预测值；</li>
+<li>基于上一小节中的 <strong>AUC</strong> 计算方法计算理论上该特征在基于 logloss 的线性分类器下的 <strong>AUC</strong>；</li>
+</ol>
+<p>举个例子，我们考虑性别特征的单值 <strong>AUC</strong> 计算，假设有 10 条样本 (前 6 条作为训练样本，后 4 条作为测试样本)：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:center">ID</th>
+<th style="text-align:center">gender</th>
+<th style="text-align:center">$y$</th>
+<th style="text-align:center">$\hat{y}$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:center">A</td>
+<td style="text-align:center">m</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">B</td>
+<td style="text-align:center">f</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">C</td>
+<td style="text-align:center">m</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">D</td>
+<td style="text-align:center">f</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">E</td>
+<td style="text-align:center">f</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">F</td>
+<td style="text-align:center">m</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center"></td>
+</tr>
+<tr>
+<td style="text-align:center">G</td>
+<td style="text-align:center">m</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0.33</td>
+</tr>
+<tr>
+<td style="text-align:center">H</td>
+<td style="text-align:center">f</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0.67</td>
+</tr>
+<tr>
+<td style="text-align:center">I</td>
+<td style="text-align:center">f</td>
+<td style="text-align:center">1</td>
+<td style="text-align:center">0.67</td>
+</tr>
+<tr>
+<td style="text-align:center">J</td>
+<td style="text-align:center">m</td>
+<td style="text-align:center">0</td>
+<td style="text-align:center">0.33</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>我们先根据训练样本 A-F 计算性别为 m 的正样本比例为 $0.33$，性别为 f 的正样本比例为 $0.67$，因此我们预测样本 G-J 的得分依次为 $[0.33,0.67,0.67,0.33]$，从而根据式 $(1)$ 可以很快算出来，这维特征的 <strong>AUC</strong> 为 $(0.5+1+1)/3=0.83$。</p>
+<h3 id="多值离散特征的-AUC-评估"><a href="#多值离散特征的-AUC-评估" class="headerlink" title="多值离散特征的 AUC 评估"></a>多值离散特征的 AUC 评估</h3><p>多值离散特征是指特征取值是离散特征，而且每个样本中该特征取值可能有多个，例如视频的标签、演员等。虽然单值离散特征可以高效的计算它的 <strong>AUC</strong>，遗憾的是，多值离散特征的 <strong>AUC</strong> 似乎无法进行类似的推导。因此我们目前还是通过仅使用这一维特征构建训练数据，用于训练 <strong>LR</strong> 模型，再用该 <strong>LR</strong> 模型预测测试数据的得分，用模型的 <strong>AUC</strong> 来作为该特征的 <strong>AUC</strong>。</p>
+<p>实际上，单值离散特征也可以用建模型的方式来评估，我们两种方法都尝试了，结果证明两种方法得到的结果是十分接近的。</p>
+<h3 id="连续特征的-AUC-评估"><a href="#连续特征的-AUC-评估" class="headerlink" title="连续特征的 AUC 评估"></a>连续特征的 AUC 评估</h3><p>连续特征就是指取值是连续值的特征，比如视频的播放次数、播放完成度等。</p>
+<p>有一些特征如年龄，虽然是连续值，但是因为取值有限，既可以作为连续特征，也可以作为离散特征。但是连续特征，尤其是非均匀分布、或者偏序关系不明确的连续特征，对于线性模型是不太友好的，例如我们考虑预测用户是否播放一个恐怖电影，可能年龄大的或者年龄小的用户都不喜欢看，而比较年轻的用户最喜欢，线性模型就难以区分了。</p>
+<p>因此，如果在线性模型中使用连续值特征，除了像播放完成度这类取值范围有限且偏序关系一致 (播放完成度越高，通常表明视频质量越好，用户点击的概率也越大) 的连续特征，我们最好还是按下面的算法来评估某连续特征的单特征 <strong>AUC</strong>：</p>
+<ol>
+<li>在训练数据中使用该连续特征训练 <strong>GBDT</strong> 模型；</li>
+<li>如果第 1 步中使用多棵树，则用第 1 步训练的 <strong>GBDT</strong> 对测试数据中的该连续特征进行分桶，将分桶结果作为新的多值离散特征，并使用多值离散特征的 <strong>AUC</strong> 评估方法进行评估；</li>
+<li>如果第 1 步中使用单棵树，则用第 1 步训练的 <strong>GBDT</strong> 对测试数据中的该连续特征进行分桶，将分桶结果作为新的单值离散特征，并使用单值离散特征的 <strong>AUC</strong> 计算方法进行评估；</li>
+</ol>
+<p>至于使用单棵树还是多棵树，最好参数与模型实际执行的特征变换保持一致。</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+            <a href="/tags/指标/" rel="tag"># 指标</a>
+          
+            <a href="/tags/AUC/" rel="tag"># AUC</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2019/11/24/paper-2018-ali-dicm/" rel="next" title="DICM with AMS 论文精读">
+                <i class="fa fa-chevron-left"></i> DICM with AMS 论文精读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">古月残辉</p>
+              <p class="site-description motion-element" itemprop="description">总结心得</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:guyuecanhui@icloud.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AUC-Area-Under-the-Curve-的概念"><span class="nav-number">1.</span> <span class="nav-text">AUC (Area Under the Curve) 的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AUC-的计算"><span class="nav-number">2.</span> <span class="nav-text">AUC 的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#穷举法"><span class="nav-number">2.1.</span> <span class="nav-text">穷举法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#序数法"><span class="nav-number">2.2.</span> <span class="nav-text">序数法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单特征-AUC-的计算"><span class="nav-number">3.</span> <span class="nav-text">单特征 AUC 的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单值离散特征的-AUC-计算"><span class="nav-number">3.1.</span> <span class="nav-text">单值离散特征的 AUC 计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多值离散特征的-AUC-评估"><span class="nav-number">3.2.</span> <span class="nav-text">多值离散特征的 AUC 评估</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连续特征的-AUC-评估"><span class="nav-number">3.3.</span> <span class="nav-text">连续特征的 AUC 评估</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古月残辉</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">36.3k</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: '6du4Ppc2TvUuhcccRHSDNH2v-gzGzoHsz',
+        appKey: 'zOKNml4W1Bq3OTzEuLt5hUjI',
+        placeholder: '感谢阅读！欢迎评论！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
