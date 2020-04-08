@@ -45,6 +45,38 @@
 
 
 
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
 
 
 
@@ -89,7 +121,7 @@
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。 AUC (Area Under the Curve) 的概念AUC（Area">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-04-04T14:33:18.087Z">
+<meta property="og:updated_time" content="2020-04-08T15:00:40.884Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AUC 理解与应用">
 <meta name="twitter:description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。 AUC (Area Under the Curve) 的概念AUC（Area">
@@ -395,7 +427,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  2k
+                  2.3k
                 </span>
               
 
@@ -411,7 +443,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  7
+                  8
                 </span>
               
             </div>
@@ -436,7 +468,7 @@
 <h2 id="AUC-Area-Under-the-Curve-的概念"><a href="#AUC-Area-Under-the-Curve-的概念" class="headerlink" title="AUC (Area Under the Curve) 的概念"></a>AUC (Area Under the Curve) 的概念</h2><p><strong>AUC</strong>（Area Under Curve）被定义为 <strong>ROC</strong> 曲线下与坐标轴围成的面积。<strong>AUC</strong> 主要用来评估二分类问题的准确率，即随机给定一个正样本和一个负样本，分类器预测该正样本的得分比预测该负样本的得分大的概率。</p>
 <p><strong>AUC</strong> 越接近 1 表明这个分类器的性能越好，随机猜测的 <strong>AUC</strong> 接近 0.5，如果一个分类器的 <strong>AUC</strong> 低于 0.5，只需要将它的结果取反就能一下子提高模型性能。</p>
 <h2 id="AUC-的计算"><a href="#AUC-的计算" class="headerlink" title="AUC 的计算"></a>AUC 的计算</h2><p>根据 <strong>AUC</strong> 的含义，给定样本的真实标签和预测标签，计算分类器的 <strong>AUC</strong> 指标，主要有两种方法：穷举法和序数法。</p>
-<h3 id="穷举法"><a href="#穷举法" class="headerlink" title="穷举法"></a>穷举法</h3><p>穷举法就是穷举样本中所有的正负样本对并计数，从而计算这些样本对中正样本预测得分大于负样本预测得分的比例。假设正例集合为 <script type="math/tex">N_{pos}</script>，正例数量为 <script type="math/tex">n_{pos}</script>；负例集合为 <script type="math/tex">N_{neg}</script>，负例数量为 <script type="math/tex">n_{neg}</script>，则：</p>
+<h3 id="穷举法"><a href="#穷举法" class="headerlink" title="穷举法"></a>穷举法</h3><p>穷举法就是穷举样本中所有的正负样本对并计数，从而计算这些样本对中正样本预测得分大于负样本预测得分的比例。假设正例集合为 <script type="math/tex">N_{pos}</script>，正例数量为 <script type="math/tex">n_{pos}</script> ；负例集合为 <script type="math/tex">N_{neg}</script>，负例数量为 <script type="math/tex">n_{neg}</script>，则：</p>
 <script type="math/tex; mode=display">
 AUC = \frac{\sum I(\hat{y}_{pos}, \hat{y}_{neg})}{n_{pos}\cdot n_{neg}}</script><p>其中，<script type="math/tex">I(.,.)</script> 是指示函数：</p>
 <script type="math/tex; mode=display">
@@ -596,6 +628,11 @@ AUC=\frac{\sum_{i\in N_{pos}}r_i - \frac{n_{neg}(1+n_{neg})}{2}}{n_{pos}\cdot n_
 </table>
 </div>
 <p>其中，CD 的预测得分相同，因此它们的编号为 $\frac{3+4}{2}=3.5$。根据式 $(3)$ 我们可以算出所有正样本的序数和为 $2+3.5+6=11.5$，$AUC=\frac{11.5-3\times 4\div 2}{3\times 3}=0.61$。</p>
+<h3 id="Group-AUC"><a href="#Group-AUC" class="headerlink" title="Group AUC"></a>Group AUC</h3><p>上面介绍了通常意义下 <strong>AUC</strong> 的计算方法，这个指标实际上是将所有的正负样本放在一起，来衡量模型整体的排序能力。但是在推荐场景下，实际上我们更关心的是<strong>对单个用户而言，推荐结果的相对顺序</strong>，至于不同用户之间是否正样本的得分一定比负样本高，其实影响并不大。</p>
+<p>因此，在某些场景下 <strong>AUC</strong> 可能无法真实的度量模型的排序能力 (比如离线指标相对较高，但是线上指标相对较差)，这时可以考虑尝试使用 <strong>GAUC</strong> 来度量。</p>
+<p><strong>GAUC</strong> 实际上就是按用户进行分组，计算每个用户下样本排序的 <strong>AUC</strong>，再汇总加权得分，计算公式如下：</p>
+<script type="math/tex; mode=display">
+GAUC=\frac{\sum_{u}w_u \cdot AUC_u}{\sum_{u}w_u}</script><p>这里的用户权重 <script type="math/tex">w_u</script> 可以设置为该用户的点击数/曝光数。至于每个用户样本的 <script type="math/tex">AUC_u</script> 计算还是参考式 $(1)$ 或式 $(3)$。</p>
 <h2 id="单特征-AUC-的计算"><a href="#单特征-AUC-的计算" class="headerlink" title="单特征 AUC 的计算"></a>单特征 AUC 的计算</h2><p>特征选择中一个重要的技术就是单特征 <strong>AUC</strong> 的计算，它体现了这维特征正确划分样本的能力。单特征 <strong>AUC</strong> 越高，这维特征也就越重要，尤其是在线性模型中。</p>
 <h3 id="单值离散特征的-AUC-计算"><a href="#单值离散特征的-AUC-计算" class="headerlink" title="单值离散特征的 AUC 计算"></a>单值离散特征的 AUC 计算</h3><p>单值离散特征是指特征取值是离散特征，而且每个样本中该特征取值只有一个，例如用户的城市、性别等。我们基于训练数据和测试数据可以使用以下算法高效的计算该特征的 <strong>AUC</strong> (推导过程参考<a href="https://blog.csdn.net/u013019431/article/details/92851053" target="_blank" rel="noopener">这里</a>)：</p>
 <ol>
@@ -812,7 +849,7 @@ AUC=\frac{\sum_{i\in N_{pos}}r_i - \frac{n_{neg}(1+n_{neg})}{2}}{n_{pos}\cdot n_
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">23</span>
+                  <span class="site-state-item-count">24</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -834,7 +871,7 @@ AUC=\frac{\sum_{i\in N_{pos}}r_i - \frac{n_{neg}(1+n_{neg})}{2}}{n_{pos}\cdot n_
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">58</span>
+                  <span class="site-state-item-count">59</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -884,7 +921,7 @@ AUC=\frac{\sum_{i\in N_{pos}}r_i - \frac{n_{neg}(1+n_{neg})}{2}}{n_{pos}\cdot n_
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AUC-Area-Under-the-Curve-的概念"><span class="nav-number">1.</span> <span class="nav-text">AUC (Area Under the Curve) 的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AUC-的计算"><span class="nav-number">2.</span> <span class="nav-text">AUC 的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#穷举法"><span class="nav-number">2.1.</span> <span class="nav-text">穷举法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#序数法"><span class="nav-number">2.2.</span> <span class="nav-text">序数法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单特征-AUC-的计算"><span class="nav-number">3.</span> <span class="nav-text">单特征 AUC 的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单值离散特征的-AUC-计算"><span class="nav-number">3.1.</span> <span class="nav-text">单值离散特征的 AUC 计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多值离散特征的-AUC-评估"><span class="nav-number">3.2.</span> <span class="nav-text">多值离散特征的 AUC 评估</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连续特征的-AUC-评估"><span class="nav-number">3.3.</span> <span class="nav-text">连续特征的 AUC 评估</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#AUC-Area-Under-the-Curve-的概念"><span class="nav-number">1.</span> <span class="nav-text">AUC (Area Under the Curve) 的概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AUC-的计算"><span class="nav-number">2.</span> <span class="nav-text">AUC 的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#穷举法"><span class="nav-number">2.1.</span> <span class="nav-text">穷举法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#序数法"><span class="nav-number">2.2.</span> <span class="nav-text">序数法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Group-AUC"><span class="nav-number">2.3.</span> <span class="nav-text">Group AUC</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#单特征-AUC-的计算"><span class="nav-number">3.</span> <span class="nav-text">单特征 AUC 的计算</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#单值离散特征的-AUC-计算"><span class="nav-number">3.1.</span> <span class="nav-text">单值离散特征的 AUC 计算</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#多值离散特征的-AUC-评估"><span class="nav-number">3.2.</span> <span class="nav-text">多值离散特征的 AUC 评估</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#连续特征的-AUC-评估"><span class="nav-number">3.3.</span> <span class="nav-text">连续特征的 AUC 评估</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -918,7 +955,7 @@ AUC=\frac{\sum_{i\in N_{pos}}r_i - \frac{n_{neg}(1+n_{neg})}{2}}{n_{pos}\cdot n_
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">36.3k</span>
+    <span title="Site words total count">37.2k</span>
   
 </div>
 
