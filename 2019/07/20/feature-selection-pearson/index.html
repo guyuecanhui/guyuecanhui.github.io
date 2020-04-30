@@ -40,7 +40,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -80,21 +80,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/,/hcigmoid/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/,/hcigmoid/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/,/hcigmoid/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/,/hcigmoid/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/,/hcigmoid/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/,/hcigmoid/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -106,7 +106,7 @@
 
 
 
-  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
+  <link rel="alternate" href="/,/hcigmoid/atom.xml" title="HCigmoid" type="application/atom+xml">
 
 
 
@@ -117,26 +117,26 @@
 <meta name="keywords" content="特征,特征选择,特征过滤,Pearson">
 <meta property="og:type" content="article">
 <meta property="og:title" content="常用的特征选择方法之 Pearson 相关系数">
-<meta property="og:url" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/index.html">
+<meta property="og:url" content="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/07/20/feature-selection-pearson/index.html">
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。 但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。 随着深度网络的崛">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/play-ratio-distribution.png">
-<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/ratio-preference.png">
-<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png">
-<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/07/20/feature-selection-pearson/play-ratio-distribution.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/07/20/feature-selection-pearson/ratio-preference.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png">
 <meta property="og:updated_time" content="2019-08-17T14:18:20.347Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="常用的特征选择方法之 Pearson 相关系数">
 <meta name="twitter:description" content="众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。 但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。 随着深度网络的崛">
-<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/play-ratio-distribution.png">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/07/20/feature-selection-pearson/play-ratio-distribution.png">
 
 
 
 <script type="text/javascript" id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/',
+    root: '/,/hcigmoid/',
     scheme: 'Gemini',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
@@ -159,7 +159,7 @@
 
 
 
-  <link rel="canonical" href="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/">
+  <link rel="canonical" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/07/20/feature-selection-pearson/">
 
 
 
@@ -193,7 +193,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/,/hcigmoid/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">HCigmoid</span>
         <span class="logo-line-after"><i></i></span>
@@ -221,7 +221,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/,/hcigmoid/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
@@ -231,7 +231,7 @@
       
         
         <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
+          <a href="/,/hcigmoid/about/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
@@ -241,7 +241,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
+          <a href="/,/hcigmoid/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
@@ -251,7 +251,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
+          <a href="/,/hcigmoid/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
@@ -261,7 +261,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href="/,/hcigmoid/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
@@ -334,12 +334,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/,/hcigmoid/2019/07/20/feature-selection-pearson/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="古月残辉">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/,/hcigmoid/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -386,7 +386,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/特征工程/" itemprop="url" rel="index">
+                  <a href="/,/hcigmoid/categories/特征工程/" itemprop="url" rel="index">
                     <span itemprop="name">特征工程</span>
                   </a>
                 </span>
@@ -404,8 +404,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/07/20/feature-selection-pearson/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/20/feature-selection-pearson/" itemprop="commentCount"></span>
+                <a href="/,/hcigmoid/2019/07/20/feature-selection-pearson/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/,/hcigmoid/2019/07/20/feature-selection-pearson/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -491,11 +491,11 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
 <p>这些条件在实际中很容易被忽略。</p>
 <p>例如，在视频推荐中，我们可以将用户对视频的播放完成度作为目标变量，检测其他连续型特征与它的相关性，或者将这些连续型特征做特定的变换后，检测其与播放完成度的相关性。</p>
 <p>但是播放完成度实际上不是正态分布的，如下图所示（实际上大多数日志统计特征，如用户播放视频数、视频播放完成度等，也都不服从正态分布），因此实际上是不能使用 <strong>Pearson</strong> 相关系数的，这时候可以用 <strong>Spearman</strong> 或者 <strong>Kendall</strong> 相关系数来代替。</p>
-<img src="/2019/07/20/feature-selection-pearson/play-ratio-distribution.png" title="图 1. 视频播放完成度分布">
+<img src="/,/hcigmoid/2019/07/20/feature-selection-pearson/play-ratio-distribution.png" title="图 1. 视频播放完成度分布">
 <p>另外要注意的是，如果两个变量本身就是线性的关系，那么 <strong>Pearson</strong> 相关系数绝对值越大相关性越强，绝对值越小相关性越弱；但在当两个变量关系未知情况下，<strong>Pearson</strong> 相关系数的大小就没有什么指导意义了，它的绝对值大小并不能表征变量间的相关性强弱，这个时候最好能够画图出来看看作为辅助判断。我会在下面的例子里再详细的说明这一点。</p>
 <h3 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h3><p>我们举个例子来看如何计算 <strong>Pearson</strong> 相关系数（这里仅仅演示计算过程，实际上数据的分布也不满足使用 <strong>Pearson</strong> 相关系数的条件）。</p>
 <p>考虑视频推荐场景下，假设我们的目标 (之一) 是最大化视频的播放完成度 $y$，播放完成度的取值范围是 $[0,1]$，我们需要分析哪些因素跟 $y$ 相关，例如有一维特征是表示用户对视频的偏好度，记为 $x$，它的取值范围也是 $[0,1]$，我们把几条样本中 $x$ 和 $y$ 的取值计算出来，并画成散点图，如下所示：</p>
-<img src="/2019/07/20/feature-selection-pearson/ratio-preference.png" title="图 2. 用户对视频的偏好度与播放完成度的对应关系">
+<img src="/,/hcigmoid/2019/07/20/feature-selection-pearson/ratio-preference.png" title="图 2. 用户对视频的偏好度与播放完成度的对应关系">
 <p>我们可以按照公式 (2) 来计算 $x$ 与 $y$ 的 <strong>Pearson</strong> 相关系数：</p>
 <ol>
 <li>计算变量平均值：$\overline{x} = 0.5,\ \overline{y}=0.55$；</li>
@@ -504,10 +504,10 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
 </ol>
 <p>通过计算，我们发现，这个特征与目标变量之间的线性相关性非常高，这与我们看图得到的认知是一致的。因此我们可以把这一维特征作为有效特征加入。</p>
 <p>但是，如果我们对这个例子稍加修改，将最后一个数据点 $(0.9,1.0)$ 改为 $(0.9,-1.0)$，如图 3 所示：</p>
-<img src="/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png" title="图 3. 引入异常数据对 Pearson 相关系数的影响">
+<img src="/,/hcigmoid/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png" title="图 3. 引入异常数据对 Pearson 相关系数的影响">
 <p>从我们的观察来看，最后一个数据点可能是噪声或者异常值，对我们判断两个变量的线性相关性应该不造成影响，但是实际上，我们再次计算一下这两个变量的 <strong>Pearson</strong> 相关系数，此时的值仅仅只有 $-0.0556$，可以说是几乎不线性相关了，这说明 <strong>Pearson</strong> 相关系数小并不代表线性相关性一定弱。在这种情况下，我们应该在数据清洗阶段把特征的异常值过滤或者平滑掉以后，再计算它与目标的相关系数。</p>
 <p>反过来，<strong>Pearson</strong> 相关系数大也并不代表线性相关性一定强。<a href="https://en.wikiversity.org/wiki/Correlation" target="_blank" rel="noopener">图 4</a> 列举了几个 <strong>Pearson</strong> 相关系数均为 $0.816$ 的变量数据，其中有些变量间并非明显的线性相关，或者是明显的二次相关，只是 <strong>Pearson</strong> 相关系数恰好较大而已。</p>
-<img src="/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png" title="图 4. 几组 Pearson 相关系数为 $0.816$ 的数据">
+<img src="/,/hcigmoid/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png" title="图 4. 几组 Pearson 相关系数为 $0.816$ 的数据">
 <blockquote>
 <p>附示例的 python 代码：</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> pearsonr</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x = [<span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.3</span>, <span class="number">0.4</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>y = [<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">1.0</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pearsonr(x, y)</span><br><span class="line">(<span class="number">0.97203814535663591</span>, <span class="number">5.3516208203873684e-05</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>z = [<span class="number">0.1</span>, <span class="number">0.1</span>, <span class="number">0.2</span>, <span class="number">0.6</span>, <span class="number">0.7</span>, <span class="number">0.8</span>, <span class="number">0.9</span>, <span class="number">-1.0</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>pearsonr(x, z)</span><br><span class="line">(<span class="number">-0.055618651039326214</span>, <span class="number">0.89592989552025337</span>)</span><br></pre></td></tr></table></figure>
@@ -546,13 +546,13 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
       
         <div class="post-tags">
           
-            <a href="/tags/特征/" rel="tag"># 特征</a>
+            <a href="/,/hcigmoid/tags/特征/" rel="tag"># 特征</a>
           
-            <a href="/tags/特征选择/" rel="tag"># 特征选择</a>
+            <a href="/,/hcigmoid/tags/特征选择/" rel="tag"># 特征选择</a>
           
-            <a href="/tags/特征过滤/" rel="tag"># 特征过滤</a>
+            <a href="/,/hcigmoid/tags/特征过滤/" rel="tag"># 特征过滤</a>
           
-            <a href="/tags/Pearson/" rel="tag"># Pearson</a>
+            <a href="/,/hcigmoid/tags/Pearson/" rel="tag"># Pearson</a>
           
         </div>
       
@@ -565,7 +565,7 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/07/03/ftrl-fm/" rel="next" title="用 FTRL 训练 FM 模型">
+              <a href="/,/hcigmoid/2019/07/03/ftrl-fm/" rel="next" title="用 FTRL 训练 FM 模型">
                 <i class="fa fa-chevron-left"></i> 用 FTRL 训练 FM 模型
               </a>
             
@@ -575,7 +575,7 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/07/28/feature-selection-spearman/" rel="prev" title="常用的特征选择方法之 Spearman 秩相关系数">
+              <a href="/,/hcigmoid/2019/07/28/feature-selection-spearman/" rel="prev" title="常用的特征选择方法之 Spearman 秩相关系数">
                 常用的特征选择方法之 Spearman 秩相关系数 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -655,7 +655,7 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives/">
+                <a href="/,/hcigmoid/archives/">
               
                   <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">日志</span>
@@ -667,7 +667,7 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
               
               
               <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
+                <a href="/,/hcigmoid/categories/index.html">
                   <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
@@ -678,7 +678,7 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
               
               
               <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
+                <a href="/,/hcigmoid/tags/index.html">
                   <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
@@ -689,7 +689,7 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
 
           
             <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
+              <a href="/,/hcigmoid/atom.xml" rel="alternate">
                 <i class="fa fa-rss"></i>
                 RSS
               </a>
@@ -851,64 +851,64 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/,/hcigmoid/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/,/hcigmoid/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/,/hcigmoid/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/,/hcigmoid/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/,/hcigmoid/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/,/hcigmoid/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/,/hcigmoid/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
@@ -980,7 +980,7 @@ r_{\boldsymbol{x},\boldsymbol{y}}=\frac{\sum ^n _{i=1}(x_i - \overline{x})(y_i -
     } else if (/json$/i.test(search_path)) {
       isXml = false;
     }
-    var path = "/" + search_path;
+    var path = "/,/hcigmoid/" + search_path;
     // monitor main search box;
 
     var onPopupClose = function (e) {

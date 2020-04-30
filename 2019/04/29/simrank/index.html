@@ -40,7 +40,7 @@
 
   
   
-  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -80,21 +80,21 @@
 
 
 
-<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/,/hcigmoid/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/,/hcigmoid/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/,/hcigmoid/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/,/hcigmoid/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/,/hcigmoid/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/,/hcigmoid/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -106,7 +106,7 @@
 
 
 
-  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
+  <link rel="alternate" href="/,/hcigmoid/atom.xml" title="HCigmoid" type="application/atom+xml">
 
 
 
@@ -117,24 +117,24 @@
 <meta name="keywords" content="推荐,协同过滤,算法,相似度,二部图">
 <meta property="og:type" content="article">
 <meta property="og:title" content="SimRank与视频相似度计算">
-<meta property="og:url" content="https://guyuecanhui.github.io/2019/04/29/simrank/index.html">
+<meta property="og:url" content="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/04/29/simrank/index.html">
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="一、应用背景最近需要对视频的相关推荐进行一些优化。之前尝试过 TagSim、AutoEncoder 和 Word2Vec 等方法，无非是基于元数据相似或基于协同相似的思路。但是在实际应用的时候，由于媒资传过来的信息未必是非常准确的，因此基于元数据相似的方法在数据基础上可能就存在一定的不确定性，因此常常会推出来一些虽然实际上很符合算法预期，但是看起来很奇怪的结果。而基于协同相似的推荐，由于需要比较多">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://guyuecanhui.github.io/2019/04/29/simrank/simrank-f1.png">
-<meta property="og:image" content="https://guyuecanhui.github.io/2019/04/29/simrank/simrank-f2.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/04/29/simrank/simrank-f1.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/04/29/simrank/simrank-f2.png">
 <meta property="og:updated_time" content="2019-05-10T14:44:49.781Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="SimRank与视频相似度计算">
 <meta name="twitter:description" content="一、应用背景最近需要对视频的相关推荐进行一些优化。之前尝试过 TagSim、AutoEncoder 和 Word2Vec 等方法，无非是基于元数据相似或基于协同相似的思路。但是在实际应用的时候，由于媒资传过来的信息未必是非常准确的，因此基于元数据相似的方法在数据基础上可能就存在一定的不确定性，因此常常会推出来一些虽然实际上很符合算法预期，但是看起来很奇怪的结果。而基于协同相似的推荐，由于需要比较多">
-<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/04/29/simrank/simrank-f1.png">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/04/29/simrank/simrank-f1.png">
 
 
 
 <script type="text/javascript" id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/',
+    root: '/,/hcigmoid/',
     scheme: 'Gemini',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
@@ -157,7 +157,7 @@
 
 
 
-  <link rel="canonical" href="https://guyuecanhui.github.io/2019/04/29/simrank/">
+  <link rel="canonical" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/04/29/simrank/">
 
 
 
@@ -191,7 +191,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/" class="brand" rel="start">
+      <a href="/,/hcigmoid/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">HCigmoid</span>
         <span class="logo-line-after"><i></i></span>
@@ -219,7 +219,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/" rel="section">
+          <a href="/,/hcigmoid/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
@@ -229,7 +229,7 @@
       
         
         <li class="menu-item menu-item-about">
-          <a href="/about/" rel="section">
+          <a href="/,/hcigmoid/about/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
@@ -239,7 +239,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/tags/" rel="section">
+          <a href="/,/hcigmoid/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
@@ -249,7 +249,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/categories/" rel="section">
+          <a href="/,/hcigmoid/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
@@ -259,7 +259,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/archives/" rel="section">
+          <a href="/,/hcigmoid/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
@@ -332,12 +332,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/04/29/simrank/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/,/hcigmoid/2019/04/29/simrank/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="古月残辉">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="image" content="/,/hcigmoid/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -384,7 +384,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                  <a href="/,/hcigmoid/categories/推荐系统/" itemprop="url" rel="index">
                     <span itemprop="name">推荐系统</span>
                   </a>
                 </span>
@@ -402,8 +402,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/2019/04/29/simrank/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/29/simrank/" itemprop="commentCount"></span>
+                <a href="/,/hcigmoid/2019/04/29/simrank/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/,/hcigmoid/2019/04/29/simrank/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -472,7 +472,7 @@
 <h2 id="二、SimRank-基本模型"><a href="#二、SimRank-基本模型" class="headerlink" title="二、SimRank 基本模型"></a>二、SimRank 基本模型</h2><h3 id="2-1-核心思想"><a href="#2-1-核心思想" class="headerlink" title="2.1 核心思想"></a>2.1 核心思想</h3><p>由于 <strong>SimRank</strong> 提出的时间比较早，网上的材料很多，而且大多长的也差不多，可以参考文献 [1, 2] ，这里只简单的搬个砖。</p>
 <p>文献 [1] 最早提出  <strong>SimRank</strong> 模型，核心的思想是 “<strong>two objects are similar if they are related to similar objects</strong>“（这跟 PageRank 的思路完全一致，只是 PageRank 是用来评估每个链接的重要性，而  <strong>SimRank</strong> 是用来评估每两个物品间的相似度）。 <strong>SimRank</strong> 既支持计算所有节点对之间的相似度（如输入数据为文章引用记录），也支持计算二部图中每一部分节点间的相似度（如输入数据为用户行为记录）。由于我们是做视频推荐，主要用的是用户行为数据，因此这里只介绍基于二部图的模型。</p>
 <p>举个简单的例子：如下图所示，用户 $u_1$ 观看了视频 $v_1,v_2,v_3$；用户 $u_2$ 观看了视频 $v_2,v_3,v_4$，则可以用二部图来表示这种观影关系（二部图是因为用户 $u_1,u_2$ 之间无联系，且视频 $v_1,v_2,v_3,v_4$ 间无联系，只有用户-视频间存在有向边）：</p>
-<img src="/2019/04/29/simrank/simrank-f1.png" title="用户观影二部图示例">
+<img src="/,/hcigmoid/2019/04/29/simrank/simrank-f1.png" title="用户观影二部图示例">
 <p>为了评估视频 $v_1,v_4$ 之间的相似度，需要看看哪些人看了 $v_1,v_4$ ，以及这些用户的相似度。这是一个典型的递归逻辑，递归的起点在于：每个节点（包括这里的用户/视频）与自己的相似度为 1；没有关联的节点间相似度为 0（一种情况是这两个节点没有与其他节点的联系，还有一种情况是在迭代的初始状态时，所有节点对间的相似度为 0）。值得注意的是，如果用 ItemCF 算法来计算 $v_1,v_4$ 的相似度，由于它们没有共同观看的用户，相似度为 0，具体对比可以参考我之前的博客：<a href="https://guyuecanhui.github.io/2019/04/12/itemcf/">可能是最好懂的ItemCF解释了</a>。</p>
 <h3 id="2-2-基于二部图的描述"><a href="#2-2-基于二部图的描述" class="headerlink" title="2.2 基于二部图的描述"></a>2.2 基于二部图的描述</h3><p>最直观和容易理解的是基于图的描述。用数学语言来表达上面的思路：</p>
 <script type="math/tex; mode=display">
@@ -523,7 +523,7 @@ W_{uv}^T\cdot S_u \cdot W_{uv} & 0
 S_u^{k+1} = c_1 \cdot W_{vu}^T\cdot S_v^k \cdot W_{vu} + (I - diag(c_1 \cdot W_{vu}^T\cdot S_v^k \cdot W_{vu})) \\
 S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}^T\cdot S_u^k \cdot W_{uv}))
 \end{cases}\quad (3)</script><h3 id="2-4-扩展用户-视频属性"><a href="#2-4-扩展用户-视频属性" class="headerlink" title="2.4 扩展用户/视频属性"></a>2.4 扩展用户/视频属性</h3><p>以上描述了经典的基于二部图的  <strong>SimRank</strong> 算法，但是其实我们可以将视频的元数据/用户的属性数据作为辅助节点加入到图中来，并添加<code>视频元数据</code>$\rightarrow$<code>视频</code>和<code>用户画像</code>$\rightarrow$<code>用户</code>的单向边（表示用户/视频的相似度不会反向传播给画像/元数据），同时初始化不同维度的视频元数据/用户画像的相似度，以达到运营干预的目的。具体的分块乘法就不推导了，跟 2.3 节差不多，这里只举一个例子：</p>
-<img src="/2019/04/29/simrank/simrank-f2.png" title="扩展用户/视频属性后的二部图示例">
+<img src="/,/hcigmoid/2019/04/29/simrank/simrank-f2.png" title="扩展用户/视频属性后的二部图示例">
 <p>上图中，本来 $u_1,u_2$ 之间是没有边相连的，因此相似度为 0，但是由于他们同属男性，因此由<code>男性</code>这个画像向这两个用户传播了一定的相似度；同样的，本来 $v_1,v_2$ 之间的相似度也为 0，但是由于它们都是搞笑的视频，因此<code>搞笑</code>这个元数据也向它们传播了一定的相似度。<strong>加入用户维度和视频维度的辅助节点以后，有助于解决由于行为较少而无法准确评估相似度的情况。</strong></p>
 <h2 id="三、模型实现与优化讨论"><a href="#三、模型实现与优化讨论" class="headerlink" title="三、模型实现与优化讨论"></a>三、模型实现与优化讨论</h2><p>我在 spark 2 和在 python 中分别实现了上述过程，使用图遍历的方式优点是代码简单，但是对于大规模的图优化比较麻烦，速度很慢；使用矩阵计算的时候，主要的问题又在于矩阵的优化计算。下面简单讲下一些可行的优化思路。</p>
 <h5 id="a-基于-spark-的精确计算"><a href="#a-基于-spark-的精确计算" class="headerlink" title="a. 基于 spark 的精确计算"></a>a. 基于 spark 的精确计算</h5><p>如果使用 mllib 的 <code>BlockMatrix</code> 来计算，会强制将稀疏矩阵转成稠密矩阵来计算，因此开销比实际需要的大很多，因此一定要使用公式 (3) 来替代公式 (2)。但是即使这样，也不能从根本上解决问题，根本上是需要自己实现一套高效的分布式稀疏矩阵的计算方法，网上有一些开源项目可参考。</p>
@@ -550,15 +550,15 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
       
         <div class="post-tags">
           
-            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+            <a href="/,/hcigmoid/tags/推荐/" rel="tag"># 推荐</a>
           
-            <a href="/tags/协同过滤/" rel="tag"># 协同过滤</a>
+            <a href="/,/hcigmoid/tags/协同过滤/" rel="tag"># 协同过滤</a>
           
-            <a href="/tags/算法/" rel="tag"># 算法</a>
+            <a href="/,/hcigmoid/tags/算法/" rel="tag"># 算法</a>
           
-            <a href="/tags/相似度/" rel="tag"># 相似度</a>
+            <a href="/,/hcigmoid/tags/相似度/" rel="tag"># 相似度</a>
           
-            <a href="/tags/二部图/" rel="tag"># 二部图</a>
+            <a href="/,/hcigmoid/tags/二部图/" rel="tag"># 二部图</a>
           
         </div>
       
@@ -571,7 +571,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/04/14/hexo-next-github/" rel="next" title="Hexo+NexT+github 配置指南">
+              <a href="/,/hcigmoid/2019/04/14/hexo-next-github/" rel="next" title="Hexo+NexT+github 配置指南">
                 <i class="fa fa-chevron-left"></i> Hexo+NexT+github 配置指南
               </a>
             
@@ -581,7 +581,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/05/10/simrankpp/" rel="prev" title="从 SimRank 到 SimRank++">
+              <a href="/,/hcigmoid/2019/05/10/simrankpp/" rel="prev" title="从 SimRank 到 SimRank++">
                 从 SimRank 到 SimRank++ <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -661,7 +661,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/archives/">
+                <a href="/,/hcigmoid/archives/">
               
                   <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">日志</span>
@@ -673,7 +673,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
               
               
               <div class="site-state-item site-state-categories">
-                <a href="/categories/index.html">
+                <a href="/,/hcigmoid/categories/index.html">
                   <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
@@ -684,7 +684,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
               
               
               <div class="site-state-item site-state-tags">
-                <a href="/tags/index.html">
+                <a href="/,/hcigmoid/tags/index.html">
                   <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
@@ -695,7 +695,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
 
           
             <div class="feed-link motion-element">
-              <a href="/atom.xml" rel="alternate">
+              <a href="/,/hcigmoid/atom.xml" rel="alternate">
                 <i class="fa fa-rss"></i>
                 RSS
               </a>
@@ -857,64 +857,64 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
 
   
   
-    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/,/hcigmoid/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/,/hcigmoid/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/,/hcigmoid/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/,/hcigmoid/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/,/hcigmoid/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/,/hcigmoid/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/,/hcigmoid/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
@@ -986,7 +986,7 @@ S_v^{k+1} = c_2 \cdot W_{uv}^T\cdot S_u^k \cdot W_{uv} + (I-diag(c_2\cdot W_{uv}
     } else if (/json$/i.test(search_path)) {
       isXml = false;
     }
-    var path = "/" + search_path;
+    var path = "/,/hcigmoid/" + search_path;
     // monitor main search box;
 
     var onPopupClose = function (e) {
