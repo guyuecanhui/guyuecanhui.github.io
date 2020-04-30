@@ -100,7 +100,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="推荐,排序,特征组合,特征交叉,">
 
 
 
@@ -113,17 +113,20 @@
 
 
 
-<meta name="description" content="总结心得">
-<meta name="keywords" content="feature, model, algorithm">
-<meta property="og:type" content="website">
-<meta property="og:title" content="HCigmoid">
-<meta property="og:url" content="https://guyuecanhui.github.io/tags/共轭/index.html">
+<meta name="description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表的一个 CTR 预估模">
+<meta name="keywords" content="推荐,排序,特征组合,特征交叉">
+<meta property="og:type" content="article">
+<meta property="og:title" content="DeepFM 论文精读">
+<meta property="og:url" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="总结心得">
+<meta property="og:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表的一个 CTR 预估模">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png">
+<meta property="og:updated_time" content="2020-04-30T17:17:08.909Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HCigmoid">
-<meta name="twitter:description" content="总结心得">
+<meta name="twitter:title" content="DeepFM 论文精读">
+<meta name="twitter:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表的一个 CTR 预估模">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png">
 
 
 
@@ -153,13 +156,13 @@
 
 
 
-  <link rel="canonical" href="https://guyuecanhui.github.io/tags/共轭/">
+  <link rel="canonical" href="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/">
 
 
 
 
 
-  <title>标签: 共轭 | HCigmoid</title>
+  <title>DeepFM 论文精读 | HCigmoid</title>
   
 
 
@@ -178,7 +181,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -314,52 +317,232 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>共轭<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/08/18/conjugate-priors-video-quality/" itemprop="url">
-              
-                <span itemprop="name">例解共轭分布之视频质量评估</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">DeepFM 论文精读</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-08-18T10:47:06+08:00" content="2019-08-18">
-          08-18
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-04-30T22:30:24+08:00">
+                2020-04-30
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/论文精读/" itemprop="url" rel="index">
+                    <span itemprop="name">论文精读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/04/30/paper-2017-noah-deepfm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/04/30/paper-2017-noah-deepfm/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  913
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p><strong>论文引用</strong>: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” <em>arXiv preprint arXiv:1703.04247</em> (2017).</p>
+</blockquote>
+<p><strong>DeepFM</strong> 是华为诺亚实验室受 <strong>FM</strong> 和 wide &amp; deep 模型启发，发表的一个 <strong>CTR</strong> 预估模型，虽然没有发表在顶会上，但是从国内企业的实践分享来看，受到了广泛的认可。它的核心思想是将 wide &amp; deep 网络中的 wide 层用 <strong>FM</strong> 层代替，增加了特征的二阶自动交叉能力，并且在实现上天然可以将 <strong>FM</strong> 层的 embedding 与 deep 层共享。</p>
+<p>随着深度网络的兴起，<strong>DNN</strong> 尤其是 <strong>MLP</strong> 的结构往往被用作非线性的特征提取器，并且取得了比较好的效果。然而文章指出，<strong>只保留特征的高阶非线性组合并不如同时保留特征的低阶组合和高阶组合效果好</strong>。这也是文章核心的出发点之一。但是 wide &amp; deep 模型中只有特征的一阶和高阶组合，因此一些有效的的二阶/三阶组合只能靠工程师人工挖掘组合出来，放到 wide 层。这个时候 <strong>FM</strong> 模型又出场了，用它来代替 wide 层，既能保留原始特征，又能自动做原始特征的二阶组合，这样就能节省很多人工特征交叉的工作。当然对于三阶及以上特征的显式组合，还是只能靠人工做一些工作，或者用前面讲的 <strong>DCN</strong> 中的 cross 等结构去捕获。</p>
+<p><strong>DeepFM</strong> 的模型架构如下图所示，首先将所有的特征转成长度相同的 embedding，然后依照 <strong>FM</strong> 模型构建 <strong>FM</strong> 层，再将所有 embedding 拼接后，送到 <strong>MLP</strong> 层，最后在顶层进行拼接后，送到 <strong>LR</strong> 层，计算二分类损失。</p>
+<img src="/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png" title="图 1. DeepFM 整体架构">
+<p>从架构来看，<strong>DeepFM</strong> 没有什么创新的子结构，主要还是在当时提出了一个比较好的思路。下面再聊一聊模型中的一些细节处理。</p>
+<p>由于诺亚在应用市场推荐场景中没有使用连续特征，因此该模型也没有考虑连续特征的处理。但是实际上 <strong>FM</strong> 本身是支持连续特征的，所以如果有连续特征，应该也是需要将每一维连续特征转成一个 embedding。</p>
+<p>对于多值的离散特征，这里有两种处理方案。一种是只考虑 field 之间的特征交叉，这种思路下，我们在生成多值离散特征的 embedding 时可以使用某种 pooling 策略，建议使用 sum pooling，因为这种情况下相当于是每个取值都与另外一维特征做了交叉；另一种是考虑所有特征取值的交叉，这种思路下，就需要将多值特征每个取值的 embedding 进行 concat，再送到 <strong>FM</strong> 层和 <strong>MLP</strong> 层。</p>
+<p>我测试了一下 <strong>DeepFM</strong> 每个子结构的性能（使用 pooling 策略），以只使用线性部分作为基线的话，只使用 FM 的交叉部分能够提升 $4.91\%$，只使用 <strong>MLP</strong> 部分能够提升 $9.30\%$，全部使用能够提升 $9.38\%$，从数据来看，<strong>FM</strong> 层的确能带来少量的提升。</p>
+<p>最后有一个小问题值得思考一下，<strong>DeepFM</strong> 使用 <strong>FM</strong> 层代替 wide 层，那能不能使用 <strong>FFM</strong> 来代替 wide 层呢？或者有没有什么类似的思路，让每个特征与其他 field 特征进行交叉的时候能够有不同的表征？这个问题留待后面介绍 <strong>AutoInt</strong> 的时候再讨论吧~</p>
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+            <a href="/tags/排序/" rel="tag"># 排序</a>
+          
+            <a href="/tags/特征组合/" rel="tag"># 特征组合</a>
+          
+            <a href="/tags/特征交叉/" rel="tag"># 特征交叉</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/04/15/paper-2017-google-dcn/" rel="next" title="Deep & Cross 论文精读">
+                <i class="fa fa-chevron-left"></i> Deep & Cross 论文精读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -367,6 +550,13 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -630,6 +820,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
