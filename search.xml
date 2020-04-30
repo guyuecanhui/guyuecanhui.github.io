@@ -264,8 +264,8 @@
         <category>推荐系统</category>
       </categories>
       <tags>
-        <tag>推荐</tag>
         <tag>统计</tag>
+        <tag>推荐</tag>
         <tag>置信区间</tag>
       </tags>
   </entry>
