@@ -40,7 +40,7 @@
 
   
   
-  <link href="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -80,21 +80,21 @@
 
 
 
-<link href="/,/hcigmoid/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/,/hcigmoid/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/,/hcigmoid/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/,/hcigmoid/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/,/hcigmoid/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/,/hcigmoid/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -106,7 +106,7 @@
 
 
 
-  <link rel="alternate" href="/,/hcigmoid/atom.xml" title="HCigmoid" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
 
 
 
@@ -117,24 +117,24 @@
 <meta name="keywords" content="特征,特征选择,特征过滤,Kendall">
 <meta property="og:type" content="article">
 <meta property="og:title" content="常用的特征选择方法之 Kendall 秩相关系数">
-<meta property="og:url" content="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/08/10/feature-selection-kendall/index.html">
+<meta property="og:url" content="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/index.html">
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="前面我们已经讨论了 Pearson 相关系数和 Spearman 秩相关系数，它们可以检测连续变量间的相关性，并且 Spearman 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：Kendall 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。 Kendall 秩相关系数的定义Kendall 秩相关系数是一个非">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/08/10/feature-selection-kendall/age-value-pairs.png">
-<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/08/10/feature-selection-kendall/age-discrete-pairs.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/age-value-pairs.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/age-discrete-pairs.png">
 <meta property="og:updated_time" content="2019-08-17T14:46:14.499Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="常用的特征选择方法之 Kendall 秩相关系数">
 <meta name="twitter:description" content="前面我们已经讨论了 Pearson 相关系数和 Spearman 秩相关系数，它们可以检测连续变量间的相关性，并且 Spearman 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：Kendall 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。 Kendall 秩相关系数的定义Kendall 秩相关系数是一个非">
-<meta name="twitter:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/08/10/feature-selection-kendall/age-value-pairs.png">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/age-value-pairs.png">
 
 
 
 <script type="text/javascript" id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/,/hcigmoid/',
+    root: '/',
     scheme: 'Gemini',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
@@ -157,7 +157,7 @@
 
 
 
-  <link rel="canonical" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/08/10/feature-selection-kendall/">
+  <link rel="canonical" href="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/">
 
 
 
@@ -191,7 +191,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/,/hcigmoid/" class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">HCigmoid</span>
         <span class="logo-line-after"><i></i></span>
@@ -219,7 +219,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/,/hcigmoid/" rel="section">
+          <a href="/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
@@ -229,7 +229,7 @@
       
         
         <li class="menu-item menu-item-about">
-          <a href="/,/hcigmoid/about/" rel="section">
+          <a href="/about/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
@@ -239,7 +239,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/,/hcigmoid/tags/" rel="section">
+          <a href="/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
@@ -249,7 +249,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/,/hcigmoid/categories/" rel="section">
+          <a href="/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
@@ -259,7 +259,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/,/hcigmoid/archives/" rel="section">
+          <a href="/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
@@ -332,12 +332,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/,/hcigmoid/2019/08/10/feature-selection-kendall/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="古月残辉">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/,/hcigmoid/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -384,7 +384,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/,/hcigmoid/categories/特征工程/" itemprop="url" rel="index">
+                  <a href="/categories/特征工程/" itemprop="url" rel="index">
                     <span itemprop="name">特征工程</span>
                   </a>
                 </span>
@@ -402,8 +402,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/,/hcigmoid/2019/08/10/feature-selection-kendall/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/,/hcigmoid/2019/08/10/feature-selection-kendall/" itemprop="commentCount"></span>
+                <a href="/2019/08/10/feature-selection-kendall/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/10/feature-selection-kendall/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -471,7 +471,7 @@
 <h3 id="Kendall-秩相关系数的定义"><a href="#Kendall-秩相关系数的定义" class="headerlink" title="Kendall 秩相关系数的定义"></a>Kendall 秩相关系数的定义</h3><p><strong>Kendall</strong> 秩相关系数是一个非参数性质（与分布无关）的秩统计参数，是用来度量两个<strong>有序变量</strong>之间<strong>单调关系</strong>强弱的相关系数，它的取值范围是 $[-1,1]$，绝对值越大，表示单调相关性越强，取值为 $0$ 时表示完全不相关。</p>
 <p>原始的 <strong>Kendall</strong> 秩相关系数定义在<strong>一致对</strong> (<strong>concordant pairs</strong>) 和<strong>分歧对</strong> (<strong>discordant pairs</strong>) 的概念上。所谓一致对，就是两个变量取值的相对关系一致；分歧对则是指它们的相对关系不一致。这么说有点难以理解，我们举个例子。</p>
 <p>假设我们为很多不同年龄的用户推送了一条社保相关的视频，然后回收了这些用户的播放完成度，如下表所示：</p>
-<img src="/,/hcigmoid/2019/08/10/feature-selection-kendall/age-value-pairs.png" title="图 1. 用户年龄与播放完成度的关系">
+<img src="/2019/08/10/feature-selection-kendall/age-value-pairs.png" title="图 1. 用户年龄与播放完成度的关系">
 <p>我们想用 <strong>Kendall</strong> 秩相关系数来分析用户年龄与该社保视频的播放情况是否相关。为此，我们将年龄和播放完成度分别排序后，对样本中取值进行排序和编号，分别得到 <code>年龄序号</code> 和 <code>播放序号</code>。这时，对于样本 $3$ 和样本 $4$，它们的年龄序号是 $[3,4]$，播放序号是 $[2,4]$，虽然序号不同，但是变化趋势是相同的，因此它们是一致的；对于样本 $2$ 和样本 $3$，它们的年龄序号是 $[2,3]$，播放序号是 $[5,2]$，它们的变化趋势是相反的，因此它们是分歧的。</p>
 <p>进一步的，我们观察可以发现，当样本已经按年龄升序排列后，对于每个样本，我们可以简单的数一下该样本后续样本中播放序号大于该样本的样本数量，作为该样本引入的一致对数 (该样本之前的样本与该样本也可能一致，但是已经算过一次了)，将所有样本引入的一致对数加起来就能得到所有样本的一致对数，记为 $c$。</p>
 <p>同样的，对于每个样本，我们可以简单的数一下该样本后续样本中播放序号小于该样本的样本数量，作为该样本引入的分歧对数，累加后得到所有样本的分歧对数，记为 $d$。</p>
@@ -489,7 +489,7 @@
 </ol>
 <p>因此，年龄与播放社保视频的时长呈现强相关性，基于这个分析我们就可以尝试对更多年龄大一些的用户推送此视频。</p>
 <p>在工程实现的时候，用户的年龄通常会被划分成不同的区间，而播放完成度只有超过一定阈值 (如 $0.3$) 我们才算作有效播放。因此，图 $1$ 的数据我们又可以转换成下面的离散情况：</p>
-<img src="/,/hcigmoid/2019/08/10/feature-selection-kendall/age-discrete-pairs.png" title="图 2. 离散化的用户年龄与播放完成度的关系">
+<img src="/2019/08/10/feature-selection-kendall/age-discrete-pairs.png" title="图 2. 离散化的用户年龄与播放完成度的关系">
 <p>可以发现，年龄段序号和有效播放序号存在大量的重复数据，因此我们基于式 $(2)$ 来计算：</p>
 <ol>
 <li>将样本按年龄段升序排列，相同的年龄段按是否有效播放排序，对年龄段和是否有效播放进行编号，如图 $2$ 所示；</li>
@@ -534,13 +534,13 @@
       
         <div class="post-tags">
           
-            <a href="/,/hcigmoid/tags/特征/" rel="tag"># 特征</a>
+            <a href="/tags/特征/" rel="tag"># 特征</a>
           
-            <a href="/,/hcigmoid/tags/特征选择/" rel="tag"># 特征选择</a>
+            <a href="/tags/特征选择/" rel="tag"># 特征选择</a>
           
-            <a href="/,/hcigmoid/tags/特征过滤/" rel="tag"># 特征过滤</a>
+            <a href="/tags/特征过滤/" rel="tag"># 特征过滤</a>
           
-            <a href="/,/hcigmoid/tags/Kendall/" rel="tag"># Kendall</a>
+            <a href="/tags/Kendall/" rel="tag"># Kendall</a>
           
         </div>
       
@@ -553,7 +553,7 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/,/hcigmoid/2019/07/28/feature-selection-spearman/" rel="next" title="常用的特征选择方法之 Spearman 秩相关系数">
+              <a href="/2019/07/28/feature-selection-spearman/" rel="next" title="常用的特征选择方法之 Spearman 秩相关系数">
                 <i class="fa fa-chevron-left"></i> 常用的特征选择方法之 Spearman 秩相关系数
               </a>
             
@@ -563,7 +563,7 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/,/hcigmoid/2019/08/18/conjugate-priors-video-quality/" rel="prev" title="例解共轭分布之视频质量评估">
+              <a href="/2019/08/18/conjugate-priors-video-quality/" rel="prev" title="例解共轭分布之视频质量评估">
                 例解共轭分布之视频质量评估 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -643,7 +643,7 @@
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/,/hcigmoid/archives/">
+                <a href="/archives/">
               
                   <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">日志</span>
@@ -655,7 +655,7 @@
               
               
               <div class="site-state-item site-state-categories">
-                <a href="/,/hcigmoid/categories/index.html">
+                <a href="/categories/index.html">
                   <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
@@ -666,7 +666,7 @@
               
               
               <div class="site-state-item site-state-tags">
-                <a href="/,/hcigmoid/tags/index.html">
+                <a href="/tags/index.html">
                   <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
@@ -677,7 +677,7 @@
 
           
             <div class="feed-link motion-element">
-              <a href="/,/hcigmoid/atom.xml" rel="alternate">
+              <a href="/atom.xml" rel="alternate">
                 <i class="fa fa-rss"></i>
                 RSS
               </a>
@@ -839,64 +839,64 @@
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/,/hcigmoid/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/,/hcigmoid/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/,/hcigmoid/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
@@ -968,7 +968,7 @@
     } else if (/json$/i.test(search_path)) {
       isXml = false;
     }
-    var path = "/,/hcigmoid/" + search_path;
+    var path = "/" + search_path;
     // monitor main search box;
 
     var onPopupClose = function (e) {

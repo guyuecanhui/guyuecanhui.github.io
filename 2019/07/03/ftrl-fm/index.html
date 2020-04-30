@@ -40,7 +40,7 @@
 
   
   
-  <link href="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -80,21 +80,21 @@
 
 
 
-<link href="/,/hcigmoid/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/,/hcigmoid/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/,/hcigmoid/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/,/hcigmoid/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/,/hcigmoid/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/,/hcigmoid/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -106,7 +106,7 @@
 
 
 
-  <link rel="alternate" href="/,/hcigmoid/atom.xml" title="HCigmoid" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
 
 
 
@@ -117,23 +117,23 @@
 <meta name="keywords" content="优化,FTRL,模型,FM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用 FTRL 训练 FM 模型">
-<meta property="og:url" content="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/07/03/ftrl-fm/index.html">
+<meta property="og:url" content="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/index.html">
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="近期尝试了基于 FTRL 来训练 FM 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。 一、FM (Factorization Machines) 模型推导FM 模型简介在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/07/03/ftrl-fm/alg-ftrl-fm.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/alg-ftrl-fm.png">
 <meta property="og:updated_time" content="2019-07-03T14:28:24.710Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用 FTRL 训练 FM 模型">
 <meta name="twitter:description" content="近期尝试了基于 FTRL 来训练 FM 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。 一、FM (Factorization Machines) 模型推导FM 模型简介在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特">
-<meta name="twitter:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/07/03/ftrl-fm/alg-ftrl-fm.png">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/alg-ftrl-fm.png">
 
 
 
 <script type="text/javascript" id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/,/hcigmoid/',
+    root: '/',
     scheme: 'Gemini',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
@@ -156,7 +156,7 @@
 
 
 
-  <link rel="canonical" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/07/03/ftrl-fm/">
+  <link rel="canonical" href="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/">
 
 
 
@@ -190,7 +190,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/,/hcigmoid/" class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">HCigmoid</span>
         <span class="logo-line-after"><i></i></span>
@@ -218,7 +218,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/,/hcigmoid/" rel="section">
+          <a href="/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
@@ -228,7 +228,7 @@
       
         
         <li class="menu-item menu-item-about">
-          <a href="/,/hcigmoid/about/" rel="section">
+          <a href="/about/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
@@ -238,7 +238,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/,/hcigmoid/tags/" rel="section">
+          <a href="/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
@@ -248,7 +248,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/,/hcigmoid/categories/" rel="section">
+          <a href="/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
@@ -258,7 +258,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/,/hcigmoid/archives/" rel="section">
+          <a href="/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
@@ -331,12 +331,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/,/hcigmoid/2019/07/03/ftrl-fm/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="古月残辉">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/,/hcigmoid/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -383,7 +383,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/,/hcigmoid/categories/推荐系统/" itemprop="url" rel="index">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
                     <span itemprop="name">推荐系统</span>
                   </a>
                 </span>
@@ -401,8 +401,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/,/hcigmoid/2019/07/03/ftrl-fm/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/,/hcigmoid/2019/07/03/ftrl-fm/" itemprop="commentCount"></span>
+                <a href="/2019/07/03/ftrl-fm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/07/03/ftrl-fm/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -529,7 +529,7 @@ w^{t+1}_i=
 \end{align}
 \end{cases} \qquad(10)</script><p>其中，令 <script type="math/tex">z_i^t=g^{1:t}-\sum_{s=1}^t\sigma_s\boldsymbol{w}_s, \ s_i^t=\sum_{j=1}^t (g_i^j)^2</script>，主要是方便存储和迭代计算。</p>
 <h2 id="三、基于-FTRL-训练-FM-的算法流程"><a href="#三、基于-FTRL-训练-FM-的算法流程" class="headerlink" title="三、基于 FTRL 训练 FM 的算法流程"></a>三、基于 FTRL 训练 FM 的算法流程</h2><p>用 <strong>FTRL</strong> 来训练 <strong>FM</strong> 模型，由于我们组习惯用 {0,1} 作为样本标签，则根据式 (2), (6), (10)，可以得到如下算法流程：</p>
-<h3 id="Algorithm-Ftrl-FM"><a href="#Algorithm-Ftrl-FM" class="headerlink" title="Algorithm Ftrl+FM"></a><strong>Algorithm</strong> Ftrl+FM</h3><img src="/,/hcigmoid/2019/07/03/ftrl-fm/alg-ftrl-fm.png" title="用 FTRL 算法训练 FM 模型流程">
+<h3 id="Algorithm-Ftrl-FM"><a href="#Algorithm-Ftrl-FM" class="headerlink" title="Algorithm Ftrl+FM"></a><strong>Algorithm</strong> Ftrl+FM</h3><img src="/2019/07/03/ftrl-fm/alg-ftrl-fm.png" title="用 FTRL 算法训练 FM 模型流程">
 <p><strong>FTRL</strong> 算法特别适合在线更新模型，即基于每条实时样本更新模型。但是出于性能和可靠性考虑，也可以稍加修改应用于离线训练或者近线批量训练。例如，离线训练任务，将每天/每小时的数据作为一个批次用来更新 <strong>FM</strong> 模型：在每轮迭代时，需要将一批次样本的所有梯度、损失等计算结果进行汇总（可以简单的用平均值来代替），再用汇总后的值更新模型。为了训练充分，可以对每个批次的样本迭代训练若干轮。训练完的模型需要将参数 $\boldsymbol{w}, \boldsymbol{s}, \boldsymbol{z}$ 保存起来，下次加载后再增量更新；而在线预测时，只需要加载参数 $\boldsymbol{w}$ 即可。</p>
 <p>另外，由于短视频的标签、UP 主等特征变化较快，因此对于离散特征的编码可以考虑使用特征 Hash，虽然牺牲了一定的可解释性，并且存在一定的编码冲突，但是实测下来效果还是不错的，并且工程上确实能省下很多麻烦，提升不少性能。</p>
 <p>最后，虽然 <strong>FM</strong> 模型具备表征特征两两组合的能力，但是实际上我们发现由于样本、调参等的限制，并不能充分发掘每对特征组合的作用，并且该模型对于三个及以上特征的组合就完全无能为力了。因此，实际应用时还是不能太依赖模型的自动特征组合能力，如果有什么对业务比较有帮助的特征，还是人工生成，再一起丢到模型里去训练吧。</p>
@@ -551,13 +551,13 @@ w^{t+1}_i=
       
         <div class="post-tags">
           
-            <a href="/,/hcigmoid/tags/优化/" rel="tag"># 优化</a>
+            <a href="/tags/优化/" rel="tag"># 优化</a>
           
-            <a href="/,/hcigmoid/tags/FTRL/" rel="tag"># FTRL</a>
+            <a href="/tags/FTRL/" rel="tag"># FTRL</a>
           
-            <a href="/,/hcigmoid/tags/模型/" rel="tag"># 模型</a>
+            <a href="/tags/模型/" rel="tag"># 模型</a>
           
-            <a href="/,/hcigmoid/tags/FM/" rel="tag"># FM</a>
+            <a href="/tags/FM/" rel="tag"># FM</a>
           
         </div>
       
@@ -570,7 +570,7 @@ w^{t+1}_i=
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/,/hcigmoid/2019/05/15/lr/" rel="next" title="二项 Logistic Regression 模型">
+              <a href="/2019/05/15/lr/" rel="next" title="二项 Logistic Regression 模型">
                 <i class="fa fa-chevron-left"></i> 二项 Logistic Regression 模型
               </a>
             
@@ -580,7 +580,7 @@ w^{t+1}_i=
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/,/hcigmoid/2019/07/20/feature-selection-pearson/" rel="prev" title="常用的特征选择方法之 Pearson 相关系数">
+              <a href="/2019/07/20/feature-selection-pearson/" rel="prev" title="常用的特征选择方法之 Pearson 相关系数">
                 常用的特征选择方法之 Pearson 相关系数 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -660,7 +660,7 @@ w^{t+1}_i=
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/,/hcigmoid/archives/">
+                <a href="/archives/">
               
                   <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">日志</span>
@@ -672,7 +672,7 @@ w^{t+1}_i=
               
               
               <div class="site-state-item site-state-categories">
-                <a href="/,/hcigmoid/categories/index.html">
+                <a href="/categories/index.html">
                   <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
@@ -683,7 +683,7 @@ w^{t+1}_i=
               
               
               <div class="site-state-item site-state-tags">
-                <a href="/,/hcigmoid/tags/index.html">
+                <a href="/tags/index.html">
                   <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
@@ -694,7 +694,7 @@ w^{t+1}_i=
 
           
             <div class="feed-link motion-element">
-              <a href="/,/hcigmoid/atom.xml" rel="alternate">
+              <a href="/atom.xml" rel="alternate">
                 <i class="fa fa-rss"></i>
                 RSS
               </a>
@@ -856,64 +856,64 @@ w^{t+1}_i=
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/,/hcigmoid/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/,/hcigmoid/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/,/hcigmoid/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
@@ -985,7 +985,7 @@ w^{t+1}_i=
     } else if (/json$/i.test(search_path)) {
       isXml = false;
     }
-    var path = "/,/hcigmoid/" + search_path;
+    var path = "/" + search_path;
     // monitor main search box;
 
     var onPopupClose = function (e) {

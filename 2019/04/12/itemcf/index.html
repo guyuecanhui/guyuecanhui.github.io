@@ -40,7 +40,7 @@
 
   
   
-  <link href="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
 
 
 
@@ -80,21 +80,21 @@
 
 
 
-<link href="/,/hcigmoid/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
 
-<link href="/,/hcigmoid/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
-
-
-  <link rel="apple-touch-icon" sizes="180x180" href="/,/hcigmoid/images/apple-touch-icon-next.png?v=5.1.4">
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
 
 
-  <link rel="icon" type="image/png" sizes="32x32" href="/,/hcigmoid/images/favicon-32x32-next.png?v=5.1.4">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
 
 
-  <link rel="icon" type="image/png" sizes="16x16" href="/,/hcigmoid/images/favicon-16x16-next.png?v=5.1.4">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
 
 
-  <link rel="mask-icon" href="/,/hcigmoid/images/logo.svg?v=5.1.4" color="#222">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
 
 
 
@@ -106,7 +106,7 @@
 
 
 
-  <link rel="alternate" href="/,/hcigmoid/atom.xml" title="HCigmoid" type="application/atom+xml">
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
 
 
 
@@ -117,23 +117,23 @@
 <meta name="keywords" content="推荐,协同过滤,算法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="可能是最好懂的ItemCF解释了">
-<meta property="og:url" content="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/04/12/itemcf/index.html">
+<meta property="og:url" content="https://guyuecanhui.github.io/2019/04/12/itemcf/index.html">
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。 ItemCF 推导过程首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因">
 <meta property="og:locale" content="default">
-<meta property="og:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/04/12/itemcf/itemcf-f1.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2019/04/12/itemcf/itemcf-f1.png">
 <meta property="og:updated_time" content="2019-05-04T13:33:58.679Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="可能是最好懂的ItemCF解释了">
 <meta name="twitter:description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。 ItemCF 推导过程首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因">
-<meta name="twitter:image" content="https://guyuecanhui.github.io/,/hcigmoid/2019/04/12/itemcf/itemcf-f1.png">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2019/04/12/itemcf/itemcf-f1.png">
 
 
 
 <script type="text/javascript" id="hexo.configurations">
   var NexT = window.NexT || {};
   var CONFIG = {
-    root: '/,/hcigmoid/',
+    root: '/',
     scheme: 'Gemini',
     version: '5.1.4',
     sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
@@ -156,7 +156,7 @@
 
 
 
-  <link rel="canonical" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/2019/04/12/itemcf/">
+  <link rel="canonical" href="https://guyuecanhui.github.io/2019/04/12/itemcf/">
 
 
 
@@ -190,7 +190,7 @@
     
 
     <div class="custom-logo-site-title">
-      <a href="/,/hcigmoid/" class="brand" rel="start">
+      <a href="/" class="brand" rel="start">
         <span class="logo-line-before"><i></i></span>
         <span class="site-title">HCigmoid</span>
         <span class="logo-line-after"><i></i></span>
@@ -218,7 +218,7 @@
       
         
         <li class="menu-item menu-item-home">
-          <a href="/,/hcigmoid/" rel="section">
+          <a href="/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
             
@@ -228,7 +228,7 @@
       
         
         <li class="menu-item menu-item-about">
-          <a href="/,/hcigmoid/about/" rel="section">
+          <a href="/about/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
             
@@ -238,7 +238,7 @@
       
         
         <li class="menu-item menu-item-tags">
-          <a href="/,/hcigmoid/tags/" rel="section">
+          <a href="/tags/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
             
@@ -248,7 +248,7 @@
       
         
         <li class="menu-item menu-item-categories">
-          <a href="/,/hcigmoid/categories/" rel="section">
+          <a href="/categories/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
             
@@ -258,7 +258,7 @@
       
         
         <li class="menu-item menu-item-archives">
-          <a href="/,/hcigmoid/archives/" rel="section">
+          <a href="/archives/" rel="section">
             
               <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
             
@@ -331,12 +331,12 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io,http://guyuecanhui.gitee.io/hcigmoid/,/hcigmoid/2019/04/12/itemcf/">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/04/12/itemcf/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="name" content="古月残辉">
       <meta itemprop="description" content>
-      <meta itemprop="image" content="/,/hcigmoid/images/avatar.gif">
+      <meta itemprop="image" content="/images/avatar.gif">
     </span>
 
     <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
@@ -383,7 +383,7 @@
               
               
                 <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/,/hcigmoid/categories/推荐系统/" itemprop="url" rel="index">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
                     <span itemprop="name">推荐系统</span>
                   </a>
                 </span>
@@ -401,8 +401,8 @@
                 <span class="post-meta-item-icon">
                   <i class="fa fa-comment-o"></i>
                 </span>
-                <a href="/,/hcigmoid/2019/04/12/itemcf/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/,/hcigmoid/2019/04/12/itemcf/" itemprop="commentCount"></span>
+                <a href="/2019/04/12/itemcf/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/04/12/itemcf/" itemprop="commentCount"></span>
                 </a>
               </span>
             
@@ -489,7 +489,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
 <li>如果觉得需要更多的考虑用户的短期兴趣，做即时的推荐，那可以将式 (6) 中的用户观看历史限制在最近几次，甚至一次；</li>
 </ol>
 <p>如果把用户-视频考虑成一个二部图，ItemCF 实际上是基于图的结构，执行了一次从用户到视频的兴趣扩散过程。可以考虑下图中的视频 $v_1,v_3$，它们没有直接的共同观看，因此用 ItemCF 算出来的相似度为 0，但是实际上 $u_1,u_2$ 都观看了 $v_2$，因此可以认为用户 $u_1,u_2$ 存在一定的相似性，因此如果执行一次视频-用户-视频的兴趣扩散过程就能够捕获 $v_1,v_3$ 的相似度了。</p>
-<img src="/,/hcigmoid/2019/04/12/itemcf/itemcf-f1.png" title="用户观影行为示例">
+<img src="/2019/04/12/itemcf/itemcf-f1.png" title="用户观影行为示例">
 <p>后面一种思路实际上就是 SimRank，但是由于需要执行多次兴趣扩散（即对二部图做多次迭代计算），SimRank 的计算复杂度相当高，在业务数据量大的情况下需要强大的算力支持，以后会再讨论下我在 SimRank 模型上的尝试。</p>
 
       
@@ -508,11 +508,11 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
       
         <div class="post-tags">
           
-            <a href="/,/hcigmoid/tags/推荐/" rel="tag"># 推荐</a>
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
           
-            <a href="/,/hcigmoid/tags/协同过滤/" rel="tag"># 协同过滤</a>
+            <a href="/tags/协同过滤/" rel="tag"># 协同过滤</a>
           
-            <a href="/,/hcigmoid/tags/算法/" rel="tag"># 算法</a>
+            <a href="/tags/算法/" rel="tag"># 算法</a>
           
         </div>
       
@@ -525,7 +525,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/,/hcigmoid/2019/02/10/confidence-interval/" rel="next" title="置信区间在推荐中的应用">
+              <a href="/2019/02/10/confidence-interval/" rel="next" title="置信区间在推荐中的应用">
                 <i class="fa fa-chevron-left"></i> 置信区间在推荐中的应用
               </a>
             
@@ -535,7 +535,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/,/hcigmoid/2019/04/14/hexo-next-github/" rel="prev" title="Hexo+NexT+github 配置指南">
+              <a href="/2019/04/14/hexo-next-github/" rel="prev" title="Hexo+NexT+github 配置指南">
                 Hexo+NexT+github 配置指南 <i class="fa fa-chevron-right"></i>
               </a>
             
@@ -615,7 +615,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
             
               <div class="site-state-item site-state-posts">
               
-                <a href="/,/hcigmoid/archives/">
+                <a href="/archives/">
               
                   <span class="site-state-item-count">25</span>
                   <span class="site-state-item-name">日志</span>
@@ -627,7 +627,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
               
               
               <div class="site-state-item site-state-categories">
-                <a href="/,/hcigmoid/categories/index.html">
+                <a href="/categories/index.html">
                   <span class="site-state-item-count">6</span>
                   <span class="site-state-item-name">分类</span>
                 </a>
@@ -638,7 +638,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
               
               
               <div class="site-state-item site-state-tags">
-                <a href="/,/hcigmoid/tags/index.html">
+                <a href="/tags/index.html">
                   <span class="site-state-item-count">60</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
@@ -649,7 +649,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
 
           
             <div class="feed-link motion-element">
-              <a href="/,/hcigmoid/atom.xml" rel="alternate">
+              <a href="/atom.xml" rel="alternate">
                 <i class="fa fa-rss"></i>
                 RSS
               </a>
@@ -811,64 +811,64 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/jquery/index.js?v=2.1.3"></script>
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
   
 
   
   
-    <script type="text/javascript" src="/,/hcigmoid/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
   
-
-
-  
-
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/utils.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/motion.js?v=5.1.4"></script>
-
-
-
-  
-  
-
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/affix.js?v=5.1.4"></script>
-
-  <script type="text/javascript" src="/,/hcigmoid/js/src/schemes/pisces.js?v=5.1.4"></script>
-
-
-
-  
-  <script type="text/javascript" src="/,/hcigmoid/js/src/scrollspy.js?v=5.1.4"></script>
-<script type="text/javascript" src="/,/hcigmoid/js/src/post-details.js?v=5.1.4"></script>
-
 
 
   
 
 
-  <script type="text/javascript" src="/,/hcigmoid/js/src/bootstrap.js?v=5.1.4"></script>
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
 
 
 
@@ -940,7 +940,7 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
     } else if (/json$/i.test(search_path)) {
       isXml = false;
     }
-    var path = "/,/hcigmoid/" + search_path;
+    var path = "/" + search_path;
     // monitor main search box;
 
     var onPopupClose = function (e) {
