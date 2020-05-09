@@ -113,20 +113,20 @@
 
 
 
-<meta name="description" content="论文引用: Wang, Ruoxi, et al. “Deep &amp;amp; cross network for ad click predictions.” Proceedings of the ADKDD’17. 2017. 1-7.  本文是 Stanford 和 Google 联合发表在 KDD 2017 workshop 上的一篇 CTR 预估模型，模型采用 wide &amp;amp; dee">
+<meta name="description" content="论文引用: Wang, Ruoxi, et al. “Deep &amp;amp; cross network for ad click predictions.” Proceedings of the ADKDD’17. 2017. 1-7.  本文是 Stanford 和 Google 联合发表在 KDD 2017 workshop 上的一篇 CTR 预估模型，模型采用 Wide&amp;amp;Deep">
 <meta name="keywords" content="推荐,排序,特征组合,特征交叉">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Deep &amp; Cross 论文精读">
 <meta property="og:url" content="https://guyuecanhui.github.io/2020/04/15/paper-2017-google-dcn/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="论文引用: Wang, Ruoxi, et al. “Deep &amp;amp; cross network for ad click predictions.” Proceedings of the ADKDD’17. 2017. 1-7.  本文是 Stanford 和 Google 联合发表在 KDD 2017 workshop 上的一篇 CTR 预估模型，模型采用 wide &amp;amp; dee">
+<meta property="og:description" content="论文引用: Wang, Ruoxi, et al. “Deep &amp;amp; cross network for ad click predictions.” Proceedings of the ADKDD’17. 2017. 1-7.  本文是 Stanford 和 Google 联合发表在 KDD 2017 workshop 上的一篇 CTR 预估模型，模型采用 Wide&amp;amp;Deep">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/15/paper-2017-google-dcn/dcn_cross.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/15/paper-2017-google-dcn/dcn_architecture.png">
-<meta property="og:updated_time" content="2020-04-29T14:46:06.001Z">
+<meta property="og:updated_time" content="2020-05-09T15:43:27.071Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Deep &amp; Cross 论文精读">
-<meta name="twitter:description" content="论文引用: Wang, Ruoxi, et al. “Deep &amp;amp; cross network for ad click predictions.” Proceedings of the ADKDD’17. 2017. 1-7.  本文是 Stanford 和 Google 联合发表在 KDD 2017 workshop 上的一篇 CTR 预估模型，模型采用 wide &amp;amp; dee">
+<meta name="twitter:description" content="论文引用: Wang, Ruoxi, et al. “Deep &amp;amp; cross network for ad click predictions.” Proceedings of the ADKDD’17. 2017. 1-7.  本文是 Stanford 和 Google 联合发表在 KDD 2017 workshop 上的一篇 CTR 预估模型，模型采用 Wide&amp;amp;Deep">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2020/04/15/paper-2017-google-dcn/dcn_cross.png">
 
 
@@ -470,10 +470,10 @@
         <blockquote>
 <p>论文引用: Wang, Ruoxi, et al. “Deep &amp; cross network for ad click predictions.” <em>Proceedings of the ADKDD’17</em>. 2017. 1-7.</p>
 </blockquote>
-<p>本文是 Stanford 和 Google 联合发表在 <strong>KDD</strong> 2017 workshop 上的一篇 <strong>CTR</strong> 预估模型，模型采用 wide &amp; deep 架构，最大的创新点在于将 wide 层替换成 cross 层，省去了原本大量的人工特征工程的工作，由 cross 层提供显式的高阶特征组合能力，同时保持较低的参数量和计算量。</p>
-<h3 id="背景与动机"><a href="#背景与动机" class="headerlink" title="背景与动机"></a>背景与动机</h3><p>随着深度网络的兴起，各大厂纷纷尝试用深度网络来作为特征提取器，并取得了显著的效果。尤其是 wide &amp; deep 架构的提出，让大家意识到可以在模型中同时使用 <strong>DNN</strong> 来捕获特征的复杂映射关系，使用线性模型来记忆组合特征，但是这里的线性模型中的组合特征其实还是工程师针对具体场景人工构造的。</p>
+<p>本文是 Stanford 和 Google 联合发表在 <strong>KDD</strong> 2017 workshop 上的一篇 <strong>CTR</strong> 预估模型，模型采用 <strong>Wide&amp;Deep</strong> 架构，最大的创新点在于将 wide 层替换成 cross 层，省去了原本大量的人工特征工程的工作，由 cross 层提供显式的高阶特征组合能力，同时保持较低的参数量和计算量。</p>
+<h3 id="背景与动机"><a href="#背景与动机" class="headerlink" title="背景与动机"></a>背景与动机</h3><p>随着深度网络的兴起，各大厂纷纷尝试用深度网络来作为特征提取器，并取得了显著的效果。尤其是 Wide&amp;Deep 架构的提出，让大家意识到可以在模型中同时使用 <strong>DNN</strong> 来捕获特征的复杂映射关系，使用线性模型来记忆组合特征，但是这里的线性模型中的组合特征其实还是工程师针对具体场景人工构造的。</p>
 <p>进一步，大家考虑将 wide 层用自动特征组合的网络来替换，例如用 <strong>FM</strong> 来代替 wide 层 (<strong>DeepFM</strong>)，能够提供了二阶的自动特征组合能力。本文则更进一步，设计出 cross 网络来代替 wide 层，能够提供任意高阶的特征组合能力 (与 cross 层数相同)，同时保持很低的计算和存储开销。</p>
-<p>那有了 deep 层为什么还需要 cross 层呢？我的理解是，deep 层更擅长的是进行特征复杂的非线性变换，这些非线性变换通常是隐式的、可能低效的，而人基于对业务的深入理解能够显式构造一些十分有效的组合特征，如果让 deep 层去学，可能需要比较大的参数规模才能学到。这也是 wide &amp; deep 为什么还需要保留 wide 层的原因。而 cross 层则设计为显式的进行特征组合，能够保证每一层都保留上一层的组合信息，并增加一阶组合，因此可以认为这两个结构是互补的。</p>
+<p>那有了 <strong>MLP</strong> 层为什么还需要 cross 层呢？我的理解是，<strong>MLP</strong> 层更擅长的是进行特征复杂的非线性变换，这些非线性变换通常是隐式的、对于乘性的特征组合捕获能力不强，而人基于对业务的深入理解能够显式构造一些十分有效的组合特征，如果让 <strong>MLP</strong> 层去学，可能需要比较大的参数规模才能学到。这也是 <strong>Wide&amp;Deep</strong> 为什么还需要保留 wide 层的原因。而 cross 层则设计为显式的进行特征组合，能够保证每一层都保留上一层的组合信息，并增加一阶组合，因此可以认为这两个结构是互补的。</p>
 <p>当然，这里的 cross 层由于参数数量的限制，容量有限，我们仍然可以在 <strong>DCN</strong> 的基础上增加 wide 层来强化对部分人工特征的记忆，或者将 cross 层作为一个子网嵌入到其他排序网络中去，作为高阶特征提取器。</p>
 <h3 id="DCN-网络架构"><a href="#DCN-网络架构" class="headerlink" title="DCN 网络架构"></a>DCN 网络架构</h3><p>前面提到了，<strong>DCN</strong> 的主要创新点在于设计了 cross 层来做特征的显式组合，同时只使用很少的参数。乍一看感觉有点神奇，如果要学习 $n$ 个特征的 $k$ 阶组合，按道理讲我们需要 $C_n^k$ 个参数 ($O(d^n)$)，那怎么进行参数的压缩呢？先可以回顾一下 <strong>FM</strong>，它本质上是学习了每个特征的隐向量，然后用两个特征隐向量的内积来代替这两个特征组合的系数，这样能够共享统计强度，并减少参数量。<strong>DCN</strong> 的 cross 层则更进一步，它每一层的设计如下：</p>
 <script type="math/tex; mode=display">
@@ -488,16 +488,16 @@
 </ol>
 <p>我们可以将 cross 层作为一个子结构加入到其他网络中去，例如 <strong>DCN</strong> 就可以看成是普通的 <strong>MLP</strong> + cross 的架构，其中，<strong>MLP</strong> 部分主要来做特征的非线性变换，一般就是几层全连接的隐含层，使用 <strong>relu</strong> 进行激活。整体的架构如下：</p>
 <img src="/2020/04/15/paper-2017-google-dcn/dcn_architecture.png" title="图 1. DCN 整体架构">
-<p>在特征处理时，连续特征做归一化，离散特征先查 embedding，拼接在一起作为原始输入 $\boldsymbol{x}_0$，并分别输入到 cross 层和 deep 层，将两个结构的输出拼接后，经过一个 <strong>LR</strong> 输出预测结果，训练的时候使用带 <strong>L2</strong> 范数的 logloss 作为 <strong>Cost Function</strong>，用 <strong>Adam</strong> 之类的优化算法求解。</p>
+<p>在特征处理时，连续特征做归一化，离散特征先查 embedding，拼接在一起作为原始输入 $\boldsymbol{x}_0$，并分别输入到 cross 层和 <strong>MLP</strong> 层，将两个结构的输出拼接后，经过一个 <strong>LR</strong> 输出预测结果，训练的时候使用带 <strong>L2</strong> 范数的 logloss 作为 <strong>Cost Function</strong>，用 <strong>Adam</strong> 之类的优化算法求解。</p>
 <p>对于模型训练，文章还分享了一些小技巧：</p>
 <ol>
-<li>deep 层使用了 batch normalization，并设置梯度截断值为 100；</li>
+<li><strong>MLP</strong> 层使用了 batch normalization，并设置梯度截断值为 100；</li>
 <li>使用 early stop 来进行正则化，相对于 L2 正则和 dropout 更有效；感觉 <strong>DCN</strong> 的确比较容易过拟合，我在测试时发现，当数据量比较大，并且将模型的参数规模调整到一个合适的量级，一个 epoch 基本已经达到最优了，继续训练可能就会导致测试 <strong>AUC</strong> 下降；</li>
 <li>$d$ 维类别特征的 embedding size 设置参考计算式：$6\times d^{\frac{1}{4}}$；但是感觉在我们的场景里还是太大了，个人倾向于设置成 $\log$ 的函数。在资源允许的情况下，embedding size 设置大一点对测试 <strong>AUC</strong> 是有正向帮助的，但是也增加了过拟合的风险；</li>
 </ol>
 <h3 id="实验与讨论"><a href="#实验与讨论" class="headerlink" title="实验与讨论"></a><strong>实验与讨论</strong></h3><p>文章主要在 <a href="https://www.kaggle.com/c/criteo-display-ad-challenge" target="_blank" rel="noopener">criteo 数据集</a>上进行了一些对比实验，除了证明 <strong>DCN</strong> 比 benchmark 都好很多以外，还重点强调了 <strong>DCN</strong> 在同等参数量下能够达到更低的误差、在同等误差的情况下能够使用更少的参数。另外，还单独测试了增加 cross 结构的确能够大幅的降低模型的误差。</p>
 <p>文章比较的时候，<strong>LR</strong>、<strong>FM</strong> 等模型使用的特征与 <strong>DCN</strong> 实际上是有差别的，做了更多的特征工程。为了测试模型本身的效果，我在我们业务的数据集上也跟一些常见模型对比测试了一下，离线效果确实还不错，而且即使只用 cross 层，也能超过 <strong>FFM</strong> 的效果。</p>
-<p>我也单独测试了 <strong>DCN</strong> 各个子结构的性能，经过若干贪心调优后，以 <strong>LR</strong> 作为基线 (即将 <strong>DCN</strong> 的 deep 层和 cross 层的输入 $\boldsymbol{x_0}$ 直接送到 <strong>LR</strong> 层)，只使用 cross 层的测试 <strong>AUC</strong> 提升了 $4.5\%$，只使用 <strong>MLP</strong> 层的测试 <strong>AUC</strong> 提升了 $5.5\%$，而两者都用的测试 <strong>AUC</strong> 提升了 $6.3\%$。只使用 cross 层效果不如只使用 <strong>MLP</strong> 层的主要原因是参数数量少了很多，即使是 10 层的 cross 层参数量也就相当于一个只含有 20 个神经元的单层全连接 <strong>MLP</strong>。如果设定两者的参数量相同的情况下，在我们的数据集上，只使用 cross 层能够比只使用 <strong>MLP</strong> 层高出 $1‰$。但是 cross 层想要把参数量提上来其实很困难，在测试中，cross 层达到 20 层的时候，训练的时长比 4 层增加 $200\%$，并且 loss 在某个 batch 以后突然爆炸（不影响 <strong>AUC</strong> 评估），因此感觉 cross 层还是只能作为一个辅助的子结构使用。一个可以尝试的方法是同时使用 2 ~ 4 层的 cross 层 (5 层相对于 4 层的收益已经很少了)，在顶层进行 concat，最后送到 <strong>LR</strong> 中去。</p>
+<p>我也单独测试了 <strong>DCN</strong> 各个子结构的性能，经过若干贪心调优后，以 <strong>LR</strong> 作为基线 (即将 <strong>DCN</strong> 的 <strong>MLP</strong> 层和 cross 层的输入 $\boldsymbol{x_0}$ 直接送到 <strong>LR</strong> 层)，只使用 cross 层的测试 <strong>AUC</strong> 提升了 $4.5\%$，只使用 <strong>MLP</strong> 层的测试 <strong>AUC</strong> 提升了 $5.5\%$，而两者都用的测试 <strong>AUC</strong> 提升了 $6.3\%$。只使用 cross 层效果不如只使用 <strong>MLP</strong> 层的主要原因是参数数量少了很多，即使是 10 层的 cross 层参数量也就相当于一个只含有 20 个神经元的单层全连接 <strong>MLP</strong>。如果设定两者的参数量相同的情况下，在我们的数据集上，只使用 cross 层能够比只使用 <strong>MLP</strong> 层高出 $1‰$。但是 cross 层想要把参数量提上来其实很困难，在测试中，cross 层达到 20 层的时候，训练的时长比 4 层增加 $200\%$，并且 loss 在某个 batch 以后突然爆炸（不影响 <strong>AUC</strong> 评估），因此感觉 cross 层还是只能作为一个辅助的子结构使用。一个可以尝试的方法是同时使用 2 ~ 4 层的 cross 层 (5 层相对于 4 层的收益已经很少了)，在顶层进行 concat，最后送到 <strong>LR</strong> 中去。</p>
 
       
     </div>
@@ -626,7 +626,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -648,7 +648,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -732,7 +732,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">40.7k</span>
+    <span title="Site words total count">43.1k</span>
   
 </div>
 

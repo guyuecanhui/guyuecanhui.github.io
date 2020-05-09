@@ -329,6 +329,238 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/08/10/feature-selection-kendall/" itemprop="url">常用的特征选择方法之 Kendall 秩相关系数</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-10T22:44:41+08:00">
+                2019-08-10
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/特征工程/" itemprop="url" rel="index">
+                    <span itemprop="name">特征工程</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/08/10/feature-selection-kendall/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/10/feature-selection-kendall/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  888
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>前面我们已经讨论了 <a href="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/"><strong>Pearson</strong> 相关系数</a>和 <a href="https://guyuecanhui.github.io/2019/07/28/feature-selection-spearman/"><strong>Spearman</strong> 秩相关系数</a>，它们可以检测连续变量间的相关性，并且 <strong>Spearman</strong> 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：<strong>Kendall</strong> 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。</p>
+<h3 id="Kendall-秩相关系数的定义"><a href="#Kendall-秩相关系数的定义" class="headerlink" title="Kendall 秩相关系数的定义"></a>Kendall 秩相关系数的定义</h3><p><strong>Kendall</strong> 秩相关系数是一个非参数性质（与分布无关）的秩统计参数，是用来度量两个<strong>有序变量</strong>之间<strong>单调关系</strong>强弱的相关系数，它的取值范围是 $[-1,1]$，绝对值越大，表示单调相关性越强，取值为 $0$ 时表示完全不相关。</p>
+<p>原始的 <strong>Kendall</strong> 秩相关系数定义在<strong>一致对</strong> (<strong>concordant pairs</strong>) 和<strong>分歧对</strong> (<strong>discordant pairs</strong>) 的概念上。所谓一致对，就是两个变量取值的相对关系一致；分歧对则是指它们的相对关系不一致。这么说有点难以理解，我们举个例子。</p>
+<p>假设我们为很多不同年龄的用户推送了一条社保相关的视频，然后回收了这些用户的播放完成度，如下表所示：</p>
+<img src="/2019/08/10/feature-selection-kendall/age-value-pairs.png" title="图 1. 用户年龄与播放完成度的关系">
+<p>我们想用 <strong>Kendall</strong> 秩相关系数来分析用户年龄与该社保视频的播放情况是否相关。为此，我们将年龄和播放完成度分别排序后，对样本中取值进行排序和编号，分别得到 <code>年龄序号</code> 和 <code>播放序号</code>。这时，对于样本 $3$ 和样本 $4$，它们的年龄序号是 $[3,4]$，播放序号是 $[2,4]$，虽然序号不同，但是变化趋势是相同的，因此它们是一致的；对于样本 $2$ 和样本 $3$，它们的年龄序号是 $[2,3]$，播放序号是 $[5,2]$，它们的变化趋势是相反的，因此它们是分歧的。</p>
+<p>进一步的，我们观察可以发现，当样本已经按年龄升序排列后，对于每个样本，我们可以简单的数一下该样本后续样本中播放序号大于该样本的样本数量，作为该样本引入的一致对数 (该样本之前的样本与该样本也可能一致，但是已经算过一次了)，将所有样本引入的一致对数加起来就能得到所有样本的一致对数，记为 $c$。</p>
+<p>同样的，对于每个样本，我们可以简单的数一下该样本后续样本中播放序号小于该样本的样本数量，作为该样本引入的分歧对数，累加后得到所有样本的分歧对数，记为 $d$。</p>
+<p>则原始的 <strong>Kendall</strong> 秩相关系数定义为：</p>
+<script type="math/tex; mode=display">
+\tau_a=\frac{c-d}{c+d}=\frac{c-d}{\frac{1}{2}\cdot n\cdot (n-1)}\qquad (1)</script><p>其中，$m=\frac{n\cdot (n-1)}{2}$ 表示所有样本两两组合的数量，在变量没有重复取值的情况下，$m=c+d$。定义 $(1)$ 也被称为 <a href="https://en.wikipedia.org/wiki/Kendall_rank_correlation_coefficient" target="_blank" rel="noopener"><strong>Tau-a</strong></a>，从定义也容易看出，它不能处理变量有相同取值的情况。</p>
+<p>为了处理变量有相同取值的情况，我们还要将每个变量中相同取值的数量考虑进来，从而得到扩展的定义：</p>
+<script type="math/tex; mode=display">
+\tau_b=\frac{c-d}{\sqrt{(c+d+t_x)(c+d+t_y)}}\qquad (2)</script><p>其中，$c$ 在计算的时候只能算 <script type="math/tex">a_i<a_j</script> 且 <script type="math/tex">b_i<b_j</script> 的对数，$d$ 也只能算 <script type="math/tex">a_i<a_j</script> 且 <script type="math/tex">b_i>b_j</script> 的对数 (<script type="math/tex">i<j</script>)；$t_x$，$t_y$ 分别表示变量 $x$，$y$ 取值中序号相同的样本对数排除共同平局的部分 (在下一小节举例说明)。式 <script type="math/tex">(2)</script> 通常又被称为 <strong>Tau-b</strong>，是实际中应用最广泛的定义 (另外还有 <strong>Tau-c</strong> 的变种这里就不介绍了)。在 <a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html" target="_blank" rel="noopener"><strong>scipy 1.3.0</strong></a> 版本的实现中，同时支持式 $(1)$ 和式 $(2)$。</p>
+<h3 id="举例说明"><a href="#举例说明" class="headerlink" title="举例说明"></a>举例说明</h3><p>首先，我们根据式 $(1)$ 算一下图 $1$ 中年龄与播放的相关度。</p>
+<ol>
+<li>将样本按年龄升序排列，将播放完成度按从小到大的顺序编号，如图 $1$ 所示；</li>
+<li>分别计算每个样本新引入的一致对数和分歧对数，如图 $1$ 所示，进而算出 $c=40$，$d=5$；</li>
+<li>根据式 $(1)$ 得到 $\tau_a=\frac{40-5}{40+5}=0.778$；</li>
+</ol>
+<p>因此，年龄与播放社保视频的时长呈现强相关性，基于这个分析我们就可以尝试对更多年龄大一些的用户推送此视频。</p>
+<p>在工程实现的时候，用户的年龄通常会被划分成不同的区间，而播放完成度只有超过一定阈值 (如 $0.3$) 我们才算作有效播放。因此，图 $1$ 的数据我们又可以转换成下面的离散情况：</p>
+<img src="/2019/08/10/feature-selection-kendall/age-discrete-pairs.png" title="图 2. 离散化的用户年龄与播放完成度的关系">
+<p>可以发现，年龄段序号和有效播放序号存在大量的重复数据，因此我们基于式 $(2)$ 来计算：</p>
+<ol>
+<li>将样本按年龄段升序排列，相同的年龄段按是否有效播放排序，对年龄段和是否有效播放进行编号，如图 $2$ 所示；</li>
+<li>计算每个样本引入的一致对数和分歧对数，如图 $2$ 所示 (例如样本 $4$ 与 样本 $8\sim 10$ 一致)，进而算出 $c=21$，$d=0$；</li>
+<li>计算公共平局的数量 $t_c$，公共平局是指 $a_i=a_j$ 且 $b_i=b_j$ 的情况 (例如样本 $1\sim 3$ 互为平局，样本 $4,5,7$ 互为平局，样本 $8,9$ 互为平局)，根据图 $2$ 易知：$t_c=\frac{3\cdot (3-1)}{2}+\frac{3\cdot (3-1)}{2}+\frac{2\cdot (2-1)}{2}=7$；</li>
+<li>计算只在年龄段平局的数量 $t_x=\frac{3\cdot (3-1)}{2}+\frac{4\cdot (4-1)}{2}+\frac{2\cdot (2-1)}{2}-t_c=10-7=3$；</li>
+<li>计算只在有效播放平均局的数量 $t_y=\frac{6\cdot (6-1)}{2}+\frac{4\cdot (4-1)}{2}-t_c=21-7=14$；</li>
+<li>根据式 $(2)$ 得到 $\tau_b=\frac{21}{\sqrt{(21+3)(21+14)}}=0.725$；</li>
+</ol>
+<p>对比发现，离散化后，我们发现这两个因素之间仍然是强相关的。</p>
+<blockquote>
+<p>附示例的 python 代码<br><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">from</span> scipy.stats <span class="keyword">import</span> kendalltau</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x=[<span class="number">1</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">4</span>,<span class="number">5</span>,<span class="number">6</span>,<span class="number">7</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>y=[<span class="number">1</span>,<span class="number">5</span>,<span class="number">2</span>,<span class="number">4</span>,<span class="number">3</span>,<span class="number">7</span>,<span class="number">6</span>,<span class="number">8</span>,<span class="number">9</span>,<span class="number">10</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>kendalltau(x,y)</span><br><span class="line">(<span class="number">0.7777777777777779</span>, <span class="number">0.0017451191944018172</span>)</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>x=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">3</span>,<span class="number">3</span>,<span class="number">4</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>y=[<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">1</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>,<span class="number">2</span>]</span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>kendalltau(x,y)</span><br><span class="line">(<span class="number">0.72456883730947197</span>, <span class="number">0.0035417200011750309</span>)</span><br></pre></td></tr></table></figure></p>
+<p>其中，<code>kendalltau</code> 返回的第二个结果是 p-value，其具体含义可参考<a href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.stats.kendalltau.html" target="_blank" rel="noopener">官方文档</a>。</p>
+</blockquote>
+<h3 id="Take-aways"><a href="#Take-aways" class="headerlink" title="Take-aways"></a>Take-aways</h3><ol>
+<li><strong>Kendall</strong> 秩相关系数可以用于度量有序变量间相关性，只要求变量取值之间可比，对变量的分布和数据的距离不作假设；</li>
+<li>能用 <strong>Pearson</strong> 相关系数和 <strong>Spearman</strong> 秩相关系数的地方都能用 <strong>Kendall</strong> 秩相关系数，但是 <strong>Spearman</strong> 和 <strong>Kendall</strong> 秩相关系数要对数据排序，复杂度远高于 <strong>Pearson</strong> 相关系数，因此能用 <strong>Pearson</strong> 相关系数的时候优先考虑 <strong>Pearson</strong> 相关系数；</li>
+<li><strong>Kendall</strong> 秩相关系数依赖一致对和分歧对的计数，这里需要注意数据中是否有重复取值的情况，来选择使用 <strong>Tau-a</strong> 还是 <strong>Tau-b</strong> 进行计算。</li>
+</ol>
+<hr>
+<blockquote>
+<h4 id="这是特征选择系列文章的第三篇，其他文章可参考："><a href="#这是特征选择系列文章的第三篇，其他文章可参考：" class="headerlink" title="这是特征选择系列文章的第三篇，其他文章可参考："></a>这是特征选择系列文章的第三篇，其他文章可参考：</h4><ol>
+<li><a href="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/">常用的特征选择方法之 Pearson 相关系数</a></li>
+<li><a href="https://guyuecanhui.github.io/2019/07/28/feature-selection-spearman/">常用的特征选择方法之 Spearman 相关系数</a></li>
+<li><a href="https://guyuecanhui.github.io/2019/07/28/feature-selection-kendall/">常用的特征选择方法之 Kendall 秩相关系数</a></li>
+</ol>
+</blockquote>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/07/28/feature-selection-spearman/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2408,202 +2640,6 @@ p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qq
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/02/10/confidence-interval/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="古月残辉">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="HCigmoid">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/02/10/confidence-interval/" itemprop="url">置信区间在推荐中的应用</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-02-10T13:22:05+08:00">
-                2019-02-10
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
-                    <span itemprop="name">推荐系统</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/02/10/confidence-interval/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/02/10/confidence-interval/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  1.6k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  5
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>学过统计的同学都对置信区间的概念非常熟悉，实际上，离开置信区间谈统计值没啥意义，或者说经常会造成很大的误导。简单来讲，置信区间是指基于观测样本来估计一个未知参数（如均值）时，我们相当确定（用置信度来度量）参数可能的取值范围。如果不考虑置信区间的概念，在我们观察到有 2 个用户喜欢一个视频、1 个用户不喜欢一个视频时，会估计该视频的推荐度为 66%，而认为它是一个高质量的视频，如果一旦将它进行大规模推荐时，很可能发现这个视频的实际转化率低的可怜。</p>
-<p>因此在推荐里，置信区间是需要密切关注的概念。在推荐领域实践中，我从 3 个简单的算法来分别介绍置信区间的应用。</p>
-<h2 id="Wilson-区间法来判断视频质量"><a href="#Wilson-区间法来判断视频质量" class="headerlink" title="Wilson 区间法来判断视频质量"></a>Wilson 区间法来判断视频质量</h2><p>在引言的例子中，我们组的海威同学利用 Wilson 区间法来估计视频的推荐度，或者说，来建立视频质量评估模型（模型的一部分）。利用视频播放行为数据来统计视频的播放转化率时，假设视频展示的总数为 $n$，用户实际播放的总数为 $m$，则直接计算出来的播放转化率为 $p=\frac{m}{n}$。如果 $n$ 越大，说明 $p$ 的估计置信度越高，否则置信度越低。由于视频质量直接决定了我们是否会大规模推荐这个视频，因此在估计 $p$ 时采用的是宁缺毋滥的策略，这个时候可以巧妙的用置信区间的下界来代替 $p$ 作为播放转化率的估计。</p>
-<p>具体到 Wilson 区间的计算公式，可以参考<a href="https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval#Wilson_score_interval" target="_blank" rel="noopener">wiki</a>（基于正态分布假设），这里只搬个公式：</p>
-<script type="math/tex; mode=display">
-p_w = \max(0, \frac{p+\frac{z^2}{2n}}{1+\frac{z^2}{n}}-\frac{z}{1+\frac{z^2}{n}}\sqrt{\frac{p(1-p)}{n}+\frac{z^2}{4n^2}})</script><p>其中，$z$ 为某置信度（如 95% 置信度）下查表可得，$n$ 在实际代入时，需要加上平滑因子（如 0.1），防止展示数据丢失导致 $n=0$。从公式可知，基于 Wilson 区间估计的播放转化率最小接近于 0（$n$ 在实际时很可能取到平滑因子），最大接近于 $p$。</p>
-<h2 id="UCB算法来平衡探索与应用（E-amp-E）"><a href="#UCB算法来平衡探索与应用（E-amp-E）" class="headerlink" title="UCB算法来平衡探索与应用（E&amp;E）"></a>UCB算法来平衡探索与应用（E&amp;E）</h2><p>Wilson区间法是用置信区间的下限来减少数据量不足时误判的可能，主要是用来选出精品视频用来广泛推荐。但是一直这样保守推荐，会导致有些视频得不到充分的曝光，就难以评估其实际的转化率，导致推荐出来的所谓精品只是次优的选择。因此，在应用（Expoit）目前已知比较好的视频进行推荐的同时，也要保持一定比例的探索（Explore），即尝试一下那些曝光较少的视频。EE算法里一个常用的算法是 LinUCB，由于涉及特征构造，这里只介绍一个简化版本 UCB，大致思路是一样的。</p>
-<p>UCB（Upper Confidence Bound）是一种多臂老虎机算法（MAB），也勉强算一种简化的强化学习算法，调性十足。同样以估计播放转化率为例，它的思路是利用置信区间的上界来代替 $p$ 作为估计值，实际上是提高了曝光不足视频（即长尾视频）的估计值。</p>
-<p>UCB 主要解决的问题在于，如何计算置信区间的上界，既能保证随着曝光总量的增加，那些未被探索的视频越来越少，又能保证长久来看，能选到精品的视频。为了实现这个目标，一个常用的启发式公式如下：</p>
-<script type="math/tex; mode=display">
-p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个视频 $n_i$ 次曝光计算的平均转化率，$t$ 表示所有视频总共的曝光数。可以看到，随着曝光总数的增加，曝光很少的视频第二项值会很大，因此所有视频都会得到保底的曝光（t=100000 时至少有 28 次）。但是随着 $n_i$ 继续增加，主要决定因素又变成了 $p_i$，即历史平均转化率高的视频更可能被选中。</p>
-<h2 id="Thompson-采样来进行随机长尾推荐"><a href="#Thompson-采样来进行随机长尾推荐" class="headerlink" title="Thompson 采样来进行随机长尾推荐"></a>Thompson 采样来进行随机长尾推荐</h2><p>UCB 算法在实际于新物品增加快的场景（例如短视频推荐，平均每天新增几万部短视频）时，由于计算过程是确定性的，存在一直只推新物品的问题。为了增加一些随机性，可以考虑用 Thompson 采样算法。它既不使用置信区间的上界，也不使用下界，而是每次基于 Beta(m, n-m) 分布进行采样（注意，这里的 m 和 n 是每个视频单独维护的参数）。</p>
-<p>我们知道，Beta 分布实际上是“白努力”过程的成功率，曝光数 $n$ 越大，Beta 分布的曲线越像是一个倒钟的形状，且钟的开口越窄，最后收于期望：$p=\frac{m}{n}$。反过来说，当使用 Thompson 采样来选择推荐的视频时，虽然每个视频长期来选中的概率取决于其转化率，但是当曝光数量少时，Beta 分布开口很大，也更容易得到比期望大或者小的采样结果，从而引入了随机性。不过从实际应用来看，当媒资库时的视频数量很多时，大部分选中的视频还是新视频。</p>
-<p>本文简单的介绍了统计区间在推荐中的一些简单应用，既有利用置信区间的下界来选精品，也有利用置信区间的上界来探索，还有利用整个分布来引入随机性。所有算法都是用简单的数学公式就能达到我们期望的效果，是比人工规则优美的多的形式。当然，举的示例都是推荐的核心问题，没有这么简单就能讲清楚，涉及大量的数据处理和参数调优，需要不断尝试和改进。</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2654,7 +2690,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">26</span>
+                  <span class="site-state-item-count">27</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2676,7 +2712,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">60</span>
+                  <span class="site-state-item-count">62</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2744,7 +2780,7 @@ p_u=\max_{i}(p_i+\sqrt{\frac{2\ln t}{n_i}})</script><p>其中，$p_i$ 为某个�
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">40.7k</span>
+    <span title="Site words total count">43.1k</span>
   
 </div>
 
