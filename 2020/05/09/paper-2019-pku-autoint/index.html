@@ -122,7 +122,7 @@
 <meta property="og:description" content="论文引用: Song, Weiping, et al. “Autoint: Automatic feature interaction learning via self-attentive neural networks.” Proceedings of the 28th ACM International Conference on Information and Knowledge Man">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/05/09/paper-2019-pku-autoint/autoint.png">
-<meta property="og:updated_time" content="2020-05-09T16:09:58.581Z">
+<meta property="og:updated_time" content="2020-05-25T15:29:39.579Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AutoInt 论文精读">
 <meta name="twitter:description" content="论文引用: Song, Weiping, et al. “Autoint: Automatic feature interaction learning via self-attentive neural networks.” Proceedings of the 28th ACM International Conference on Information and Knowledge Man">
@@ -498,7 +498,7 @@ a_{i,j}^{(h)} = \frac{\exp(\boldsymbol{q}_i^{(h)}\cdot\boldsymbol{k}_j^{(h)})}{\
 <li>文献 $[5]$ 在最后一步还会再过一个 <strong>LayerNormalization</strong>，文章里并没有加；实现的时候可以加了看看效果；</li>
 <li>在实现的时候，假设 embedding 的维度为 $d$，head 的数量为 $k$，则可以设置每个 head 中 query、key、value 矩阵 $\boldsymbol{W}^{(h)}$ 的维度为 $(\frac{d}{k}, d)$，这样得到的 $\tilde{\boldsymbol{e}}_i^{(h)}$ 就是 $\frac{d}{k}$ 维，将 $k$ 个 head 的结果 concat 后，$\tilde{\boldsymbol{e}}_i$ 又变成了 $d$ 维，从而保证输入的维度与输出的维度相同；这样的话，最后一步中矩阵 $\boldsymbol{W}$ 其实就不需要了（<em>文章的实验中 $\boldsymbol{e}$ 与 $\tilde{\boldsymbol{e}}’$ 维度不同，因此需要通过 $\boldsymbol{W}$ 将 $\boldsymbol{e}$ 变成与 $\tilde{\boldsymbol{e}}’$ 相同的维度</em>）。</li>
 </ul>
-<h4 id="Self-Attention-交叉能力分析"><a href="#Self-Attention-交叉能力分析" class="headerlink" title="Self-Attention 交叉能力分析"></a>Self-Attention 交叉能力分析</h4><p>文章将有 $p$ 个不同 field 特征乘性组合的特征称为 $p$ 阶组合特征，记为 $g(x<em>{i_1},\cdots,x</em>{i_p})$，从计算过程容易看出来，$\tilde{\boldsymbol{e}}_i^{(h)}$ 乃至 $\tilde{\boldsymbol{e}}_i$ 都是包含 $\boldsymbol{x}_i$ 与所有 $\boldsymbol{x}_j\ (j=1,\cdots,i-1,i+1,\cdots,m )$ 交互的 2 阶组合特征：${g(x_i,x_1),g(x_i,x_2),\cdots,g(x_i,x_m)}$。因此，单层 Self-Attention 就能表征所有 field 的 2 阶组合特征。</p>
+<h4 id="Self-Attention-交叉能力分析"><a href="#Self-Attention-交叉能力分析" class="headerlink" title="Self-Attention 交叉能力分析"></a>Self-Attention 交叉能力分析</h4><p>文章将有 $p$ 个不同 field 特征乘性组合的特征称为 $p$ 阶组合特征，记为 <script type="math/tex">g(x_{i_1},\cdots,x_{i_p})</script>，从计算过程容易看出来，<script type="math/tex">\tilde{\boldsymbol{e}}_i^{(h)}</script> 乃至 $\tilde{\boldsymbol{e}}_i$ 都是包含 $\boldsymbol{x}_i$ 与所有 <script type="math/tex">\boldsymbol{x}_j\ (j=1,\cdots,i-1,i+1,\cdots,m )</script> 交互的 2 阶组合特征：${g(x_i,x_1),g(x_i,x_2),\cdots,g(x_i,x_m)}$。因此，单层 Self-Attention 就能表征所有 field 的 2 阶组合特征。</p>
 <p>到了两层时，由于第一层输出中每个 field 相当于都是包含了所有的 2 阶组合，因此它的输出就包含了 3 阶和 4 阶的组合特征，例如 $g(x_1,x_2,x_3,x_4)$ 就包含在 $\tilde{\boldsymbol{e}}_1$ 和 $\tilde{\boldsymbol{e}}_3$ 的交互中。同理，三层 <strong>Self-Attention</strong> 就包含 8 阶内的组合特征……与 <strong>DCN</strong> 中的 cross 层相比，cross 每层增加 1 阶特征组合，而 <strong>Self-Attention</strong> 每层增加 1 倍特征组合。</p>
 <h4 id="应用与讨论"><a href="#应用与讨论" class="headerlink" title="应用与讨论"></a>应用与讨论</h4><p>上面已经介绍了 embedding 层和 <strong>Self-Attetion</strong> 层，其中，<strong>Self-Attention</strong> 层是可以直接堆叠的，由于有残差结构的设计（最后一步加上了输入），理论上可以堆的比较深（文章的实验也证明了这个设计是比较有效的）。它还可以作为子结构，通过串联或者并联的方式，嵌入到其他网络中去，例如：</p>
 <ul>
