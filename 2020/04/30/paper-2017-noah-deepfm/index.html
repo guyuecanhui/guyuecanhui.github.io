@@ -113,19 +113,21 @@
 
 
 
-<meta name="description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表的一个 CTR 预估模">
+<meta name="description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 201">
 <meta name="keywords" content="推荐,排序,特征组合,特征交叉">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DeepFM 论文精读">
 <meta property="og:url" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表的一个 CTR 预估模">
+<meta property="og:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 201">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png">
-<meta property="og:updated_time" content="2020-04-30T17:17:08.909Z">
+<meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/neuralffm_architecture.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepffm_architecture.png">
+<meta property="og:updated_time" content="2020-05-25T15:21:24.687Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DeepFM 论文精读">
-<meta name="twitter:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表的一个 CTR 预估模">
+<meta name="twitter:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 201">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png">
 
 
@@ -429,7 +431,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  913
+                  1.4k
                 </span>
               
 
@@ -445,7 +447,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  3
+                  5
                 </span>
               
             </div>
@@ -469,15 +471,24 @@
         <blockquote>
 <p><strong>论文引用</strong>: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” <em>arXiv preprint arXiv:1703.04247</em> (2017).</p>
 </blockquote>
-<p><strong>DeepFM</strong> 是华为诺亚实验室受 <strong>FM</strong> 和 wide &amp; deep 模型启发，发表的一个 <strong>CTR</strong> 预估模型，虽然没有发表在顶会上，但是从国内企业的实践分享来看，受到了广泛的认可。它的核心思想是将 wide &amp; deep 网络中的 wide 层用 <strong>FM</strong> 层代替，增加了特征的二阶自动交叉能力，并且在实现上天然可以将 <strong>FM</strong> 层的 embedding 与 deep 层共享。</p>
-<p>随着深度网络的兴起，<strong>DNN</strong> 尤其是 <strong>MLP</strong> 的结构往往被用作非线性的特征提取器，并且取得了比较好的效果。然而文章指出，<strong>只保留特征的高阶非线性组合并不如同时保留特征的低阶组合和高阶组合效果好</strong>。这也是文章核心的出发点之一。但是 wide &amp; deep 模型中只有特征的一阶和高阶组合，因此一些有效的的二阶/三阶组合只能靠工程师人工挖掘组合出来，放到 wide 层。这个时候 <strong>FM</strong> 模型又出场了，用它来代替 wide 层，既能保留原始特征，又能自动做原始特征的二阶组合，这样就能节省很多人工特征交叉的工作。当然对于三阶及以上特征的显式组合，还是只能靠人工做一些工作，或者用前面讲的 <strong>DCN</strong> 中的 cross 等结构去捕获。</p>
+<p><strong>DeepFM</strong> 是华为诺亚实验室受 <strong>FM</strong> 和 wide &amp; deep 模型启发，发表在 <strong>IJCAI 2017</strong> 的一个 <strong>CTR</strong> 预估模型，从国内企业的实践分享来看，其效果受到了广泛的认可。它的核心思想是将 wide &amp; deep 网络中的 wide 层用 <strong>FM</strong> 层代替，增加了特征的二阶自动交叉能力，并且在实现上天然可以将 <strong>FM</strong> 层的 embedding 与 deep 层共享。</p>
+<h3 id="DeepFM-架构"><a href="#DeepFM-架构" class="headerlink" title="DeepFM 架构"></a>DeepFM 架构</h3><p>随着深度网络的兴起，<strong>DNN</strong> 尤其是 <strong>MLP</strong> 的结构往往被用作非线性的特征提取器，并且取得了比较好的效果。然而文章指出，<strong>只保留特征的高阶非线性组合并不如同时保留特征的低阶组合和高阶组合效果好</strong>。这也是文章核心的出发点之一。但是 wide &amp; deep 模型中只有特征的一阶和高阶组合，因此一些有效的的二阶/三阶组合只能靠工程师人工挖掘组合出来，放到 wide 层。这个时候 <strong>FM</strong> 模型又出场了，用它来代替 wide 层，既能保留原始特征，又能自动做原始特征的二阶组合，这样就能节省很多人工特征交叉的工作。当然对于三阶及以上特征的显式组合，还是只能靠人工做一些工作，或者用前面讲的 <strong>DCN</strong> 中的 cross 等结构去捕获。</p>
 <p><strong>DeepFM</strong> 的模型架构如下图所示，首先将所有的特征转成长度相同的 embedding，然后依照 <strong>FM</strong> 模型构建 <strong>FM</strong> 层，再将所有 embedding 拼接后，送到 <strong>MLP</strong> 层，最后在顶层进行拼接后，送到 <strong>LR</strong> 层，计算二分类损失。</p>
 <img src="/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png" title="图 1. DeepFM 整体架构">
 <p>从架构来看，<strong>DeepFM</strong> 没有什么创新的子结构，主要还是在当时提出了一个比较好的思路。下面再聊一聊模型中的一些细节处理。</p>
-<p>由于诺亚在应用市场推荐场景中没有使用连续特征，因此该模型也没有考虑连续特征的处理。但是实际上 <strong>FM</strong> 本身是支持连续特征的，所以如果有连续特征，应该也是需要将每一维连续特征转成一个 embedding。</p>
+<h3 id="特征处理"><a href="#特征处理" class="headerlink" title="特征处理"></a>特征处理</h3><p>由于诺亚在应用市场推荐场景中没有使用连续特征，因此该模型也没有考虑连续特征的处理。但是实际上 <strong>FM</strong> 本身是支持连续特征的，所以如果有连续特征，应该也是需要将每一维连续特征转成一个 embedding。</p>
 <p>对于多值的离散特征，这里有两种处理方案。一种是只考虑 field 之间的特征交叉，这种思路下，我们在生成多值离散特征的 embedding 时可以使用某种 pooling 策略，建议使用 sum pooling，因为这种情况下相当于是每个取值都与另外一维特征做了交叉；另一种是考虑所有特征取值的交叉，这种思路下，就需要将多值特征每个取值的 embedding 进行 concat，再送到 <strong>FM</strong> 层和 <strong>MLP</strong> 层。</p>
-<p>我测试了一下 <strong>DeepFM</strong> 每个子结构的性能（使用 pooling 策略），以只使用线性部分作为基线的话，只使用 FM 的交叉部分能够提升 $4.91\%$，只使用 <strong>MLP</strong> 部分能够提升 $9.30\%$，全部使用能够提升 $9.38\%$，从数据来看，<strong>FM</strong> 层的确能带来少量的提升。</p>
-<p>最后有一个小问题值得思考一下，<strong>DeepFM</strong> 使用 <strong>FM</strong> 层代替 wide 层，那能不能使用 <strong>FFM</strong> 来代替 wide 层呢？或者有没有什么类似的思路，让每个特征与其他 field 特征进行交叉的时候能够有不同的表征？这个问题留待后面介绍 <strong>AutoInt</strong> 的时候再讨论吧~</p>
+<h3 id="效果测试"><a href="#效果测试" class="headerlink" title="效果测试"></a>效果测试</h3><p>我测试了一下 <strong>DeepFM</strong> 每个子结构的性能（使用 pooling 策略），以只使用线性部分作为基线的话，只使用 FM 的交叉部分能够提升 $4.91\%$，只使用 <strong>MLP</strong> 部分能够提升 $9.30\%$，全部使用能够提升 $9.38\%$，从数据来看，<strong>FM</strong> 层的确能带来少量的提升。</p>
+<h3 id="从-DeepFM-到-DeepFFM"><a href="#从-DeepFM-到-DeepFFM" class="headerlink" title="从 DeepFM 到 DeepFFM"></a>从 DeepFM 到 DeepFFM</h3><p>最后有一个小问题值得思考和讨论一下，<strong>DeepFM</strong> 使用 <strong>FM</strong> 层代替 wide 层，那能不能使用 <strong>FFM</strong> 来代替 wide 层呢？或者有没有什么类似的思路，让每个特征与其他 field 特征进行交叉的时候能够有不同的表征？</p>
+<p>最直接的方案就是将 embedding 层进行扩展（称为 <strong>NeuralFFM</strong> $^{[1]}$），即将原来每个 field 对应一个二维的 embedding matrix，扩展为每个 field 对应一个三维的 embedding matrix，使得每个特征都对应于一个二维的 embedding matrix，在交叉时同时根据 source/target field ID 来 lookup 相应的 embedding vector，如图 2 所示。假设 field 的数量为 $m$，这种方案实际上是将 embedding 的参数量增加为原来的 $m$ 倍。这种方案貌似最早是南大在比赛中使用过，效果还不错。但是由于 embedding 层本来就已经贡献了整个模型主要的参数量，这种方案无论是在 train、store 还是 serving 都十分吃资源。</p>
+<img src="/2020/04/30/paper-2017-noah-deepfm/neuralffm_architecture.png" title="图 2. NeuralFFM 整体架构">
+<p>还有一种思路是使用 self-attention 的思路 $^{[2]}$，将每个 field 与其他 field 计算 attention 值，作为其他 field 对该 field 相关的权重，然后再计算加权的 pooling，作为该 field 与其他所有 field 特征的交互结果。这个方案我们在 后续介绍 <a href="https://guyuecanhui.github.io/2020/05/09/paper-2019-pku-autoint/">AutoInt</a> 时会再详细说明。</p>
+<p>张俊林等人则同时采用了这两种思路，提出了 <strong>FAT-DeepFFM</strong> $^{[3]}$，即 embedding 层使用 <strong>FFM</strong> 的扩展，在交互层使用 attention 机制，如下所示。但是张俊林自己在分享中都表示这种思路尝试一下就好了 $^{[4]}$，所以这里就学习一下这种思路，不详细介绍了，大家在生产环境中还是谨慎使用。</p>
+<img src="/2020/04/30/paper-2017-noah-deepfm/deepffm_architecture.png" title="图 3. FAT-DeepFFM 整体架构">
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] Yang, Yi, et al.. “Neural field-aware factorization machine.” <em><a href="https://cs.nju.edu.cn/31/60/c1654a209248/page.htm" target="_blank" rel="noopener">https://cs.nju.edu.cn/31/60/c1654a209248/page.htm</a></em>. 2017.</p>
+<p>[2] Song, Weiping, et al. “Autoint: Automatic feature interaction learning via self-attentive neural networks.” <em>Proceedings of the 28th ACM International Conference on Information and Knowledge Management</em>. 2019.</p>
+<p>[3] Zhang, Junlin, Tongwen Huang, and Zhiqi Zhang. “FAT-DeepFFM: Field Attentive Deep Field-aware Factorization Machine.” <em>arXiv preprint arXiv:1905.06336</em> (2019).</p>
+<p>[4] 张俊林. “FFM及DeepFFM模型在推荐系统的探索.” <em><a href="https://zhuanlan.zhihu.com/p/67795161" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/67795161</a></em>. 2019.</p>
 
       
     </div>
@@ -581,8 +592,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -660,6 +680,22 @@
       </section>
 
       
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#DeepFM-架构"><span class="nav-number">1.</span> <span class="nav-text">DeepFM 架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#特征处理"><span class="nav-number">2.</span> <span class="nav-text">特征处理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#效果测试"><span class="nav-number">3.</span> <span class="nav-text">效果测试</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#从-DeepFM-到-DeepFFM"><span class="nav-number">4.</span> <span class="nav-text">从 DeepFM 到 DeepFFM</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">5.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
 
       
 
@@ -687,7 +723,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">43.1k</span>
+    <span title="Site words total count">43.5k</span>
   
 </div>
 
