@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://guyuecanhui.github.io/"/>
-  <updated>2020-05-25T15:29:39.579Z</updated>
+  <updated>2020-05-26T15:16:05.333Z</updated>
   <id>https://guyuecanhui.github.io/</id>
   
   <author>
@@ -15,6 +15,40 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>xDeepFM 论文精读</title>
+    <link href="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/"/>
+    <id>https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/</id>
+    <published>2020-05-26T14:57:32.000Z</published>
+    <updated>2020-05-26T15:16:05.333Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p><strong>论文引用：</strong>Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” <em>Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining</em>. 2018.</p></blockquote><p><strong>xDeepFM</strong> 是中科大和 <strong>MSRA</strong> 发表在 <strong>KDD 2018</strong> 上用于 <strong>CTR</strong> 预估的模型。这个模型充分借鉴了 <strong>DCN</strong>、<strong>FM</strong> 的思想，提出了一种新的将特征按 vector 进行交叉的结构 <strong>CIN</strong>，并且这个结构与 <strong>CNN</strong> 和 <strong>RNN</strong> 有一定的相似性。从实验来看，效果的确不错，但是工程效率实在是个难题。</p><h2 id="背景与动机"><a href="#背景与动机" class="headerlink" title="背景与动机"></a>背景与动机</h2><p>原始特征就像是未雕琢的原石，很难直接发挥出有效的作用，在预测系统中，我们通常需要对原始特征进行一定的组合变换，来取得比较好的效果。其中，特征交叉（即将离散特征值拼成一个新的特征值）能够衡量原始特征间的交互关系，提供在组合场景下有指导性的信息，对预测效果影响也比较显著，因此自动完成并提炼这种特征变换成为了众多模型（<strong>FM</strong>、<strong>DeepFM</strong>、<strong>DCN</strong> 等）设计显式交叉结构最主要的目的。</p><p>虽然 <strong>DeepFM</strong>、<strong>FNN</strong>、<strong>PNN</strong> 等模型能够完成特征的二阶显式交叉，并且通过 <strong>MLP</strong> 来完成特征的高阶隐式交叉，但是 <strong>xDeepFM</strong> 作者认为，单纯靠 <strong>DNN</strong> 来捕获高阶交叉特征效果无法保证，既说不清楚学到的函数是什么样的，也没法证明最多能学到几阶交叉，而且 <strong>MLP</strong> 本质上还是按 bit 进行交叉，物理含义也难以解释。</p><p><strong>DCN</strong> 模型前面也介绍过，是典型的能够提供高阶显式交叉能力，文章则证明了，<strong>DCN</strong> 的 CrossNet 结构每一层实际只能学到 embedding 层的张量积的形式。这个实际上就是看法的不同。对于第 $i+1$ 层 CrossNet，它的输出是根据 embedding 层的输入 $x_0$ 和第 $i$ 层的输出变换得到的：</p><script type="math/tex; mode=display">x_{i+1} = x_0x_i^{\top}w_{i+1}+x_i</script><p>我们之前说 CrossNet 能够捕获所有特征两两交叉的信息，是源自它有一项 <script type="math/tex">x_0x_i^{\top}</script>，它的结果是个矩阵，包含两个向量每一位的乘积，然后再乘 $w_{i+1}$ 相当于是 pooling 或者信息压缩。</p><p>而文章作者是看到上式等价于 <script type="math/tex">x_{i+1}=x_0(x_i^{\top}w_{i+1})+x_i</script>，而括号内的是一个标量，因此我们可以根据归纳法得到：</p><script type="math/tex; mode=display">\begin{align}x_1=&x_0(x_0^{\top}w_1)+x_0 = x_0(x_0^{\top}w_1+1)=\alpha^{(1)}x_0 \\x_2=&x_0(x_1^{\top}w_1)+x_1 = x_0\big((\alpha^1x_0)^{\top}w_1\big)+\alpha^{(1)}x_0=x_0\big((\alpha^{(1)}x_0)^{\top}w_1+\alpha^{(1)}\big)=\alpha^{(2)} x_0 \\\cdots \\x_{i+1}=& x_0\big((\alpha^{(i)}x_0)^{\top}w_{i+1}+\alpha^{(i)})=\alpha^{(i+1)}x_0\end{align}</script><p>这里的 $\alpha^i$ 是个标量，从这个表达式来看，CrossNet 的确每一层学到的是 $x_0$ 的张量积的形式。但是这并不是说 $x_k$ 与 $x_0$ 是线性相关的，只是说学到的函数形式比较受限。</p><p>因此文章设计 <strong>CIN</strong> 的核心思路有两个：一个是能够提供逐层高阶的显式特征交叉能力，另外特征交叉是按 vector 粒度进行，目标则是学到更加复杂的函数形式。</p><h2 id="CIN-架构"><a href="#CIN-架构" class="headerlink" title="CIN 架构"></a>CIN 架构</h2><p>文章提出 <strong>CIN</strong> 网络来完成特征显式交叉，简单来讲，它是将每一层的所有特征向量与输入层的所有特征向量进行点乘，然后用多个卷积核去做卷积，来生成特征交互的结果。具体来讲，它的交互过程如下：</p><p>记特征的 field 数量为 $m$，每个 field 特征对应的 embedding 维度都为 $d$，记 embedding 层输入为 $X^0\in \mathbb{R}^{m\times d}$，记第 $k+1$ 层 <strong>CIN</strong> 的输入（即第 $k$ 层的输出）为 <script type="math/tex">X^k\in \mathbb{R}^{h_k\times d}</script>。这里，<script type="math/tex">h_k</script> 是我们设置的超参数，例如，我们设置 <strong>CIN</strong> 的 layers 为 $[128, 128, 128]$ 时，它实际上指定了 <strong>CIN</strong> 有三层，且第 $k$ 层的权重矩阵 $W^k\in\mathbb{R}^{h_{k-1}\times m}$ 的数量为 $128$。</p><p>假设我们已经算出来前 $k-1$ 层的输出 $X^{k-1}$，则第 $k$ 层的输出 $X^k$ 的计算过程如下：</p><ol><li><p>计算出 $X^{k-1}$ 与 $X^0$ 的所有 field 特征向量间的 Hadamard 积，即将第 $k-1$ 层 <strong>CIN</strong> 输出的 <script type="math/tex">h_{k-1}</script> 个特征向量与 embedding 层的 $m$ 个特征向量做向量级的两两交叉，得到了 <script type="math/tex">h_{k-1}\times m</script> 个交叉向量，每个向量还是 $d$ 维：</p><script type="math/tex; mode=display">Z^k_{i,j} = X^{k-1}_{i,*}\circ X^0_{j,*}, \qquad 1\le i\le h_{k-1},1\le j\le m</script></li><li><p>在第 $k$ 层构造 <script type="math/tex">h_k</script> 个可训练的权重矩阵，每个权重矩阵 <script type="math/tex">W^{k,h}</script> 的维度为 <script type="math/tex">(h_{k-1},m)</script>，矩阵的每个元素对应了上一步中每个向量的权重，计算第 $h$ 个权重矩阵对所有向量的加权和，得到这个权重矩阵对应的加权向量 <script type="math/tex">X_{h,*}^k</script>，即第 $k$ 层 <strong>CIN</strong> 的输出 $X^k$ 的第 $h$ 行，每一行还是 $d$ 维：</p></li></ol><script type="math/tex; mode=display">X_{h,*}^k=\sum_{i=1}^{h_{k-1}} \sum_{j=1}^m W^{k,h}_{i,j} \cdot Z_{i,j}^k, \qquad 1\le h\le h_k</script><p>这样，我们就能够得到所有 <strong>CIN</strong> 层的输出 ${X^1,\cdots,X^n}$，并且一直保持 $X^i$ 的每一行是 $d$ 维的向量，从而保证每层都能与 $X^0$ 进行 vector 粒度的交叉。</p><p>整个 <strong>CIN</strong> 网络的输出则是将每个 <script type="math/tex">X^i\in \mathbb{R}^{h_i\times d}</script> 按列进行 sum pooling，得到一个 $h_i$ 维的向量 $x_i$，然后将所有 $x_i$ 进行拼接，得到一个 $\sum_i h_i$ 维的向量。上面的过程如果用卷积的思路，可以参考下面的图示：</p><img src="/2020/05/26/paper-2018-msra-xdeepfm/cin-flow.png" title="CIN 计算过程示意"><p>由于 <strong>CIN</strong> 层中每个权重矩阵实际上是相对独立的，每一个权重矩阵都对应了所有的特征交叉信息。因此在实现中，还可以将每个 $X^i$ 分成 <script type="math/tex">X^i_{0:h_i/2-1,*}</script> 和 <script type="math/tex">X^i_{h_i/2:,*}</script>，前一半进行 sum pooling 后得到 $h_i/2$ 维向量直接接到输出层，后一半则作为下一层的输入。</p><h3 id="网络分析"><a href="#网络分析" class="headerlink" title="网络分析"></a>网络分析</h3><p>由于模型里可训练的参数主要是权重矩阵，根据上面的分析，<strong>CIN</strong> 的总参数量为 <script type="math/tex">\sum_k h_k\cdot h_{k-1}\cdot m</script>。文章也提出，如果 $h_k$ 比较大的话，可以将每个权重矩阵做 L-order decomposition，用两个小矩阵的乘积来代替，可以进一步减少参数量。</p><p>举个例子，比如 $100$ 个 field 的 $[128, 128, 128]$ 的 <strong>CIN</strong> 网络，参数量为 $3\times 128\times 128\times 100=4915200$；假设 embedding 维度为 $16$，$[128, 128, 128]$ 的 <strong>MLP</strong> 参数量为 $16\times 100\times 128+128\times 128+128\times 128=237568$；<strong>CIN</strong> 要明显多出不少。</p><p><strong>CIN</strong> 每一层计算需要 $O(mh^2d)$ 的时间复杂度，$t$ 层的复杂度为 $O(mh^2dt)$，明显比 <strong>MLP</strong> 的 $O(mhd+h^2t)$ 大很多，实际跑下来，<strong>xDeepFM</strong> 一个 epoch 用时大概是 <strong>DeepFM</strong> 的 3 倍。因此，<strong>xDeepFM</strong> 模型无论是参数量还是训练、推理的速度，都对工程化有很高的要求。</p><p>关于 <strong>CIN</strong> 的交叉能力，从上面的网络计算过程来看，也容易知道，<strong>CIN</strong> 的交叉阶数是逐层加 1 的，这里就不展开说明了。</p><p>最后，<strong>CIN</strong> 可以与 <strong>MLP</strong> 组成并行架构，也就是文章提出的 <strong>xDeepFM</strong>，兼具显式交叉和隐式交叉的能力，如下图所示，这貌似也已经是一个通用的做法了。</p><img src="/2020/05/26/paper-2018-msra-xdeepfm/xdeepfm-architecture.png" title="xDeepFM 整体架构">]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;论文引用：&lt;/strong&gt;Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender s
+      
+    
+    </summary>
+    
+      <category term="论文精读" scheme="https://guyuecanhui.github.io/categories/%E8%AE%BA%E6%96%87%E7%B2%BE%E8%AF%BB/"/>
+    
+    
+      <category term="推荐" scheme="https://guyuecanhui.github.io/tags/%E6%8E%A8%E8%8D%90/"/>
+    
+      <category term="排序" scheme="https://guyuecanhui.github.io/tags/%E6%8E%92%E5%BA%8F/"/>
+    
+      <category term="特征交叉" scheme="https://guyuecanhui.github.io/tags/%E7%89%B9%E5%BE%81%E4%BA%A4%E5%8F%89/"/>
+    
+      <category term="CIN" scheme="https://guyuecanhui.github.io/tags/CIN/"/>
+    
+      <category term="ctr" scheme="https://guyuecanhui.github.io/tags/ctr/"/>
+    
+  </entry>
   
   <entry>
     <title>AutoInt 论文精读</title>
@@ -44,9 +78,9 @@
     
       <category term="注意力" scheme="https://guyuecanhui.github.io/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B/"/>
     
-      <category term="self-attention" scheme="https://guyuecanhui.github.io/tags/self-attention/"/>
-    
       <category term="ctr" scheme="https://guyuecanhui.github.io/tags/ctr/"/>
+    
+      <category term="self-attention" scheme="https://guyuecanhui.github.io/tags/self-attention/"/>
     
   </entry>
   
@@ -628,36 +662,6 @@
       <category term="github" scheme="https://guyuecanhui.github.io/tags/github/"/>
     
       <category term="next" scheme="https://guyuecanhui.github.io/tags/next/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>可能是最好懂的ItemCF解释了</title>
-    <link href="https://guyuecanhui.github.io/2019/04/12/itemcf/"/>
-    <id>https://guyuecanhui.github.io/2019/04/12/itemcf/</id>
-    <published>2019-04-12T05:56:07.000Z</published>
-    <updated>2019-05-04T13:33:58.679Z</updated>
-    
-    <content type="html"><![CDATA[<p>说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。</p><h2 id="ItemCF-推导过程"><a href="#ItemCF-推导过程" class="headerlink" title="ItemCF 推导过程"></a>ItemCF 推导过程</h2><p>首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因而有很大的相似度。</p><p>从这个假设出发，我们可以认为两个视频相似表现在它们被很多用户同时观看，两个物品共同观看的人数越多，说明它们的相似度越高，用公式来表达就是：</p><script type="math/tex; mode=display">s_{i,j}=|N(i)\cap N(j)| \qquad (1)</script><p>其中，$N(i)$ 表示观看视频 $i$ 的人群集合，$|N(i)\cap N(j)|$ 表示同时播放过 $i,j$ 的人数。但是由于热点视频可能并不代表用户的真实兴趣（有可能是运营推送，或者仅仅是由于追热心理），因此需要惩罚那些热点的视频，可以通过将共同观看人数除以与视频总观看数相关的系数来实现，例如使用以下方式：</p><script type="math/tex; mode=display">s_{i,j}=\frac{|N(i)\cap N(j)|}{\sqrt{|N(i)|\cdot|N(j)|}} \qquad (2)</script><p>但是仅仅惩罚热点视频也还不够，有些人就是闲的无聊，有什么看什么，这种情况下他表现出来的就未必是真实的兴趣了（就不满足我们的隐含假设），他的行为也就不太能作为我们的协同的依据，因此需要对这种人做降权，例如使用以下方式：</p><script type="math/tex; mode=display">s_{i,j}=\frac{\sum_{u\in N(i)\cap N(j)}\frac{1}{log(1+|M(u)|)}}{\sqrt{|N(i)|\cdot|N(j)|}} \qquad (3)</script><p>其中，$M(u)$ 表示用户 $u$ 观看的视频集合。另外，如果用户对视频 $i$ 观看了 80%，而对视频 $j$ 只看了 10%，那用户对这两个视频的喜欢程度也是不相同的，因此我们还可以对用户对两个视频观看的完成度差异做降权，差异越大，相似度也越低，例如使用以下方式：</p><script type="math/tex; mode=display">s_{i,j}=\frac{\sum_{u\in N(i)\cap N(j)}\frac{\cos(r_u(i),r_u(j))}{log(1+|M(u)|)}}{\sqrt{|N(i)|\cdot|N(j)|}} \qquad (4)</script><p>其中，$r_u(i)$ 表示用户 $u$ 对视频 $i$ 的观看完成度。最后，将所有视频与其他视频的相似度做 $max$ 归一化，得到：</p><script type="math/tex; mode=display">s_{i,j}'=\frac{s_{i,j}}{\max_j s_{i,j}} \qquad (5)</script><p>归一化使得所有物品的相似度取值都在 (0,1] 之间，这个相似度已经可以直接用于相关推荐场景。另外，有研究表明，这种归一化可以提高 ItemCF 用于个性化推荐时的准确度、覆盖率和多样性。</p><p>那基于 ItemCF 如何进行个性化推荐呢？主要是考虑推荐与用户的观看历史最相似的视频，即计算每个视频与用户观看视频集合的相似度作为作为是否观看该视频的预测值：</p><script type="math/tex; mode=display">p_u(i)=\frac{\sum_{j\in M(u)} s_{i,j}\cdot r_u(j)}{\sum_{j\in M(u)} s_{i,j}} \qquad (6)</script><p>最后，再根据预测值从大到小选取 TopN 个视频作为推荐结果。</p><h2 id="优化与讨论"><a href="#优化与讨论" class="headerlink" title="优化与讨论"></a>优化与讨论</h2><p>其实从第 1 部分的介绍来看，基于 ItemCF 的思想可以做很多改进。例如：</p><ol><li>如果感觉算出来的结果仍然偏向热门视频时，可以增加式 (4) 的分母大小；</li><li>如果觉得用户只有观看完完成度很高时才是真实兴趣，那可以将式 (4) 的 $cos(\cdot)$ 部分改成类似 $r_u(i)\cdot r_u(j)$ 的形式；</li><li>如果觉得需要更多的考虑用户的短期兴趣，做即时的推荐，那可以将式 (6) 中的用户观看历史限制在最近几次，甚至一次；</li></ol><p>如果把用户-视频考虑成一个二部图，ItemCF 实际上是基于图的结构，执行了一次从用户到视频的兴趣扩散过程。可以考虑下图中的视频 $v_1,v_3$，它们没有直接的共同观看，因此用 ItemCF 算出来的相似度为 0，但是实际上 $u_1,u_2$ 都观看了 $v_2$，因此可以认为用户 $u_1,u_2$ 存在一定的相似性，因此如果执行一次视频-用户-视频的兴趣扩散过程就能够捕获 $v_1,v_3$ 的相似度了。</p><img src="/2019/04/12/itemcf/itemcf-f1.png" title="用户观影行为示例"><p>后面一种思路实际上就是 SimRank，但是由于需要执行多次兴趣扩散（即对二部图做多次迭代计算），SimRank 的计算复杂度相当高，在业务数据量大的情况下需要强大的算力支持，以后会再讨论下我在 SimRank 模型上的尝试。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。&lt;/p&gt;
-&lt;h2 id=&quot;ItemCF-推导过程&quot;&gt;&lt;a href=&quot;#ItemCF-推导过程&quot; class=&quot;headerl
-      
-    
-    </summary>
-    
-      <category term="推荐系统" scheme="https://guyuecanhui.github.io/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/"/>
-    
-    
-      <category term="推荐" scheme="https://guyuecanhui.github.io/tags/%E6%8E%A8%E8%8D%90/"/>
-    
-      <category term="协同过滤" scheme="https://guyuecanhui.github.io/tags/%E5%8D%8F%E5%90%8C%E8%BF%87%E6%BB%A4/"/>
-    
-      <category term="算法" scheme="https://guyuecanhui.github.io/tags/%E7%AE%97%E6%B3%95/"/>
     
   </entry>
   

@@ -100,7 +100,7 @@
 
 
 
-  <meta name="keywords" content="Hexo, NexT">
+  <meta name="keywords" content="推荐,排序,特征交叉,CIN,ctr,">
 
 
 
@@ -113,17 +113,21 @@
 
 
 
-<meta name="description" content="总结心得">
-<meta name="keywords" content="feature, model, algorithm">
-<meta property="og:type" content="website">
-<meta property="og:title" content="HCigmoid">
-<meta property="og:url" content="https://guyuecanhui.github.io/tags/next/index.html">
+<meta name="description" content="论文引用：Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
+<meta name="keywords" content="推荐,排序,特征交叉,CIN,ctr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="xDeepFM 论文精读">
+<meta property="og:url" content="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="总结心得">
+<meta property="og:description" content="论文引用：Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
 <meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/cin-flow.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/xdeepfm-architecture.png">
+<meta property="og:updated_time" content="2020-05-26T15:16:05.333Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="HCigmoid">
-<meta name="twitter:description" content="总结心得">
+<meta name="twitter:title" content="xDeepFM 论文精读">
+<meta name="twitter:description" content="论文引用：Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/cin-flow.png">
 
 
 
@@ -153,13 +157,13 @@
 
 
 
-  <link rel="canonical" href="https://guyuecanhui.github.io/tags/next/">
+  <link rel="canonical" href="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/">
 
 
 
 
 
-  <title>标签: next | HCigmoid</title>
+  <title>xDeepFM 论文精读 | HCigmoid</title>
   
 
 
@@ -178,7 +182,7 @@
     
   
 
-  <div class="container sidebar-position-left ">
+  <div class="container sidebar-position-left page-post-detail">
     <div class="headband"></div>
 
     <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
@@ -314,52 +318,256 @@
           <div id="content" class="content">
             
 
-  
-  
-  
-  <div class="post-block tag">
+  <div id="posts" class="posts-expand">
+    
 
-    <div id="posts" class="posts-collapse">
-      <div class="collection-title">
-        <h1>next<small>标签</small>
-        </h1>
-      </div>
+  
 
-      
-        
+  
+  
+  
 
   <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/">
 
-      <h2 class="post-title">
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
         
-            <a class="post-title-link" href="/2019/04/14/hexo-next-github/" itemprop="url">
-              
-                <span itemprop="name">Hexo+NexT+github 配置指南</span>
-              
-            </a>
         
-      </h2>
+          <h1 class="post-title" itemprop="name headline">xDeepFM 论文精读</h1>
+        
 
-      <div class="post-meta">
-        <time class="post-time" itemprop="dateCreated" datetime="2019-04-14T14:43:50+08:00" content="2019-04-14">
-          04-14
-        </time>
-      </div>
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-05-26T22:57:32+08:00">
+                2020-05-26
+              </time>
+            
 
-    </header>
-  </article>
+            
 
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/论文精读/" itemprop="url" rel="index">
+                    <span itemprop="name">论文精读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/05/26/paper-2018-msra-xdeepfm/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/05/26/paper-2018-msra-xdeepfm/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.9k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  7
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <blockquote>
+<p><strong>论文引用：</strong>Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” <em>Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining</em>. 2018.</p>
+</blockquote>
+<p><strong>xDeepFM</strong> 是中科大和 <strong>MSRA</strong> 发表在 <strong>KDD 2018</strong> 上用于 <strong>CTR</strong> 预估的模型。这个模型充分借鉴了 <strong>DCN</strong>、<strong>FM</strong> 的思想，提出了一种新的将特征按 vector 进行交叉的结构 <strong>CIN</strong>，并且这个结构与 <strong>CNN</strong> 和 <strong>RNN</strong> 有一定的相似性。从实验来看，效果的确不错，但是工程效率实在是个难题。</p>
+<h2 id="背景与动机"><a href="#背景与动机" class="headerlink" title="背景与动机"></a>背景与动机</h2><p>原始特征就像是未雕琢的原石，很难直接发挥出有效的作用，在预测系统中，我们通常需要对原始特征进行一定的组合变换，来取得比较好的效果。其中，特征交叉（即将离散特征值拼成一个新的特征值）能够衡量原始特征间的交互关系，提供在组合场景下有指导性的信息，对预测效果影响也比较显著，因此自动完成并提炼这种特征变换成为了众多模型（<strong>FM</strong>、<strong>DeepFM</strong>、<strong>DCN</strong> 等）设计显式交叉结构最主要的目的。</p>
+<p>虽然 <strong>DeepFM</strong>、<strong>FNN</strong>、<strong>PNN</strong> 等模型能够完成特征的二阶显式交叉，并且通过 <strong>MLP</strong> 来完成特征的高阶隐式交叉，但是 <strong>xDeepFM</strong> 作者认为，单纯靠 <strong>DNN</strong> 来捕获高阶交叉特征效果无法保证，既说不清楚学到的函数是什么样的，也没法证明最多能学到几阶交叉，而且 <strong>MLP</strong> 本质上还是按 bit 进行交叉，物理含义也难以解释。</p>
+<p><strong>DCN</strong> 模型前面也介绍过，是典型的能够提供高阶显式交叉能力，文章则证明了，<strong>DCN</strong> 的 CrossNet 结构每一层实际只能学到 embedding 层的张量积的形式。这个实际上就是看法的不同。对于第 $i+1$ 层 CrossNet，它的输出是根据 embedding 层的输入 $x_0$ 和第 $i$ 层的输出变换得到的：</p>
+<script type="math/tex; mode=display">
+x_{i+1} = x_0x_i^{\top}w_{i+1}+x_i</script><p>我们之前说 CrossNet 能够捕获所有特征两两交叉的信息，是源自它有一项 <script type="math/tex">x_0x_i^{\top}</script>，它的结果是个矩阵，包含两个向量每一位的乘积，然后再乘 $w_{i+1}$ 相当于是 pooling 或者信息压缩。</p>
+<p>而文章作者是看到上式等价于 <script type="math/tex">x_{i+1}=x_0(x_i^{\top}w_{i+1})+x_i</script>，而括号内的是一个标量，因此我们可以根据归纳法得到：</p>
+<script type="math/tex; mode=display">
+\begin{align}x_1=&x_0(x_0^{\top}w_1)+x_0 = x_0(x_0^{\top}w_1+1)=\alpha^{(1)}x_0 \\x_2=&x_0(x_1^{\top}w_1)+x_1 = x_0\big((\alpha^1x_0)^{\top}w_1\big)+\alpha^{(1)}x_0=x_0\big((\alpha^{(1)}x_0)^{\top}w_1+\alpha^{(1)}\big)=\alpha^{(2)} x_0 \\\cdots \\x_{i+1}=& x_0\big((\alpha^{(i)}x_0)^{\top}w_{i+1}+\alpha^{(i)})=\alpha^{(i+1)}x_0\end{align}</script><p>这里的 $\alpha^i$ 是个标量，从这个表达式来看，CrossNet 的确每一层学到的是 $x_0$ 的张量积的形式。但是这并不是说 $x_k$ 与 $x_0$ 是线性相关的，只是说学到的函数形式比较受限。</p>
+<p>因此文章设计 <strong>CIN</strong> 的核心思路有两个：一个是能够提供逐层高阶的显式特征交叉能力，另外特征交叉是按 vector 粒度进行，目标则是学到更加复杂的函数形式。</p>
+<h2 id="CIN-架构"><a href="#CIN-架构" class="headerlink" title="CIN 架构"></a>CIN 架构</h2><p>文章提出 <strong>CIN</strong> 网络来完成特征显式交叉，简单来讲，它是将每一层的所有特征向量与输入层的所有特征向量进行点乘，然后用多个卷积核去做卷积，来生成特征交互的结果。具体来讲，它的交互过程如下：</p>
+<p>记特征的 field 数量为 $m$，每个 field 特征对应的 embedding 维度都为 $d$，记 embedding 层输入为 $X^0\in \mathbb{R}^{m\times d}$，记第 $k+1$ 层 <strong>CIN</strong> 的输入（即第 $k$ 层的输出）为 <script type="math/tex">X^k\in \mathbb{R}^{h_k\times d}</script>。这里，<script type="math/tex">h_k</script> 是我们设置的超参数，例如，我们设置 <strong>CIN</strong> 的 layers 为 $[128, 128, 128]$ 时，它实际上指定了 <strong>CIN</strong> 有三层，且第 $k$ 层的权重矩阵 $W^k\in\mathbb{R}^{h_{k-1}\times m}$ 的数量为 $128$。</p>
+<p>假设我们已经算出来前 $k-1$ 层的输出 $X^{k-1}$，则第 $k$ 层的输出 $X^k$ 的计算过程如下：</p>
+<ol>
+<li><p>计算出 $X^{k-1}$ 与 $X^0$ 的所有 field 特征向量间的 Hadamard 积，即将第 $k-1$ 层 <strong>CIN</strong> 输出的 <script type="math/tex">h_{k-1}</script> 个特征向量与 embedding 层的 $m$ 个特征向量做向量级的两两交叉，得到了 <script type="math/tex">h_{k-1}\times m</script> 个交叉向量，每个向量还是 $d$ 维：</p>
+<script type="math/tex; mode=display">
+Z^k_{i,j} = X^{k-1}_{i,*}\circ X^0_{j,*}, \qquad 1\le i\le h_{k-1},1\le j\le m</script></li>
+<li><p>在第 $k$ 层构造 <script type="math/tex">h_k</script> 个可训练的权重矩阵，每个权重矩阵 <script type="math/tex">W^{k,h}</script> 的维度为 <script type="math/tex">(h_{k-1},m)</script>，矩阵的每个元素对应了上一步中每个向量的权重，计算第 $h$ 个权重矩阵对所有向量的加权和，得到这个权重矩阵对应的加权向量 <script type="math/tex">X_{h,*}^k</script>，即第 $k$ 层 <strong>CIN</strong> 的输出 $X^k$ 的第 $h$ 行，每一行还是 $d$ 维：</p>
+</li>
+</ol>
+<script type="math/tex; mode=display">
+X_{h,*}^k=\sum_{i=1}^{h_{k-1}} \sum_{j=1}^m W^{k,h}_{i,j} \cdot Z_{i,j}^k, \qquad 1\le h\le h_k</script><p>这样，我们就能够得到所有 <strong>CIN</strong> 层的输出 ${X^1,\cdots,X^n}$，并且一直保持 $X^i$ 的每一行是 $d$ 维的向量，从而保证每层都能与 $X^0$ 进行 vector 粒度的交叉。</p>
+<p>整个 <strong>CIN</strong> 网络的输出则是将每个 <script type="math/tex">X^i\in \mathbb{R}^{h_i\times d}</script> 按列进行 sum pooling，得到一个 $h_i$ 维的向量 $x_i$，然后将所有 $x_i$ 进行拼接，得到一个 $\sum_i h_i$ 维的向量。上面的过程如果用卷积的思路，可以参考下面的图示：</p>
+<img src="/2020/05/26/paper-2018-msra-xdeepfm/cin-flow.png" title="CIN 计算过程示意">
+<p>由于 <strong>CIN</strong> 层中每个权重矩阵实际上是相对独立的，每一个权重矩阵都对应了所有的特征交叉信息。因此在实现中，还可以将每个 $X^i$ 分成 <script type="math/tex">X^i_{0:h_i/2-1,*}</script> 和 <script type="math/tex">X^i_{h_i/2:,*}</script>，前一半进行 sum pooling 后得到 $h_i/2$ 维向量直接接到输出层，后一半则作为下一层的输入。</p>
+<h3 id="网络分析"><a href="#网络分析" class="headerlink" title="网络分析"></a>网络分析</h3><p>由于模型里可训练的参数主要是权重矩阵，根据上面的分析，<strong>CIN</strong> 的总参数量为 <script type="math/tex">\sum_k h_k\cdot h_{k-1}\cdot m</script>。文章也提出，如果 $h_k$ 比较大的话，可以将每个权重矩阵做 L-order decomposition，用两个小矩阵的乘积来代替，可以进一步减少参数量。</p>
+<p>举个例子，比如 $100$ 个 field 的 $[128, 128, 128]$ 的 <strong>CIN</strong> 网络，参数量为 $3\times 128\times 128\times 100=4915200$；假设 embedding 维度为 $16$，$[128, 128, 128]$ 的 <strong>MLP</strong> 参数量为 $16\times 100\times 128+128\times 128+128\times 128=237568$；<strong>CIN</strong> 要明显多出不少。</p>
+<p><strong>CIN</strong> 每一层计算需要 $O(mh^2d)$ 的时间复杂度，$t$ 层的复杂度为 $O(mh^2dt)$，明显比 <strong>MLP</strong> 的 $O(mhd+h^2t)$ 大很多，实际跑下来，<strong>xDeepFM</strong> 一个 epoch 用时大概是 <strong>DeepFM</strong> 的 3 倍。因此，<strong>xDeepFM</strong> 模型无论是参数量还是训练、推理的速度，都对工程化有很高的要求。</p>
+<p>关于 <strong>CIN</strong> 的交叉能力，从上面的网络计算过程来看，也容易知道，<strong>CIN</strong> 的交叉阶数是逐层加 1 的，这里就不展开说明了。</p>
+<p>最后，<strong>CIN</strong> 可以与 <strong>MLP</strong> 组成并行架构，也就是文章提出的 <strong>xDeepFM</strong>，兼具显式交叉和隐式交叉的能力，如下图所示，这貌似也已经是一个通用的做法了。</p>
+<img src="/2020/05/26/paper-2018-msra-xdeepfm/xdeepfm-architecture.png" title="xDeepFM 整体架构">
 
       
     </div>
+    
+    
+    
 
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+            <a href="/tags/排序/" rel="tag"># 排序</a>
+          
+            <a href="/tags/特征交叉/" rel="tag"># 特征交叉</a>
+          
+            <a href="/tags/CIN/" rel="tag"># CIN</a>
+          
+            <a href="/tags/ctr/" rel="tag"># ctr</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/09/paper-2019-pku-autoint/" rel="next" title="AutoInt 论文精读">
+                <i class="fa fa-chevron-left"></i> AutoInt 论文精读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
   </div>
   
   
   
+  </article>
 
-  
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
 
 
           </div>
@@ -367,6 +575,13 @@
 
 
           
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
 
         </div>
         
@@ -387,8 +602,17 @@
       
 
       
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
 
-      <section class="site-overview-wrap sidebar-panel sidebar-panel-active">
+      <section class="site-overview-wrap sidebar-panel">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
             
@@ -465,6 +689,22 @@
         </div>
       </section>
 
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景与动机"><span class="nav-number">1.</span> <span class="nav-text">背景与动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#CIN-架构"><span class="nav-number">2.</span> <span class="nav-text">CIN 架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#网络分析"><span class="nav-number">2.1.</span> <span class="nav-text">网络分析</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
       
 
       
@@ -630,6 +870,10 @@
 
 
   
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
 
   
 
