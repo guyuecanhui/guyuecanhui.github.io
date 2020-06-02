@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
-    <title><![CDATA[Tversky **对比模型**及其在推荐系统中的应用]]></title>
+    <title><![CDATA[Tversky 对比模型及其在推荐系统中的应用]]></title>
     <url>%2F2020%2F06%2F02%2Ftversky-contrast-model%2F</url>
     <content type="text"><![CDATA[物品相似度评估在推荐中当属核心问题之一，尤其是当用户有一些明确的喜好、或者当前有一个明确的消费目标的时候，推荐与用户搜索内容/当前浏览内容相似的内容，能够极大的提升用户体验。例如，“猜你喜欢”、“再来一条”、“相关推荐” 等场景，就是围绕用户的这类诉求设计的，它属于 ”探索与利用“ 中的 ”利用“。 相似度评估已经是一个研究十分深入的领域，尤其是在心理学领域。我们往往说不清楚到底什么样的物品是相似的，或者说为什么两个物品不相似。出现这个问题，可能是因为在不同的情境下，我们不自觉的有不同的判断标准，使用了不同的特征，或者对不同的特征有不同的权重等等。这也导致了我们很难客观度量模型相似度评估的准不准，在很多业务场景下引发一些 badcase。 本文先简单的介绍一下推荐系统中的相似模型，再重点介绍一个心理学研究上的经典相似模型：Tversky 对比模型。 推荐系统中的相似模型目前业界常用的相似度评估的模型一般分为两类：基于内容相似和基于协同相似。 基于协同相似有经典的算法，比如 itemCF、ALS、SimRank++ 等；也有深度的模型，比如 TowerModel、GCN 等，先生成物品的 embedding，然后基于距离度量函数（主要是 cosine 距离）来评估物品间相似度。虽然这里面有一些算法也能够结合物品的内容信息，但是它们的主要问题还是：不可解释、受物品热度影响大、冷启动效果不好。 而基于内容的相似模型（比如标签相似）则有比较好的解释性，而且只要标签的质量好，完全可以应对新内容的启动问题。当然，基于内容的相似也可以结合用户的协同信息进行调优，比如基于群体统计来学习不同标签的权重等。因此实际使用中，基于内容的相似模型还是不可或缺的，通常作为补充的召回，或者在特定场景下使用（例如物品冷启动）。 基于内容的相似通常使用内容特征（这里称为标签）的匹配来计算，比如基于标签集合的 Jaccard 加权相似度、基于词袋向量/加权向量的余弦/欧氏距离等，这些基于距离度量函数的评估方法（包括上面提到的基于协同的模型），隐式的假设了我们对物品的相似度评估是对称的，即物品 $a$ 与物品 $b$ 的相似度满足：$s(a,b)=s(b,a)$，这个假设是否满足，在心理学上也是过讨论的，下面再来看一个心理学上的经典理论。 相似度评估的心理学研究心理学家在研究是什么影响了人们对相似度的评估时，一般首先是会设计一些强迫选择（forced choice）的实验。实验常见的设计比如给用户两个物品，让用户回答它们是否相似；或者给用户一个目标物品和两个备选物品，让用户选择哪个与目标更相似。其中，后面一种方案评估的是人们相对相似的评价，可以避免每个人内在的偏好，因此得到的数据更客观和一致，预测能力也更强。例如文献 $[1]$ 就设计了相对相似实验，用来建立用户在线购买时装场景下的相似评估模型。 在相似评估建模方面，除了对称相似模型，还有非对称相似模型。Tversky 等人在上世纪 70 年代，针对人如何评估物品间的相似度进行研究，提出了对比模型（Tversky Contrast Model $^{[2] }$），它与我们当前流行使用的基于距离度量函数的方案相比最大的差别表现在，对比模型中物品间的相似度是非对称的。 为什么说我们的相似度评估是非对称的呢？文献 $[2]$ 中给出一些例子，挺有意思的（怕翻译了失去原来的意味，所以引的原文）： We say “the portrait resembles the person” rather than “the person resembles the portrait”. We say “the son resembles the father” rather than “the father resembles the son”. We say “an ellipse is like a circle”, not “a circle is like an ellipse”. We say “Turks fight like tigers” and not “tigers fight like Turks”. The poet writes “my love is as deep as the ocean”, not “the ocean is as deep as my love”. 可以看到，尤其是当物品间存在一些类比、或者不那么直接的联系的时候，我们的相似评估呈现很明显的非对称性。这可能是因为我们在评估这些相似的时候，关注了不同的特征、使用了不同的权重。Tversky 基于这些观察，提出了经典的对比模型。 Tversky 对比模型Tversky 对比模型的核心思想是将人们评估相似度的过程抽象成一个特征比较的过程，而且比较不仅仅关注相同的特征，还关注不同的特征。其中，每个特征的权重可能不同，并且双方共有的特征与单方独有的特征权重也不相同。它基于如下假设： Matching：对于 $a$ 和 $b$，它们的相似度是它们特征集合关系的函数：$s(a,b)=g(A\cap B,A-B,B-A)$； Monotonicity：当 $A\cap B \supset A\cap C,\ A-B \subset A- C, \ B-A\subset C-A$ 时，$s(a,b)\ge s(a,c)$； Independence：每个特征对相似度的影响是独立的； Solvability：基于现有的特征集合能够将不相似的物品区分开来； Invariance：Invariance ensures that the equivalence of intervals is preserved across factors. 其中，满足条件 1, 2 的 $g$ 被称为一个匹配函数（MatchingFunction），它衡量两个目标根据特征的匹配程度。Tversky 在文献 $[1]$ 中证明了，当满足以上 5 条假设的时候，一定存在一个相似度度量 $S$ 和一个非负的权重函数 $f$ 使下式成立： \begin{align}&S(a,b)\ge S(c,d), & \text{iff}\ \ s(a,b)\ge s(c,d)\\&S(a,b)=\theta f(A\cap B)-\alpha f(A- B) - \beta f(B-A), &\theta,\alpha,\beta\ge 0 \qquad (1)\end{align}注意，这里 $s(a,b)$ 表示 $a,b$ 的实际相似度，而 $S(a,b)$ 表示我们建模后，对 $a,b$ 相似度的度量。 我们把式 $(1)$ 称为 Tversky 对比模型，或简称对比模型。它最大的特点是将特征匹配拆分成 $A\cup B$、$A-B$、$B-A$ 三个部分，并分别赋予权重，从而当 $\alpha \not = \beta$ 时，$S(a,b)\not =S(b,a)$，即物品间相似是不对称的。另外，可以通过权重函数 $f()$ 函数来对每个特征赋予不同的重要性，这也满足我们在判断相似时更关注一些重要的特征是否匹配的现象。 作者还指出，对比模型可能是匹配函数最简单的形式。当然还可以考虑匹配函数的其他形式，例如下面的 RatioModel： S(a,b)=\frac{f(A\cap B)}{f(A\cap B)+\alpha f(A-B) + \beta f(B-A)}, \quad\alpha,\beta\ge 0 \qquad(2)由于式 $(2)$ 中每一项都为正，因此 $S(a,b) $ 取值范围为 $[0,1]$，并且： 当 $\alpha=\beta=1$ 时，RatioModel 退化成 $\frac{f(A\cap B)}{f(A\cup B)}$； 当 $\alpha=\beta=0.5$ 时，RatioModel 退化成 $\frac{f(A\cap B)}{f(A)+f(B)}$； 当 $\alpha=1, \beta=0$ 时，RatioModel 退化成 $\frac{f(A\cap B)}{f(A)}$； 模型的应用Tversky 对比模型一眼看上去就非常符合常理，十分吸引人。但是实际上在应用到推荐系统中时，其复杂性就远远高于它的形式上的简单性。我们需要根据实际场景数据学到参数 $\theta,\alpha,\beta$，并且学到一个合理的权重函数，这里的难点主要在于：如何设置正负样本？样本怎么组织？ 文献 $[1]$ 介绍了他们在时装线上商城上实践的经验，他们通过设置一些问卷实验来收集数据。问卷发放给典型的用户，每次给他们一张时装的图片作为目标，然后给出两张在特征上有所不同的时装图片作为备选，让用户选择哪一张备选图片与目标最相似，如下图所示。用户问卷收集完毕后，还需要经过一些统计上的处理才能作为后续的训练数据。 样本组织上，作者基于对比模型按如下过程来生成一个样本，并设置标签： \begin{align}\begin{cases}Y&=I\big(S(T,A)-S(T,B)\big) \\S(T,X) &= \theta w^\top\cdot x_{T\cap A} -\alpha w^\top\cdot x_{T- A} -\beta w^\top\cdot x_{A-T}\end{cases}\end{align}其中，$I(x)$ 是指示函数，当 $x&gt; 0$ 时 $I(x)=1$，否则 $I(x)=0$；$T$ 表示实验中的目标时装的特征集合，$A,B$ 表示两个备选时装的特征集合，$w$ 表示每个特征的权重。 根据这种方式，就可以对每个用户的每次选择生成一条样本：每条样本需要计算目标与备选的对比相似度，然后求差，作为样本的输入；假如用户选 $A$，则样本为正，否则样本为负。 在训练的时候，则用 $\delta\big(S(T,A)-S(T,B)\big)$ 来计算标签预测值，并设置如下损失函数： L(\gamma)=logloss(\alpha,\beta,\theta,w)-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}\log(\beta)-\frac{1}{\mu}\log(\theta)其中，$-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}\log(\beta)-\frac{1}{\mu}\log(\theta)$ 表示 LogBarrier 惩罚，主要是为了限制 $\alpha,\beta,\theta$ 非负，$\mu\gg 0$ 为 LogBarrier 参数。 文章实验结果表明，在他们的场景下，各个特征的权重确实不同，并且 $\theta&gt;\alpha&gt;\beta$，表明拥有共同特征还是占主导作用，而 $\alpha&gt;\beta$ 表明目标有而备选没有的特征起次要作用，并且用户的相似度估计确实是非对称的。 文献 $[1]$ 的经验在复用的时候，主要是要解决人工标注的问题，还有如何选择目标/备选物品，如何确定选用哪些特征等。在与运营发生类似于 ”给我推的一点也不相似“ 的争端时，给他们设计一个问卷吧~ 参考文献[1] Winecoff, Amy A., et al. “Users in the loop: a psychologically-informed approach to similar item retrieval.” Proceedings of the 13th ACM Conference on Recommender Systems. 2019.[2] Tversky, Amos. “Features of similarity.” Psychological review 84.4 (1977): 327.]]></content>
       <categories>
@@ -25,8 +25,8 @@
         <tag>推荐</tag>
         <tag>排序</tag>
         <tag>特征交叉</tag>
-        <tag>CIN</tag>
         <tag>ctr</tag>
+        <tag>CIN</tag>
       </tags>
   </entry>
   <entry>
@@ -40,8 +40,8 @@
         <tag>推荐</tag>
         <tag>排序</tag>
         <tag>注意力</tag>
-        <tag>ctr</tag>
         <tag>self-attention</tag>
+        <tag>ctr</tag>
       </tags>
   </entry>
   <entry>
