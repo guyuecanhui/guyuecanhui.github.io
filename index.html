@@ -329,6 +329,239 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2020/06/02/tversky-contrast-model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2020/06/02/tversky-contrast-model/" itemprop="url">Tversky **对比模型**及其在推荐系统中的应用</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-02T23:18:08+08:00">
+                2020-06-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/06/02/tversky-contrast-model/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/06/02/tversky-contrast-model/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          
+            <p>物品相似度评估在推荐中当属核心问题之一，尤其是当用户有一些明确的喜好、或者当前有一个明确的消费目标的时候，推荐与用户搜索内容/当前浏览内容相似的内容，能够极大的提升用户体验。例如，“猜你喜欢”、“再来一条”、“相关推荐” 等场景，就是围绕用户的这类诉求设计的，它属于 ”探索与利用“ 中的 ”利用“。</p>
+<p>相似度评估已经是一个研究十分深入的领域，尤其是在心理学领域。我们往往说不清楚到底什么样的物品是相似的，或者说为什么两个物品不相似。出现这个问题，可能是因为在不同的情境下，我们不自觉的有不同的判断标准，使用了不同的特征，或者对不同的特征有不同的权重等等。这也导致了我们很难客观度量模型相似度评估的准不准，在很多业务场景下引发一些 badcase。</p>
+<p>本文先简单的介绍一下推荐系统中的相似模型，再重点介绍一个心理学研究上的经典相似模型：<strong>Tversky</strong> <strong>对比模型</strong>。</p>
+<h2 id="推荐系统中的相似模型"><a href="#推荐系统中的相似模型" class="headerlink" title="推荐系统中的相似模型"></a>推荐系统中的相似模型</h2><p>目前业界常用的相似度评估的模型一般分为两类：基于内容相似和基于协同相似。</p>
+<p>基于协同相似有经典的算法，比如 <strong>itemCF</strong>、<strong>ALS</strong>、<strong>SimRank++</strong> 等；也有深度的模型，比如 <strong>TowerModel</strong>、<strong>GCN</strong> 等，先生成物品的 embedding，然后基于距离度量函数（主要是 cosine 距离）来评估物品间相似度。虽然这里面有一些算法也能够结合物品的内容信息，但是它们的主要问题还是：不可解释、受物品热度影响大、冷启动效果不好。</p>
+<p>而基于内容的相似模型（比如标签相似）则有比较好的解释性，而且只要标签的质量好，完全可以应对新内容的启动问题。当然，基于内容的相似也可以结合用户的协同信息进行调优，比如基于群体统计来学习不同标签的权重等。因此实际使用中，基于内容的相似模型还是不可或缺的，通常作为补充的召回，或者在特定场景下使用（例如物品冷启动）。</p>
+<p>基于内容的相似通常使用内容特征（这里称为标签）的匹配来计算，比如基于标签集合的 <strong>Jaccard</strong> 加权相似度、基于词袋向量/加权向量的余弦/欧氏距离等，这些基于距离度量函数的评估方法（包括上面提到的基于协同的模型），隐式的假设了我们对物品的相似度评估是对称的，即物品 $a$ 与物品 $b$ 的相似度满足：$s(a,b)=s(b,a)$，这个假设是否满足，在心理学上也是过讨论的，下面再来看一个心理学上的经典理论。</p>
+<h2 id="相似度评估的心理学研究"><a href="#相似度评估的心理学研究" class="headerlink" title="相似度评估的心理学研究"></a>相似度评估的心理学研究</h2><p>心理学家在研究是什么影响了人们对相似度的评估时，一般首先是会设计一些强迫选择（forced choice）的实验。实验常见的设计比如给用户两个物品，让用户回答它们是否相似；或者给用户一个目标物品和两个备选物品，让用户选择哪个与目标更相似。其中，后面一种方案评估的是人们相对相似的评价，可以避免每个人内在的偏好，因此得到的数据更客观和一致，预测能力也更强。例如文献 $[1]$ 就设计了相对相似实验，用来建立用户在线购买时装场景下的相似评估模型。</p>
+<p>在相似评估建模方面，除了对称相似模型，还有非对称相似模型。Tversky 等人在上世纪 70 年代，针对人如何评估物品间的相似度进行研究，提出了<strong>对比模型</strong>（<strong>Tversky Contrast Model</strong> $^{[2] }$），它与我们当前流行使用的基于距离度量函数的方案相比最大的差别表现在，<strong>对比模型</strong>中物品间的相似度是非对称的。</p>
+<p>为什么说我们的相似度评估是非对称的呢？文献 $[2]$ 中给出一些例子，挺有意思的（怕翻译了失去原来的意味，所以引的原文）：</p>
+<ol>
+<li>We say “the portrait resembles the person” rather than “the person resembles the portrait”.</li>
+<li>We say “the son resembles the father” rather than “the father resembles the son”.</li>
+<li>We say “an ellipse is like a circle”, not “a circle is like an ellipse”.</li>
+<li>We say “Turks fight like tigers” and not “tigers fight like Turks”.</li>
+<li>The poet writes “my love is as deep as the ocean”, not “the ocean is as deep as my love”.</li>
+</ol>
+<p>可以看到，尤其是当物品间存在一些类比、或者不那么直接的联系的时候，我们的相似评估呈现很明显的非对称性。这可能是因为我们在评估这些相似的时候，关注了不同的特征、使用了不同的权重。Tversky 基于这些观察，提出了经典的<strong>对比模型</strong>。</p>
+<h3 id="Tversky-对比模型"><a href="#Tversky-对比模型" class="headerlink" title="Tversky 对比模型"></a>Tversky <strong>对比模型</strong></h3><p><strong>Tversky</strong> <strong>对比模型</strong>的核心思想是将人们评估相似度的过程抽象成一个特征比较的过程，而且比较不仅仅关注相同的特征，还关注不同的特征。其中，每个特征的权重可能不同，并且双方共有的特征与单方独有的特征权重也不相同。它基于如下假设：</p>
+<ol>
+<li><strong>Matching</strong>：对于 $a$ 和 $b$，它们的相似度是它们特征集合关系的函数：$s(a,b)=g(A\cap B,A-B,B-A)$；</li>
+<li><strong>Monotonicity</strong>：当 $A\cap B \supset A\cap C,\ A-B \subset A- C, \ B-A\subset C-A$ 时，$s(a,b)\ge s(a,c)$；</li>
+<li><strong>Independence</strong>：每个特征对相似度的影响是独立的；</li>
+<li><strong>Solvability</strong>：基于现有的特征集合能够将不相似的物品区分开来；</li>
+<li><strong>Invariance</strong>：Invariance ensures that the equivalence of intervals is preserved across factors.</li>
+</ol>
+<p>其中，满足条件 1, 2 的 $g$  被称为一个匹配函数（<strong>MatchingFunction</strong>），它衡量两个目标根据特征的匹配程度。Tversky 在文献 $[1]$ 中证明了，当满足以上 5 条假设的时候，一定存在一个相似度度量 $S$ 和一个非负的权重函数 $f$ 使下式成立：</p>
+<script type="math/tex; mode=display">
+\begin{align}&S(a,b)\ge S(c,d), &  \text{iff}\ \ s(a,b)\ge s(c,d)\\&S(a,b)=\theta f(A\cap B)-\alpha f(A- B) - \beta f(B-A), &\theta,\alpha,\beta\ge 0 \qquad (1)\end{align}</script><p>注意，这里 $s(a,b)$ 表示 $a,b$ 的实际相似度，而 $S(a,b)$ 表示我们建模后，对 $a,b$ 相似度的度量。</p>
+<p>我们把式 $(1)$ 称为 <strong>Tversky</strong> <strong>对比模型</strong>，或简称<strong>对比模型</strong>。它最大的特点是将特征匹配拆分成 $A\cup B$、$A-B$、$B-A$ 三个部分，并分别赋予权重，从而当 $\alpha \not = \beta$ 时，$S(a,b)\not =S(b,a)$，即物品间相似是不对称的。另外，可以通过权重函数 $f()$ 函数来对每个特征赋予不同的重要性，这也满足我们在判断相似时更关注一些重要的特征是否匹配的现象。</p>
+<p>作者还指出，<strong>对比模型</strong>可能是匹配函数最简单的形式。当然还可以考虑匹配函数的其他形式，例如下面的 <strong>RatioModel</strong>：</p>
+<script type="math/tex; mode=display">
+S(a,b)=\frac{f(A\cap B)}{f(A\cap B)+\alpha f(A-B) + \beta f(B-A)}, \quad\alpha,\beta\ge 0 \qquad(2)</script><p>由于式 $(2)$ 中每一项都为正，因此 $S(a,b) $ 取值范围为 $[0,1]$，并且：</p>
+<ul>
+<li>当 $\alpha=\beta=1$ 时，<strong>RatioModel</strong> 退化成 $\frac{f(A\cap B)}{f(A\cup B)}$；</li>
+<li>当 $\alpha=\beta=0.5$ 时，<strong>RatioModel</strong> 退化成 $\frac{f(A\cap B)}{f(A)+f(B)}$；</li>
+<li>当 $\alpha=1, \beta=0$ 时，<strong>RatioModel</strong> 退化成 $\frac{f(A\cap B)}{f(A)}$；</li>
+</ul>
+<h3 id="模型的应用"><a href="#模型的应用" class="headerlink" title="模型的应用"></a>模型的应用</h3><p><strong>Tversky</strong> <strong>对比模型</strong>一眼看上去就非常符合常理，十分吸引人。但是实际上在应用到推荐系统中时，其复杂性就远远高于它的形式上的简单性。我们需要根据实际场景数据学到参数 $\theta,\alpha,\beta$，并且学到一个合理的权重函数，这里的难点主要在于：如何设置正负样本？样本怎么组织？</p>
+<p>文献 $[1]$ 介绍了他们在时装线上商城上实践的经验，他们通过设置一些问卷实验来收集数据。问卷发放给典型的用户，每次给他们一张时装的图片作为目标，然后给出两张在特征上有所不同的时装图片作为备选，让用户选择哪一张备选图片与目标最相似，如下图所示。用户问卷收集完毕后，还需要经过一些统计上的处理才能作为后续的训练数据。</p>
+<img src="/2020/06/02/tversky-contrast-model/queries.png" title="实验设计：上面图片为目标图片，下面两张为备选图片">
+<p>样本组织上，作者基于<strong>对比模型</strong>按如下过程来生成一个样本，并设置标签：</p>
+<script type="math/tex; mode=display">
+\begin{align}\begin{cases}Y&=I\big(S(T,A)-S(T,B)\big) \\S(T,X) &= \theta w^\top\cdot x_{T\cap A} -\alpha w^\top\cdot x_{T- A} -\beta w^\top\cdot x_{A-T}\end{cases}\end{align}</script><p>其中，$I(x)$ 是指示函数，当 $x&gt; 0$ 时 $I(x)=1$，否则 $I(x)=0$；$T$ 表示实验中的目标时装的特征集合，$A,B$ 表示两个备选时装的特征集合，$w$ 表示每个特征的权重。</p>
+<p>根据这种方式，就可以对每个用户的每次选择生成一条样本：每条样本需要计算目标与备选的对比相似度，然后求差，作为样本的输入；假如用户选 $A$，则样本为正，否则样本为负。</p>
+<p>在训练的时候，则用 $\delta\big(S(T,A)-S(T,B)\big)$ 来计算标签预测值，并设置如下损失函数：</p>
+<script type="math/tex; mode=display">
+L(\gamma)=logloss(\alpha,\beta,\theta,w)-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}\log(\beta)-\frac{1}{\mu}\log(\theta)</script><p>其中，$-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}\log(\beta)-\frac{1}{\mu}\log(\theta)$ 表示  <strong>LogBarrier</strong> 惩罚，主要是为了限制 $\alpha,\beta,\theta$ 非负，$\mu\gg 0$ 为 <strong>LogBarrier</strong> 参数。</p>
+<p>文章实验结果表明，在他们的场景下，各个特征的权重确实不同，并且 $\theta&gt;\alpha&gt;\beta$，表明拥有共同特征还是占主导作用，而 $\alpha&gt;\beta$ 表明目标有而备选没有的特征起次要作用，并且用户的相似度估计确实是非对称的。</p>
+<p>文献 $[1]$ 的经验在复用的时候，主要是要解决人工标注的问题，还有如何选择目标/备选物品，如何确定选用哪些特征等。在与运营发生类似于 ”给我推的一点也不相似“ 的争端时，给他们设计一个问卷吧~</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] Winecoff, Amy A., et al. “Users in the loop: a psychologically-informed approach to similar item retrieval.” <em>Proceedings of the 13th ACM Conference on Recommender Systems</em>. 2019.<br>[2] Tversky, Amos. “Features of similarity.” <em>Psychological review</em> 84.4 (1977): 327.</p>
+
+          
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2478,192 +2711,6 @@ L(\theta_{cvr},\theta_{ctr}) = \sum_{i=1}^N l(y_i, f(\boldsymbol{x}_i;\theta_{ct
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/08/28/jupyter-config/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="古月残辉">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="HCigmoid">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2019/08/28/jupyter-config/" itemprop="url">效率提升 10 倍的各种配置</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-08-28T22:36:04+08:00">
-                2019-08-28
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/安装部署/" itemprop="url" rel="index">
-                    <span itemprop="name">安装部署</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2019/08/28/jupyter-config/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2019/08/28/jupyter-config/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  592
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  3
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          
-            <p>由于工作经常会更换机器、更换环境，有时候一个机器用惯了，换了一台机器都不记得自己之前是怎么配置的了。为了防止老年痴呆阻止我配置好看的工作环境，我决定把所有喜欢的配置都记录在这里，可能有点乱。</p>
-<h3 id="Jupyter-Notebook"><a href="#Jupyter-Notebook" class="headerlink" title="Jupyter Notebook"></a>Jupyter Notebook</h3><p>这个应该很常用了，大家第一件事应该就是设置主题吧，我试过各种主题，都无法满足我的诉求，所以就自己配置了一下 <code>~/.jupyter/custom/custom.css</code>，感觉下面这个配置简单又好看~</p>
-<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-class">.introspection</span>, <span class="selector-class">.input_prompt</span>, <span class="selector-class">.output_prompt</span>, <span class="selector-class">.output</span>, <span class="selector-class">.CodeMirror</span> <span class="selector-tag">pre</span> &#123;</span><br><span class="line">    <span class="attribute">font-family</span>: <span class="string">"Microsoft YaHei Mono"</span>, Consolas, <span class="string">"Liberation Mono"</span>, Menlo, Courier, monospace;</span><br><span class="line">    <span class="attribute">font-size</span>: <span class="number">15px</span>;</span><br><span class="line">    <span class="attribute">line-height</span>: <span class="number">22px</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.output_area</span> <span class="selector-tag">pre</span> &#123;</span><br><span class="line"> <span class="attribute">font-family</span>: <span class="string">"Microsoft YaHei Mono"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.text_cell</span>,</span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.text_cell_render</span> <span class="selector-tag">pre</span>,</span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.text_cell_render</span> &#123;</span><br><span class="line"> <span class="attribute">font-family</span>: sans-serif;</span><br><span class="line"> <span class="attribute">font-size</span>: <span class="number">11pt</span>;</span><br><span class="line"> <span class="attribute">line-height</span>: <span class="number">20pt</span>;</span><br><span class="line"> <span class="attribute">color</span>: <span class="number">#353535</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">div</span><span class="selector-class">.rendered_html</span> <span class="selector-tag">code</span> &#123;</span><br><span class="line"> <span class="attribute">font-family</span>: <span class="string">"Microsoft YaHei Mono"</span>;</span><br><span class="line"> <span class="attribute">font-size</span>: <span class="number">11pt</span>;</span><br><span class="line"> <span class="attribute">padding-top</span>: <span class="number">3px</span>;</span><br><span class="line"> <span class="attribute">padding-left</span>: <span class="number">6px</span>;</span><br><span class="line"> <span class="attribute">padding-right</span>: <span class="number">6px</span>;</span><br><span class="line"> <span class="attribute">color</span>: <span class="number">#a3be8c</span>;</span><br><span class="line"> <span class="attribute">background</span>: <span class="number">#efefef</span>;</span><br><span class="line"> <span class="attribute">background-color</span>: <span class="number">#efefef</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.rendered_html</span> <span class="selector-tag">thead</span> &#123;</span><br><span class="line"> <span class="attribute">font-family</span>: <span class="string">"Microsoft YaHei Mono"</span>;</span><br><span class="line"> <span class="attribute">font-size</span>: <span class="number">10.5pt</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.rendered_html</span> <span class="selector-tag">td</span> &#123;</span><br><span class="line"> <span class="attribute">font-family</span>: <span class="string">"Microsoft YaHei Mono"</span>;</span><br><span class="line"> <span class="attribute">font-size</span>: <span class="number">10pt</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.rendered_html</span> <span class="selector-tag">h1</span>,</span><br><span class="line"><span class="selector-class">.text_cell_render</span> <span class="selector-tag">h1</span> &#123;</span><br><span class="line"> <span class="attribute">color</span>: <span class="number">#126dce</span> <span class="meta">!important</span>;</span><br><span class="line"> <span class="attribute">font-size</span>: <span class="number">160%</span>;</span><br><span class="line"> <span class="attribute">text-align</span>: left;</span><br><span class="line"> <span class="attribute">font-style</span>: normal;</span><br><span class="line"> <span class="attribute">font-weight</span>: bold;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.rendered_html</span> <span class="selector-tag">h2</span>,</span><br><span class="line"><span class="selector-class">.text_cell_render</span> <span class="selector-tag">h2</span> &#123;</span><br><span class="line"> <span class="attribute">color</span>: <span class="number">#126dce</span> <span class="meta">!important</span>;</span><br><span class="line"> <span class="attribute">font-size</span>: <span class="number">140%</span>;</span><br><span class="line"> <span class="attribute">font-style</span>: normal;</span><br><span class="line"> <span class="attribute">font-weight</span>: bold;</span><br><span class="line">&#125;</span><br><span class="line"><span class="selector-class">.rendered_html</span> <span class="selector-tag">h3</span>,</span><br><span class="line"><span class="selector-class">.text_cell_render</span> <span class="selector-tag">h3</span> &#123;</span><br><span class="line"> <span class="attribute">color</span>: <span class="number">#126dce</span> <span class="meta">!important</span>;</span><br><span class="line"> <span class="attribute">font-size</span>: <span class="number">120%</span>;</span><br><span class="line"> <span class="attribute">font-style</span>: normal;</span><br><span class="line"> <span class="attribute">font-weight</span>: bold;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-class">.CodeMirror-linenumber</span> &#123;</span><br><span class="line"> <span class="attribute">font-family</span>: <span class="string">"Microsoft YaHei Mono"</span>;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.cm-s-ipython</span><span class="selector-class">.CodeMirror</span> &#123;<span class="attribute">background</span>: <span class="number">#2b303b</span>; <span class="attribute">color</span>: <span class="number">#dfe1e8</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">div</span><span class="selector-class">.CodeMirror-selected</span> &#123;<span class="attribute">background</span>: <span class="number">#343d46</span> <span class="meta">!important</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-class">.CodeMirror-gutters</span> &#123;<span class="attribute">background</span>: <span class="number">#2b303b</span>; <span class="attribute">border-right</span>: <span class="number">0px</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-class">.CodeMirror-linenumber</span> &#123;<span class="attribute">color</span>: <span class="number">#65737e</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-class">.CodeMirror-cursor</span> &#123;<span class="attribute">border-left</span>: <span class="number">1px</span> solid <span class="number">#a7adba</span> <span class="meta">!important</span>;&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-comment</span> &#123;<span class="attribute">color</span>: <span class="number">#A3BE72</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-atom</span> &#123;<span class="attribute">color</span>: <span class="number">#b48ead</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-number</span> &#123;<span class="attribute">color</span>: <span class="number">#b48ead</span>;&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-property</span>, <span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-attribute</span> &#123;<span class="attribute">color</span>: <span class="number">#c0c5ce</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-keyword</span> &#123;<span class="attribute">color</span>: <span class="number">#DDD7A3</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-string</span> &#123;<span class="attribute">color</span>: <span class="number">#94C273</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-operator</span> &#123;<span class="attribute">color</span>: <span class="number">#ab7967</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-builtin</span> &#123;<span class="attribute">color</span>: <span class="number">#EA8080</span>;&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-variable</span> &#123;<span class="attribute">color</span>: <span class="number">#c0c5ce</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-variable-2</span> &#123;<span class="attribute">color</span>: <span class="number">#8fa1b3</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-def</span> &#123;<span class="attribute">color</span>: <span class="number">#61AFEF</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-error</span> &#123;<span class="attribute">background</span>: <span class="number">#bf616a</span>; <span class="attribute">color</span>: <span class="number">#a7adba</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-bracket</span> &#123;<span class="attribute">color</span>: <span class="number">#c0c5ce</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-tag</span> &#123;<span class="attribute">color</span>: <span class="number">#bf616a</span>;&#125;</span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-tag">span</span><span class="selector-class">.cm-link</span> &#123;<span class="attribute">color</span>: <span class="number">#b48ead</span>;&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.cm-s-ipython</span> <span class="selector-class">.CodeMirror-matchingbracket</span> &#123; <span class="attribute">text-decoration</span>: underline; <span class="attribute">color</span>: <span class="number">#dfe1e8</span> <span class="meta">!important</span>;&#125;</span><br></pre></td></tr></table></figure>
-<p>另外，在 linux 上安装 jupyter notebook 的话，第一次启动时会报 `` 的错，需要修改以下文件：</p>
-
-          
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2714,7 +2761,7 @@ L(\theta_{cvr},\theta_{ctr}) = \sum_{i=1}^N l(y_i, f(\boldsymbol{x}_i;\theta_{ct
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">28</span>
+                  <span class="site-state-item-count">29</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2736,7 +2783,7 @@ L(\theta_{cvr},\theta_{ctr}) = \sum_{i=1}^N l(y_i, f(\boldsymbol{x}_i;\theta_{ct
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">63</span>
+                  <span class="site-state-item-count">66</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2804,7 +2851,7 @@ L(\theta_{cvr},\theta_{ctr}) = \sum_{i=1}^N l(y_i, f(\boldsymbol{x}_i;\theta_{ct
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">45.4k</span>
+    <span title="Site words total count">48.2k</span>
   
 </div>
 

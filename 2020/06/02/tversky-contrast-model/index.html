@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="相似度,相似模型,tversky,内容推荐,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="物品相似度评估在推荐中当属核心问题之一，尤其是当用户有一些明确的喜好、或者当前有一个明确的消费目标的时候，推荐与用户搜索内容/当前浏览内容相似的内容，能够极大的提升用户体验。例如，“猜你喜欢”、“再来一条”、“相关推荐” 等场景，就是围绕用户的这类诉求设计的，它属于 ”探索与利用“ 中的 ”利用“。 相似度评估已经是一个研究十分深入的领域，尤其是在心理学领域。我们往往说不清楚到底什么样的物品是相似">
+<meta name="keywords" content="相似度,相似模型,tversky,内容推荐">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tversky **对比模型**及其在推荐系统中的应用">
+<meta property="og:url" content="https://guyuecanhui.github.io/2020/06/02/tversky-contrast-model/index.html">
+<meta property="og:site_name" content="HCigmoid">
+<meta property="og:description" content="物品相似度评估在推荐中当属核心问题之一，尤其是当用户有一些明确的喜好、或者当前有一个明确的消费目标的时候，推荐与用户搜索内容/当前浏览内容相似的内容，能够极大的提升用户体验。例如，“猜你喜欢”、“再来一条”、“相关推荐” 等场景，就是围绕用户的这类诉求设计的，它属于 ”探索与利用“ 中的 ”利用“。 相似度评估已经是一个研究十分深入的领域，尤其是在心理学领域。我们往往说不清楚到底什么样的物品是相似">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2020/06/02/tversky-contrast-model/queries.png">
+<meta property="og:updated_time" content="2020-06-02T15:42:13.108Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Tversky **对比模型**及其在推荐系统中的应用">
+<meta name="twitter:description" content="物品相似度评估在推荐中当属核心问题之一，尤其是当用户有一些明确的喜好、或者当前有一个明确的消费目标的时候，推荐与用户搜索内容/当前浏览内容相似的内容，能够极大的提升用户体验。例如，“猜你喜欢”、“再来一条”、“相关推荐” 等场景，就是围绕用户的这类诉求设计的，它属于 ”探索与利用“ 中的 ”利用“。 相似度评估已经是一个研究十分深入的领域，尤其是在心理学领域。我们往往说不清楚到底什么样的物品是相似">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2020/06/02/tversky-contrast-model/queries.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://guyuecanhui.github.io/2020/06/02/tversky-contrast-model/">
+
+
+
+
+
+  <title>Tversky **对比模型**及其在推荐系统中的应用 | HCigmoid</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HCigmoid</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Watch, learn and practise</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2020/06/02/tversky-contrast-model/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">Tversky **对比模型**及其在推荐系统中的应用</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-06-02T23:18:08+08:00">
+                2020-06-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/推荐系统/" itemprop="url" rel="index">
+                    <span itemprop="name">推荐系统</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/06/02/tversky-contrast-model/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/06/02/tversky-contrast-model/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  2.8k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  10
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>物品相似度评估在推荐中当属核心问题之一，尤其是当用户有一些明确的喜好、或者当前有一个明确的消费目标的时候，推荐与用户搜索内容/当前浏览内容相似的内容，能够极大的提升用户体验。例如，“猜你喜欢”、“再来一条”、“相关推荐” 等场景，就是围绕用户的这类诉求设计的，它属于 ”探索与利用“ 中的 ”利用“。</p>
+<p>相似度评估已经是一个研究十分深入的领域，尤其是在心理学领域。我们往往说不清楚到底什么样的物品是相似的，或者说为什么两个物品不相似。出现这个问题，可能是因为在不同的情境下，我们不自觉的有不同的判断标准，使用了不同的特征，或者对不同的特征有不同的权重等等。这也导致了我们很难客观度量模型相似度评估的准不准，在很多业务场景下引发一些 badcase。</p>
+<p>本文先简单的介绍一下推荐系统中的相似模型，再重点介绍一个心理学研究上的经典相似模型：<strong>Tversky</strong> <strong>对比模型</strong>。</p>
+<h2 id="推荐系统中的相似模型"><a href="#推荐系统中的相似模型" class="headerlink" title="推荐系统中的相似模型"></a>推荐系统中的相似模型</h2><p>目前业界常用的相似度评估的模型一般分为两类：基于内容相似和基于协同相似。</p>
+<p>基于协同相似有经典的算法，比如 <strong>itemCF</strong>、<strong>ALS</strong>、<strong>SimRank++</strong> 等；也有深度的模型，比如 <strong>TowerModel</strong>、<strong>GCN</strong> 等，先生成物品的 embedding，然后基于距离度量函数（主要是 cosine 距离）来评估物品间相似度。虽然这里面有一些算法也能够结合物品的内容信息，但是它们的主要问题还是：不可解释、受物品热度影响大、冷启动效果不好。</p>
+<p>而基于内容的相似模型（比如标签相似）则有比较好的解释性，而且只要标签的质量好，完全可以应对新内容的启动问题。当然，基于内容的相似也可以结合用户的协同信息进行调优，比如基于群体统计来学习不同标签的权重等。因此实际使用中，基于内容的相似模型还是不可或缺的，通常作为补充的召回，或者在特定场景下使用（例如物品冷启动）。</p>
+<p>基于内容的相似通常使用内容特征（这里称为标签）的匹配来计算，比如基于标签集合的 <strong>Jaccard</strong> 加权相似度、基于词袋向量/加权向量的余弦/欧氏距离等，这些基于距离度量函数的评估方法（包括上面提到的基于协同的模型），隐式的假设了我们对物品的相似度评估是对称的，即物品 $a$ 与物品 $b$ 的相似度满足：$s(a,b)=s(b,a)$，这个假设是否满足，在心理学上也是过讨论的，下面再来看一个心理学上的经典理论。</p>
+<h2 id="相似度评估的心理学研究"><a href="#相似度评估的心理学研究" class="headerlink" title="相似度评估的心理学研究"></a>相似度评估的心理学研究</h2><p>心理学家在研究是什么影响了人们对相似度的评估时，一般首先是会设计一些强迫选择（forced choice）的实验。实验常见的设计比如给用户两个物品，让用户回答它们是否相似；或者给用户一个目标物品和两个备选物品，让用户选择哪个与目标更相似。其中，后面一种方案评估的是人们相对相似的评价，可以避免每个人内在的偏好，因此得到的数据更客观和一致，预测能力也更强。例如文献 $[1]$ 就设计了相对相似实验，用来建立用户在线购买时装场景下的相似评估模型。</p>
+<p>在相似评估建模方面，除了对称相似模型，还有非对称相似模型。Tversky 等人在上世纪 70 年代，针对人如何评估物品间的相似度进行研究，提出了<strong>对比模型</strong>（<strong>Tversky Contrast Model</strong> $^{[2] }$），它与我们当前流行使用的基于距离度量函数的方案相比最大的差别表现在，<strong>对比模型</strong>中物品间的相似度是非对称的。</p>
+<p>为什么说我们的相似度评估是非对称的呢？文献 $[2]$ 中给出一些例子，挺有意思的（怕翻译了失去原来的意味，所以引的原文）：</p>
+<ol>
+<li>We say “the portrait resembles the person” rather than “the person resembles the portrait”.</li>
+<li>We say “the son resembles the father” rather than “the father resembles the son”.</li>
+<li>We say “an ellipse is like a circle”, not “a circle is like an ellipse”.</li>
+<li>We say “Turks fight like tigers” and not “tigers fight like Turks”.</li>
+<li>The poet writes “my love is as deep as the ocean”, not “the ocean is as deep as my love”.</li>
+</ol>
+<p>可以看到，尤其是当物品间存在一些类比、或者不那么直接的联系的时候，我们的相似评估呈现很明显的非对称性。这可能是因为我们在评估这些相似的时候，关注了不同的特征、使用了不同的权重。Tversky 基于这些观察，提出了经典的<strong>对比模型</strong>。</p>
+<h3 id="Tversky-对比模型"><a href="#Tversky-对比模型" class="headerlink" title="Tversky 对比模型"></a>Tversky <strong>对比模型</strong></h3><p><strong>Tversky</strong> <strong>对比模型</strong>的核心思想是将人们评估相似度的过程抽象成一个特征比较的过程，而且比较不仅仅关注相同的特征，还关注不同的特征。其中，每个特征的权重可能不同，并且双方共有的特征与单方独有的特征权重也不相同。它基于如下假设：</p>
+<ol>
+<li><strong>Matching</strong>：对于 $a$ 和 $b$，它们的相似度是它们特征集合关系的函数：$s(a,b)=g(A\cap B,A-B,B-A)$；</li>
+<li><strong>Monotonicity</strong>：当 $A\cap B \supset A\cap C,\ A-B \subset A- C, \ B-A\subset C-A$ 时，$s(a,b)\ge s(a,c)$；</li>
+<li><strong>Independence</strong>：每个特征对相似度的影响是独立的；</li>
+<li><strong>Solvability</strong>：基于现有的特征集合能够将不相似的物品区分开来；</li>
+<li><strong>Invariance</strong>：Invariance ensures that the equivalence of intervals is preserved across factors.</li>
+</ol>
+<p>其中，满足条件 1, 2 的 $g$  被称为一个匹配函数（<strong>MatchingFunction</strong>），它衡量两个目标根据特征的匹配程度。Tversky 在文献 $[1]$ 中证明了，当满足以上 5 条假设的时候，一定存在一个相似度度量 $S$ 和一个非负的权重函数 $f$ 使下式成立：</p>
+<script type="math/tex; mode=display">
+\begin{align}&S(a,b)\ge S(c,d), &  \text{iff}\ \ s(a,b)\ge s(c,d)\\&S(a,b)=\theta f(A\cap B)-\alpha f(A- B) - \beta f(B-A), &\theta,\alpha,\beta\ge 0 \qquad (1)\end{align}</script><p>注意，这里 $s(a,b)$ 表示 $a,b$ 的实际相似度，而 $S(a,b)$ 表示我们建模后，对 $a,b$ 相似度的度量。</p>
+<p>我们把式 $(1)$ 称为 <strong>Tversky</strong> <strong>对比模型</strong>，或简称<strong>对比模型</strong>。它最大的特点是将特征匹配拆分成 $A\cup B$、$A-B$、$B-A$ 三个部分，并分别赋予权重，从而当 $\alpha \not = \beta$ 时，$S(a,b)\not =S(b,a)$，即物品间相似是不对称的。另外，可以通过权重函数 $f()$ 函数来对每个特征赋予不同的重要性，这也满足我们在判断相似时更关注一些重要的特征是否匹配的现象。</p>
+<p>作者还指出，<strong>对比模型</strong>可能是匹配函数最简单的形式。当然还可以考虑匹配函数的其他形式，例如下面的 <strong>RatioModel</strong>：</p>
+<script type="math/tex; mode=display">
+S(a,b)=\frac{f(A\cap B)}{f(A\cap B)+\alpha f(A-B) + \beta f(B-A)}, \quad\alpha,\beta\ge 0 \qquad(2)</script><p>由于式 $(2)$ 中每一项都为正，因此 $S(a,b) $ 取值范围为 $[0,1]$，并且：</p>
+<ul>
+<li>当 $\alpha=\beta=1$ 时，<strong>RatioModel</strong> 退化成 $\frac{f(A\cap B)}{f(A\cup B)}$；</li>
+<li>当 $\alpha=\beta=0.5$ 时，<strong>RatioModel</strong> 退化成 $\frac{f(A\cap B)}{f(A)+f(B)}$；</li>
+<li>当 $\alpha=1, \beta=0$ 时，<strong>RatioModel</strong> 退化成 $\frac{f(A\cap B)}{f(A)}$；</li>
+</ul>
+<h3 id="模型的应用"><a href="#模型的应用" class="headerlink" title="模型的应用"></a>模型的应用</h3><p><strong>Tversky</strong> <strong>对比模型</strong>一眼看上去就非常符合常理，十分吸引人。但是实际上在应用到推荐系统中时，其复杂性就远远高于它的形式上的简单性。我们需要根据实际场景数据学到参数 $\theta,\alpha,\beta$，并且学到一个合理的权重函数，这里的难点主要在于：如何设置正负样本？样本怎么组织？</p>
+<p>文献 $[1]$ 介绍了他们在时装线上商城上实践的经验，他们通过设置一些问卷实验来收集数据。问卷发放给典型的用户，每次给他们一张时装的图片作为目标，然后给出两张在特征上有所不同的时装图片作为备选，让用户选择哪一张备选图片与目标最相似，如下图所示。用户问卷收集完毕后，还需要经过一些统计上的处理才能作为后续的训练数据。</p>
+<img src="/2020/06/02/tversky-contrast-model/queries.png" title="实验设计：上面图片为目标图片，下面两张为备选图片">
+<p>样本组织上，作者基于<strong>对比模型</strong>按如下过程来生成一个样本，并设置标签：</p>
+<script type="math/tex; mode=display">
+\begin{align}\begin{cases}Y&=I\big(S(T,A)-S(T,B)\big) \\S(T,X) &= \theta w^\top\cdot x_{T\cap A} -\alpha w^\top\cdot x_{T- A} -\beta w^\top\cdot x_{A-T}\end{cases}\end{align}</script><p>其中，$I(x)$ 是指示函数，当 $x&gt; 0$ 时 $I(x)=1$，否则 $I(x)=0$；$T$ 表示实验中的目标时装的特征集合，$A,B$ 表示两个备选时装的特征集合，$w$ 表示每个特征的权重。</p>
+<p>根据这种方式，就可以对每个用户的每次选择生成一条样本：每条样本需要计算目标与备选的对比相似度，然后求差，作为样本的输入；假如用户选 $A$，则样本为正，否则样本为负。</p>
+<p>在训练的时候，则用 $\delta\big(S(T,A)-S(T,B)\big)$ 来计算标签预测值，并设置如下损失函数：</p>
+<script type="math/tex; mode=display">
+L(\gamma)=logloss(\alpha,\beta,\theta,w)-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}\log(\beta)-\frac{1}{\mu}\log(\theta)</script><p>其中，$-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}\log(\beta)-\frac{1}{\mu}\log(\theta)$ 表示  <strong>LogBarrier</strong> 惩罚，主要是为了限制 $\alpha,\beta,\theta$ 非负，$\mu\gg 0$ 为 <strong>LogBarrier</strong> 参数。</p>
+<p>文章实验结果表明，在他们的场景下，各个特征的权重确实不同，并且 $\theta&gt;\alpha&gt;\beta$，表明拥有共同特征还是占主导作用，而 $\alpha&gt;\beta$ 表明目标有而备选没有的特征起次要作用，并且用户的相似度估计确实是非对称的。</p>
+<p>文献 $[1]$ 的经验在复用的时候，主要是要解决人工标注的问题，还有如何选择目标/备选物品，如何确定选用哪些特征等。在与运营发生类似于 ”给我推的一点也不相似“ 的争端时，给他们设计一个问卷吧~</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] Winecoff, Amy A., et al. “Users in the loop: a psychologically-informed approach to similar item retrieval.” <em>Proceedings of the 13th ACM Conference on Recommender Systems</em>. 2019.<br>[2] Tversky, Amos. “Features of similarity.” <em>Psychological review</em> 84.4 (1977): 327.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/相似度/" rel="tag"># 相似度</a>
+          
+            <a href="/tags/相似模型/" rel="tag"># 相似模型</a>
+          
+            <a href="/tags/tversky/" rel="tag"># tversky</a>
+          
+            <a href="/tags/内容推荐/" rel="tag"># 内容推荐</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/05/26/paper-2018-msra-xdeepfm/" rel="next" title="xDeepFM 论文精读">
+                <i class="fa fa-chevron-left"></i> xDeepFM 论文精读
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">古月残辉</p>
+              <p class="site-description motion-element" itemprop="description">总结心得</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:guyuecanhui@icloud.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#推荐系统中的相似模型"><span class="nav-number">1.</span> <span class="nav-text">推荐系统中的相似模型</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#相似度评估的心理学研究"><span class="nav-number">2.</span> <span class="nav-text">相似度评估的心理学研究</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Tversky-对比模型"><span class="nav-number">2.1.</span> <span class="nav-text">Tversky 对比模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#模型的应用"><span class="nav-number">2.2.</span> <span class="nav-text">模型的应用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">2.3.</span> <span class="nav-text">参考文献</span></a></li></ol></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古月残辉</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">48.2k</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: '6du4Ppc2TvUuhcccRHSDNH2v-gzGzoHsz',
+        appKey: 'zOKNml4W1Bq3OTzEuLt5hUjI',
+        placeholder: '感谢阅读！欢迎评论！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
