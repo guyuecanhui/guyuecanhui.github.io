@@ -113,21 +113,21 @@
 
 
 
-<meta name="description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 201">
+<meta name="description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 2017">
 <meta name="keywords" content="推荐,排序,特征组合,特征交叉">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DeepFM 论文精读">
 <meta property="og:url" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 201">
+<meta property="og:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 2017">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/neuralffm_architecture.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepffm_architecture.png">
-<meta property="og:updated_time" content="2020-06-10T13:19:27.746Z">
+<meta property="og:updated_time" content="2020-06-10T13:44:01.847Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DeepFM 论文精读">
-<meta name="twitter:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 201">
+<meta name="twitter:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 2017">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png">
 
 
@@ -468,9 +468,7 @@
       
 
       
-        <blockquote>
-<p><strong>论文引用</strong>: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” <em>arXiv preprint arXiv:1703.04247</em> (2017).</p>
-</blockquote>
+        <div class="note success"><p><strong>论文引用:</strong> Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” <em>arXiv preprint arXiv:1703.04247</em> (2017). </p></div>
 <p><strong>DeepFM</strong> 是华为诺亚实验室受 <strong>FM</strong> 和 wide &amp; deep 模型启发，发表在 <strong>IJCAI 2017</strong> 的一个 <strong>CTR</strong> 预估模型，从国内企业的实践分享来看，其效果受到了广泛的认可。它的核心思想是将 wide &amp; deep 网络中的 wide 层用 <strong>FM</strong> 层代替，增加了特征的二阶自动交叉能力，并且在实现上天然可以将 <strong>FM</strong> 层的 embedding 与 deep 层共享。</p>
 <a id="more"></a>
 <h3 id="DeepFM-架构"><a href="#DeepFM-架构" class="headerlink" title="DeepFM 架构"></a>DeepFM 架构</h3><p>随着深度网络的兴起，<strong>DNN</strong> 尤其是 <strong>MLP</strong> 的结构往往被用作非线性的特征提取器，并且取得了比较好的效果。然而文章指出，<strong>只保留特征的高阶非线性组合并不如同时保留特征的低阶组合和高阶组合效果好</strong>。这也是文章核心的出发点之一。但是 wide &amp; deep 模型中只有特征的一阶和高阶组合，因此一些有效的的二阶/三阶组合只能靠工程师人工挖掘组合出来，放到 wide 层。这个时候 <strong>FM</strong> 模型又出场了，用它来代替 wide 层，既能保留原始特征，又能自动做原始特征的二阶组合，这样就能节省很多人工特征交叉的工作。当然对于三阶及以上特征的显式组合，还是只能靠人工做一些工作，或者用前面讲的 <strong>DCN</strong> 中的 cross 等结构去捕获。</p>

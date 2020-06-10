@@ -113,21 +113,21 @@
 
 
 
-<meta name="description" content="论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
+<meta name="description" content="论文引用: Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
 <meta name="keywords" content="推荐,排序,多模态,预排序,图片,分布式,注意力">
 <meta property="og:type" content="article">
 <meta property="og:title" content="DICM with AMS 论文精读">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
+<meta property="og:description" content="论文引用: Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/ams-architecture.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/vgg16.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/attentive-pooling.png">
-<meta property="og:updated_time" content="2020-06-10T13:19:35.563Z">
+<meta property="og:updated_time" content="2020-06-10T13:44:37.912Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DICM with AMS 论文精读">
-<meta name="twitter:description" content="论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
+<meta name="twitter:description" content="论文引用: Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/ams-architecture.png">
 
 
@@ -468,9 +468,7 @@
       
 
       
-        <blockquote>
-<p>论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).</p>
-</blockquote>
+        <div class="note success"><p><strong>论文引用:</strong> Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018). </p></div>
 <p>本文是阿里发表在 <strong>CIKM 2018</strong> 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 <strong>CTR</strong> 预估时就能够估计用户对广告图片的喜好，从而提升 <strong>CTR</strong> 预估的准确率。由于用户在商品页面行为历史通常较为丰富，因此训练样本中会包含大量的图片特征，这些特征使用传统的 <strong>PS</strong> 架构无法有效训练，因此文章提出了 <strong>AMS</strong> (<em>Advanced Model Server</em>) 架构，能够平衡存储和通信开销，使得天级更新模型成为可能。这篇文章主要的贡献也是在工程实现方面。</p>
 <a id="more"></a>
 <h3 id="背景和动机"><a href="#背景和动机" class="headerlink" title="背景和动机"></a>背景和动机</h3><p>广告 <strong>CTR</strong> 预估是广告系统中至关重要的环节，传统的 (非多模态) 预估模型，主要是使用一些 <strong>ID</strong> 和交叉统计之类的特征，但是由于 <strong>ID</strong> 没有语义，我们无法判断两个 <strong>ID</strong> 是不是有相关性，因此这些模型对于出现频次少或者新出现的 <strong>ID</strong> 无法充分训练，即存在冷启动的问题。</p>

@@ -113,20 +113,20 @@
 
 
 
-<meta name="description" content="论文引用：Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
+<meta name="description" content="论文引用: Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
 <meta name="keywords" content="推荐,排序,特征交叉,CIN,ctr">
 <meta property="og:type" content="article">
 <meta property="og:title" content="xDeepFM 论文精读">
 <meta property="og:url" content="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="论文引用：Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
+<meta property="og:description" content="论文引用: Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/cin-flow.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/xdeepfm-architecture.png">
-<meta property="og:updated_time" content="2020-06-10T13:22:50.601Z">
+<meta property="og:updated_time" content="2020-06-10T13:46:05.216Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="xDeepFM 论文精读">
-<meta name="twitter:description" content="论文引用：Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
+<meta name="twitter:description" content="论文引用: Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2020/05/26/paper-2018-msra-xdeepfm/cin-flow.png">
 
 
@@ -467,9 +467,7 @@
       
 
       
-        <blockquote>
-<p><strong>论文引用：</strong>Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” <em>Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining</em>. 2018.</p>
-</blockquote>
+        <div class="note success"><p><strong>论文引用:</strong> Lian, Jianxun, et al. “xdeepfm: Combining explicit and implicit feature interactions for recommender systems.” <em>Proceedings of the 24th ACM SIGKDD International Conference on Knowledge Discovery &amp; Data Mining</em>. 2018. </p></div>
 <p><strong>xDeepFM</strong> 是中科大和 <strong>MSRA</strong> 发表在 <strong>KDD 2018</strong> 上用于 <strong>CTR</strong> 预估的模型。这个模型充分借鉴了 <strong>DCN</strong>、<strong>FM</strong> 的思想，提出了一种新的将特征按 vector 进行交叉的结构 <strong>CIN</strong>，并且这个结构与 <strong>CNN</strong> 和 <strong>RNN</strong> 有一定的相似性。从实验来看，效果的确不错，但是工程效率实在是个难题。</p>
 <a id="more"></a>
 <h2 id="背景与动机"><a href="#背景与动机" class="headerlink" title="背景与动机"></a>背景与动机</h2><p>原始特征就像是未雕琢的原石，很难直接发挥出有效的作用，在预测系统中，我们通常需要对原始特征进行一定的组合变换，来取得比较好的效果。其中，特征交叉（即将离散特征值拼成一个新的特征值）能够衡量原始特征间的交互关系，提供在组合场景下有指导性的信息，对预测效果影响也比较显著，因此自动完成并提炼这种特征变换成为了众多模型（<strong>FM</strong>、<strong>DeepFM</strong>、<strong>DCN</strong> 等）设计显式交叉结构最主要的目的。</p>

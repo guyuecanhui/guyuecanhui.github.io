@@ -113,19 +113,19 @@
 
 
 
-<meta name="description" content="论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” the 24th ACM SIGKDD International Conference ACM, 2018.  本文是 Google 发表在 KDD 2018 的论文，">
+<meta name="description" content="论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” the 24th ACM SIGKDD International Conference ACM, 2018.  本文是 Google 发表在 KDD 2018 的论文，不">
 <meta name="keywords" content="推荐,排序,多任务,MoE">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MMoE 论文精读">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/11/16/paper-2018-google-mmoe/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” the 24th ACM SIGKDD International Conference ACM, 2018.  本文是 Google 发表在 KDD 2018 的论文，">
+<meta property="og:description" content="论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” the 24th ACM SIGKDD International Conference ACM, 2018.  本文是 Google 发表在 KDD 2018 的论文，不">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/16/paper-2018-google-mmoe/mmoe.png">
-<meta property="og:updated_time" content="2020-06-10T13:22:46.764Z">
+<meta property="og:updated_time" content="2020-06-10T13:45:37.513Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MMoE 论文精读">
-<meta name="twitter:description" content="论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” the 24th ACM SIGKDD International Conference ACM, 2018.  本文是 Google 发表在 KDD 2018 的论文，">
+<meta name="twitter:description" content="论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” the 24th ACM SIGKDD International Conference ACM, 2018.  本文是 Google 发表在 KDD 2018 的论文，不">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2019/11/16/paper-2018-google-mmoe/mmoe.png">
 
 
@@ -466,9 +466,7 @@
       
 
       
-        <blockquote>
-<p>论文引用: Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” <em>the 24th ACM SIGKDD International Conference</em> ACM, 2018.</p>
-</blockquote>
+        <div class="note success"><p><strong>论文引用:</strong> Ma, Jiaqi , et al. “Modeling Task Relationships in Multi-task Learning with Multi-gate Mixture-of-Experts.” <em>the 24th ACM SIGKDD International Conference</em> ACM, 2018. </p></div>
 <p>本文是 Google 发表在 <strong>KDD 2018</strong> 的论文，不过感觉少了一些工程的加持，内容略显单薄。文章主要提出了一种多专家子网的结构，显式的从数据中学习多个任务之间的关系，并能够通过门限网络对每个任务进行单独的优化。与传统的 <strong>share-bottom</strong> 结构相比，这种结构在任务之间关联较弱时，仍然能够取得比较好的效果。</p>
 <a id="more"></a>
 <p>近年来，在推荐领域逐渐引入多任务学习来减轻一些使用单个模型指标可能带来的负面影响。例如在视频推荐中，只考虑点击转化率时，会倾向推荐包含标题党、擦边海报的视频；只考虑完成度时，会倾向推荐时间比较短的视频等等。而这些倾向都会影响用户体验，并且可能导致业务长期目标的下降。因此，大家开始尝试引入多个相互关联但又不一致的目标来进行综合考虑建模，并且实践表示，多任务学习在推荐系统中能够提升上下文推荐的效果。</p>
