@@ -123,7 +123,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/09/paper-2018-ali-esmm/esmm-ssb.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/09/paper-2018-ali-esmm/esmm-architect.png">
-<meta property="og:updated_time" content="2019-11-16T01:47:27.694Z">
+<meta property="og:updated_time" content="2020-06-10T13:21:41.259Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="ESMM 论文精读">
 <meta name="twitter:description" content="论文引用: Ma, Xiao, et al. “Entire space multi-task model: An effective approach for estimating post-click conversion rate.” The 41st International ACM SIGIR Conference on Research &amp;amp; Development in I">
@@ -470,7 +470,9 @@
         <blockquote>
 <p>论文引用: Ma, Xiao, et al. “Entire space multi-task model: An effective approach for estimating post-click conversion rate.” The 41st International ACM SIGIR Conference on Research &amp; Development in Information Retrieval. ACM, 2018.</p>
 </blockquote>
-<p>本文是阿里发表在 <strong>SIGIR 2018</strong> 年的短文，主要解决了精确预估 <strong>CVR</strong> 的问题。<strong>CVR</strong> 预估是最大化场景商品交易总额 (<strong>GMV</strong>=<code>流量×点击率×转化率×客单价</code>) 的重要因子，它可以用于 <strong>OCPC</strong> 模式下动态调整出价来使平台和广告主共同受益；并且从用户体验的角度来说，准确预估的 <strong>CVR</strong> 被用来平衡用户的点击偏好与购买偏好。文章认为当前的 <strong>CVR</strong> 预估主要存在两个问题：</p>
+<p>本文是阿里发表在 <strong>SIGIR 2018</strong> 年的短文，主要解决了精确预估 <strong>CVR</strong> 的问题。</p>
+<a id="more"></a>
+<p><strong>CVR</strong> 预估是最大化场景商品交易总额 (<strong>GMV</strong>=<code>流量×点击率×转化率×客单价</code>) 的重要因子，它可以用于 <strong>OCPC</strong> 模式下动态调整出价来使平台和广告主共同受益；并且从用户体验的角度来说，准确预估的 <strong>CVR</strong> 被用来平衡用户的点击偏好与购买偏好。文章认为当前的 <strong>CVR</strong> 预估主要存在两个问题：</p>
 <ol>
 <li><strong>Sample Selection Bias (SSB)</strong>：当前 <strong>CVR</strong> 预估是基于 <code>点击-&gt;转化</code> 数据进行训练的，而有点击的展示数据只是所有展示数据中的一小部分 (如下图所示)，这部分数据的分布与整体的分布通常并不一致。而在实际 serving 的时候，模型又是对整个空间中的所有样本进行预测，因此模型的泛化效果会受到影响。</li>
 <li><strong>Data Sparsity (DS)</strong>：与前一个问题的根因相同，只使用点击数据会存在严重的数据稀疏问题。</li>

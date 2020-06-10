@@ -113,18 +113,18 @@
 
 
 
-<meta name="description" content="柯里化（Currying，以逻辑学家 Haskell Brooks Curry 的名字命名）指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。新的函数返回一个以原有第二个参数作为参数的函数。乍一看不容易理解，我们结合几个例子来看看，在 scala 中，currying 是什么样的，以及什么时候我们可以考虑使用它。 样例一：加法从最简单的开始，我们看一下 currying 是怎么把一个">
+<meta name="description" content="柯里化（Currying，以逻辑学家 Haskell Brooks Curry 的名字命名）指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。新的函数返回一个以原有第二个参数作为参数的函数。乍一看不容易理解，我们结合几个例子来看看，在 scala 中，currying 是什么样的，以及什么时候我们可以考虑使用它。">
 <meta name="keywords" content="curry,柯里化,scala">
 <meta property="og:type" content="article">
 <meta property="og:title" content="柯里化 (Currying) 及其应用">
 <meta property="og:url" content="https://guyuecanhui.github.io/2018/07/20/currying/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="柯里化（Currying，以逻辑学家 Haskell Brooks Curry 的名字命名）指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。新的函数返回一个以原有第二个参数作为参数的函数。乍一看不容易理解，我们结合几个例子来看看，在 scala 中，currying 是什么样的，以及什么时候我们可以考虑使用它。 样例一：加法从最简单的开始，我们看一下 currying 是怎么把一个">
+<meta property="og:description" content="柯里化（Currying，以逻辑学家 Haskell Brooks Curry 的名字命名）指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。新的函数返回一个以原有第二个参数作为参数的函数。乍一看不容易理解，我们结合几个例子来看看，在 scala 中，currying 是什么样的，以及什么时候我们可以考虑使用它。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-07-20T08:20:15.641Z">
+<meta property="og:updated_time" content="2020-06-10T13:16:50.522Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="柯里化 (Currying) 及其应用">
-<meta name="twitter:description" content="柯里化（Currying，以逻辑学家 Haskell Brooks Curry 的名字命名）指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。新的函数返回一个以原有第二个参数作为参数的函数。乍一看不容易理解，我们结合几个例子来看看，在 scala 中，currying 是什么样的，以及什么时候我们可以考虑使用它。 样例一：加法从最简单的开始，我们看一下 currying 是怎么把一个">
+<meta name="twitter:description" content="柯里化（Currying，以逻辑学家 Haskell Brooks Curry 的名字命名）指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。新的函数返回一个以原有第二个参数作为参数的函数。乍一看不容易理解，我们结合几个例子来看看，在 scala 中，currying 是什么样的，以及什么时候我们可以考虑使用它。">
 
 
 
@@ -465,6 +465,7 @@
 
       
         <p>柯里化（<strong>Currying</strong>，以逻辑学家 Haskell Brooks Curry 的名字命名）指的是将原来接受两个参数的函数变成新的接受一个参数的函数的过程。新的函数返回一个以原有第二个参数作为参数的函数。乍一看不容易理解，我们结合几个例子来看看，在 <strong>scala</strong> 中，<strong>currying</strong> 是什么样的，以及什么时候我们可以考虑使用它。</p>
+<a id="more"></a>
 <h3 id="样例一：加法"><a href="#样例一：加法" class="headerlink" title="样例一：加法"></a>样例一：加法</h3><p>从最简单的开始，我们看一下 <strong>currying</strong> 是怎么把一个接受两个参数的函数改造成每次只接受一个参数的函数：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// uncurry</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add1</span></span>(x: <span class="type">Int</span>, y: <span class="type">Int</span>): <span class="type">Int</span> = &#123;</span><br><span class="line">  x + y</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// shorthand</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add2</span></span>(x: <span class="type">Int</span>)(y: <span class="type">Int</span>): <span class="type">Int</span> = &#123;</span><br><span class="line">  x + y</span><br><span class="line">&#125;</span><br><span class="line">add2(<span class="number">2</span>) _</span><br><span class="line">add2(<span class="number">2</span>)(<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">// longhand</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add3</span></span>(x: <span class="type">Int</span>): (<span class="type">Int</span> =&gt; <span class="type">Int</span>) = &#123;</span><br><span class="line">  (y: <span class="type">Int</span>) =&gt; &#123;</span><br><span class="line">    x + y</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">add3(<span class="number">2</span>)</span><br><span class="line">add3(<span class="number">2</span>)(<span class="number">5</span>)</span><br></pre></td></tr></table></figure>
 <p><strong>输出结果：</strong></p>

@@ -113,18 +113,18 @@
 
 
 
-<meta name="description" content="1. 引子在 Spark 开发过程中，我们经常会定义一些 udf 函数，用于对 DataFrame 的列进行变换，例如： 123val thres = 3.0val log10Udf = udf &amp;#123; x: Long =&amp;gt; math.min(math.log10(x + 2.0), thres) &amp;#125;df.withColumn(&quot;newColumn&quot;, log10Udf($&quot;">
+<meta name="description" content="本文主要举例介绍 Scala 中函数与方法的差别。">
 <meta name="keywords" content="scala,method,function">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Scala 中函数与方法的差别">
 <meta property="og:url" content="https://guyuecanhui.github.io/2018/07/17/method-vs-function/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="1. 引子在 Spark 开发过程中，我们经常会定义一些 udf 函数，用于对 DataFrame 的列进行变换，例如： 123val thres = 3.0val log10Udf = udf &amp;#123; x: Long =&amp;gt; math.min(math.log10(x + 2.0), thres) &amp;#125;df.withColumn(&quot;newColumn&quot;, log10Udf($&quot;">
+<meta property="og:description" content="本文主要举例介绍 Scala 中函数与方法的差别。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-07-20T08:12:03.916Z">
+<meta property="og:updated_time" content="2020-06-10T13:19:07.607Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Scala 中函数与方法的差别">
-<meta name="twitter:description" content="1. 引子在 Spark 开发过程中，我们经常会定义一些 udf 函数，用于对 DataFrame 的列进行变换，例如： 123val thres = 3.0val log10Udf = udf &amp;#123; x: Long =&amp;gt; math.min(math.log10(x + 2.0), thres) &amp;#125;df.withColumn(&quot;newColumn&quot;, log10Udf($&quot;">
+<meta name="twitter:description" content="本文主要举例介绍 Scala 中函数与方法的差别。">
 
 
 
@@ -464,7 +464,9 @@
       
 
       
-        <h3 id="1-引子"><a href="#1-引子" class="headerlink" title="1. 引子"></a>1. 引子</h3><p>在 <strong>Spark</strong> 开发过程中，我们经常会定义一些 <code>udf</code> 函数，用于对 <strong>DataFrame</strong> 的列进行变换，例如：</p>
+        <p>本文主要举例介绍 Scala 中函数与方法的差别。</p>
+<a id="more"></a>
+<h3 id="1-引子"><a href="#1-引子" class="headerlink" title="1. 引子"></a>1. 引子</h3><p>在 <strong>Spark</strong> 开发过程中，我们经常会定义一些 <code>udf</code> 函数，用于对 <strong>DataFrame</strong> 的列进行变换，例如：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">val</span> thres = <span class="number">3.0</span></span><br><span class="line"><span class="keyword">val</span> log10Udf = udf &#123; x: <span class="type">Long</span> =&gt; math.min(math.log10(x + <span class="number">2.0</span>), thres) &#125;</span><br><span class="line">df.withColumn(<span class="string">"newColumn"</span>, log10Udf($<span class="string">"oldColumn"</span>)).show</span><br></pre></td></tr></table></figure>
 <p>这里的 <code>log10Udf</code> 是个啥呢？我们去看 <code>udf</code> 的定义，会发现它返回的是一个 <code>UserDefinedFunction</code> 对象：</p>
 <figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">udf</span></span>[<span class="type">RT</span>: <span class="type">TypeTag</span>, <span class="type">A1</span>: <span class="type">TypeTag</span>](f: <span class="type">Function1</span>[<span class="type">A1</span>, <span class="type">RT</span>]): <span class="type">UserDefinedFunction</span> = &#123;</span><br><span class="line">    <span class="keyword">val</span> inputTypes = <span class="type">Try</span>(<span class="type">ScalaReflection</span>.schemaFor(typeTag[<span class="type">A1</span>]).dataType :: <span class="type">Nil</span>).toOption</span><br><span class="line">    <span class="type">UserDefinedFunction</span>(f, <span class="type">ScalaReflection</span>.schemaFor(typeTag[<span class="type">RT</span>]).dataType, inputTypes)</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>

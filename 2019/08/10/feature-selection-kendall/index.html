@@ -113,20 +113,20 @@
 
 
 
-<meta name="description" content="前面我们已经讨论了 Pearson 相关系数和 Spearman 秩相关系数，它们可以检测连续变量间的相关性，并且 Spearman 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：Kendall 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。 Kendall 秩相关系数的定义Kendall 秩相关系数是一个非">
+<meta name="description" content="前面我们已经讨论了 Pearson 相关系数和 Spearman 秩相关系数，它们可以检测连续变量间的相关性，并且 Spearman 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：Kendall 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。">
 <meta name="keywords" content="特征,特征选择,特征过滤,Kendall">
 <meta property="og:type" content="article">
 <meta property="og:title" content="常用的特征选择方法之 Kendall 秩相关系数">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="前面我们已经讨论了 Pearson 相关系数和 Spearman 秩相关系数，它们可以检测连续变量间的相关性，并且 Spearman 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：Kendall 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。 Kendall 秩相关系数的定义Kendall 秩相关系数是一个非">
+<meta property="og:description" content="前面我们已经讨论了 Pearson 相关系数和 Spearman 秩相关系数，它们可以检测连续变量间的相关性，并且 Spearman 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：Kendall 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/age-value-pairs.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/age-discrete-pairs.png">
-<meta property="og:updated_time" content="2019-08-17T14:46:14.499Z">
+<meta property="og:updated_time" content="2020-06-10T13:16:55.321Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="常用的特征选择方法之 Kendall 秩相关系数">
-<meta name="twitter:description" content="前面我们已经讨论了 Pearson 相关系数和 Spearman 秩相关系数，它们可以检测连续变量间的相关性，并且 Spearman 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：Kendall 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。 Kendall 秩相关系数的定义Kendall 秩相关系数是一个非">
+<meta name="twitter:description" content="前面我们已经讨论了 Pearson 相关系数和 Spearman 秩相关系数，它们可以检测连续变量间的相关性，并且 Spearman 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：Kendall 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2019/08/10/feature-selection-kendall/age-value-pairs.png">
 
 
@@ -468,6 +468,7 @@
 
       
         <p>前面我们已经讨论了 <a href="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/"><strong>Pearson</strong> 相关系数</a>和 <a href="https://guyuecanhui.github.io/2019/07/28/feature-selection-spearman/"><strong>Spearman</strong> 秩相关系数</a>，它们可以检测连续变量间的相关性，并且 <strong>Spearman</strong> 秩相关系数还能够检测有序的离散变量间的相关系数。今天我们再讨论一个能够检测有序变量相关性的系数：<strong>Kendall</strong> 秩相关系数。这里有序变量既包括实数变量，也包括可以排序的类别变量，比如名次、年龄段等。</p>
+<a id="more"></a>
 <h3 id="Kendall-秩相关系数的定义"><a href="#Kendall-秩相关系数的定义" class="headerlink" title="Kendall 秩相关系数的定义"></a>Kendall 秩相关系数的定义</h3><p><strong>Kendall</strong> 秩相关系数是一个非参数性质（与分布无关）的秩统计参数，是用来度量两个<strong>有序变量</strong>之间<strong>单调关系</strong>强弱的相关系数，它的取值范围是 $[-1,1]$，绝对值越大，表示单调相关性越强，取值为 $0$ 时表示完全不相关。</p>
 <p>原始的 <strong>Kendall</strong> 秩相关系数定义在<strong>一致对</strong> (<strong>concordant pairs</strong>) 和<strong>分歧对</strong> (<strong>discordant pairs</strong>) 的概念上。所谓一致对，就是两个变量取值的相对关系一致；分歧对则是指它们的相对关系不一致。这么说有点难以理解，我们举个例子。</p>
 <p>假设我们为很多不同年龄的用户推送了一条社保相关的视频，然后回收了这些用户的播放完成度，如下表所示：</p>

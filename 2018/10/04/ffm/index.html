@@ -121,7 +121,7 @@
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="前段时间搞 LR 的特征优化，切身体会到人工特征工程实在太费劲了，一方面发掘高价值的特征十分困难，另一方面某些特征之间需要组合才能有效，比如用户对视频的某个特征的偏好，就必须将视频的特征和用户的特征进行组合。LR 是线性模型，没法自动做特征组合，只能人工搞，但人工来干这事就相当麻烦了。自然而然的，就会想到用可以自动组合特征的模型。现在了解的包括 FM、FFM 等基于矩阵分解的模型、基于 GBDT">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-04T13:37:20.601Z">
+<meta property="og:updated_time" content="2020-06-10T13:17:15.130Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="特征组合之FFM">
 <meta name="twitter:description" content="前段时间搞 LR 的特征优化，切身体会到人工特征工程实在太费劲了，一方面发掘高价值的特征十分困难，另一方面某些特征之间需要组合才能有效，比如用户对视频的某个特征的偏好，就必须将视频的特征和用户的特征进行组合。LR 是线性模型，没法自动做特征组合，只能人工搞，但人工来干这事就相当麻烦了。自然而然的，就会想到用可以自动组合特征的模型。现在了解的包括 FM、FFM 等基于矩阵分解的模型、基于 GBDT">
@@ -465,6 +465,7 @@
 
       
         <p>前段时间搞 LR 的特征优化，切身体会到人工特征工程实在太费劲了，一方面发掘高价值的特征十分困难，另一方面某些特征之间需要组合才能有效，比如用户对视频的某个特征的偏好，就必须将视频的特征和用户的特征进行组合。LR 是线性模型，没法自动做特征组合，只能人工搞，但人工来干这事就相当麻烦了。自然而然的，就会想到用可以自动组合特征的模型。现在了解的包括 FM、FFM 等基于矩阵分解的模型、基于 GBDT 之类的树模型和基于 DNN 的网络模型。这篇文章先介绍下 FFM 模型。</p>
+<a id="more"></a>
 <h2 id="FFM-模型简介"><a href="#FFM-模型简介" class="headerlink" title="FFM 模型简介"></a>FFM 模型简介</h2><p>FFM (Field-aware Factorization Machines)$^{[1]}$是 Yuchin Juan 等人在台大期间提出的用于 CTR 预估的模型。它是对 FM 模型的推广，提到 FM 又不得不提到 Poly2 模型，好在它们三个的关系十分简单和明确：</p>
 <ol>
 <li><p>Poly2 模型是将所有特征进行两两组合，也就是当特征有 $n$ 个的时候，需要 $O(n^2)$ 个参数，而且这些参数之间是<strong>相互独立</strong>的，意味着<strong>每个参数都需要足够的样本来训练</strong>，也就是每对特征都同时出现在足够多的样本里。因此如果无法满足海量样本的要求时，这个模型很难训练出来。它的模型如下（其中 $h(i,j)$ 作用是将 $i,j$ 映射成一个自然数）：</p>

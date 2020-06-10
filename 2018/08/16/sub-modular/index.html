@@ -121,7 +121,7 @@
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="Submodular 函数的定义与性质最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。所谓 Submodular 函数，是指满足如下定义的集合函数$^{[1]}$：  记 $[n]={1,2,\cdots,n}$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}$ 为一个集合函数，该函数是 submudular当： f">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-05-10T14:41:11.981Z">
+<meta property="og:updated_time" content="2020-06-10T13:24:04.081Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Submodular函数">
 <meta name="twitter:description" content="Submodular 函数的定义与性质最近在看一些计算学习理论的时候，发现很多文章是基于 Submodular 函数做的，就去了解了一下。所谓 Submodular 函数，是指满足如下定义的集合函数$^{[1]}$：  记 $[n]={1,2,\cdots,n}$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}$ 为一个集合函数，该函数是 submudular当： f">
@@ -468,6 +468,7 @@
 <blockquote>
 <p>记 $[n]={1,2,\cdots,n}$ 为 Ground Set，记 $f:2^{[n]}\to\mathbb{R}$ 为一个集合函数，该函数是 submudular当：</p>
 <script type="math/tex; mode=display">f(A)+f(B)\ge f(A\cup B)+f(A\cap B), \quad \forall A,B\subseteq[n] \qquad(1)</script></blockquote>
+<a id="more"></a>
 <p>它是对 <strong>Modular</strong> 函数的条件进行放松，而 <strong>Modular</strong> 函数是指满足如下定义的函数：</p>
 <script type="math/tex; mode=display">
 f(A)+f(B)=f(A\cup B)+f(A\cap B), \quad \forall A,B\subseteq[n] \qquad(2)</script><p>看定义，<strong>Submodular</strong> 函数与凹函数有些相似，不同的在于它并不限定元素的顺序！<br><strong>Submodular</strong> 函数还有一种等价式，更能体现它的一个核心特点：</p>

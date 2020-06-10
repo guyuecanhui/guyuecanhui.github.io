@@ -124,7 +124,7 @@
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/neuralffm_architecture.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/30/paper-2017-noah-deepfm/deepffm_architecture.png">
-<meta property="og:updated_time" content="2020-05-25T15:21:24.687Z">
+<meta property="og:updated_time" content="2020-06-10T13:19:27.746Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DeepFM 论文精读">
 <meta name="twitter:description" content="论文引用: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” arXiv preprint arXiv:1703.04247 (2017).  DeepFM 是华为诺亚实验室受 FM 和 wide &amp;amp; deep 模型启发，发表在 IJCAI 201">
@@ -472,6 +472,7 @@
 <p><strong>论文引用</strong>: Guo, Huifeng, et al. “DeepFM: a factorization-machine based neural network for CTR prediction.” <em>arXiv preprint arXiv:1703.04247</em> (2017).</p>
 </blockquote>
 <p><strong>DeepFM</strong> 是华为诺亚实验室受 <strong>FM</strong> 和 wide &amp; deep 模型启发，发表在 <strong>IJCAI 2017</strong> 的一个 <strong>CTR</strong> 预估模型，从国内企业的实践分享来看，其效果受到了广泛的认可。它的核心思想是将 wide &amp; deep 网络中的 wide 层用 <strong>FM</strong> 层代替，增加了特征的二阶自动交叉能力，并且在实现上天然可以将 <strong>FM</strong> 层的 embedding 与 deep 层共享。</p>
+<a id="more"></a>
 <h3 id="DeepFM-架构"><a href="#DeepFM-架构" class="headerlink" title="DeepFM 架构"></a>DeepFM 架构</h3><p>随着深度网络的兴起，<strong>DNN</strong> 尤其是 <strong>MLP</strong> 的结构往往被用作非线性的特征提取器，并且取得了比较好的效果。然而文章指出，<strong>只保留特征的高阶非线性组合并不如同时保留特征的低阶组合和高阶组合效果好</strong>。这也是文章核心的出发点之一。但是 wide &amp; deep 模型中只有特征的一阶和高阶组合，因此一些有效的的二阶/三阶组合只能靠工程师人工挖掘组合出来，放到 wide 层。这个时候 <strong>FM</strong> 模型又出场了，用它来代替 wide 层，既能保留原始特征，又能自动做原始特征的二阶组合，这样就能节省很多人工特征交叉的工作。当然对于三阶及以上特征的显式组合，还是只能靠人工做一些工作，或者用前面讲的 <strong>DCN</strong> 中的 cross 等结构去捕获。</p>
 <p><strong>DeepFM</strong> 的模型架构如下图所示，首先将所有的特征转成长度相同的 embedding，然后依照 <strong>FM</strong> 模型构建 <strong>FM</strong> 层，再将所有 embedding 拼接后，送到 <strong>MLP</strong> 层，最后在顶层进行拼接后，送到 <strong>LR</strong> 层，计算二分类损失。</p>
 <img src="/2020/04/30/paper-2017-noah-deepfm/deepfm_architecture.png" title="图 1. DeepFM 整体架构">

@@ -113,19 +113,19 @@
 
 
 
-<meta name="description" content="近期尝试了基于 FTRL 来训练 FM 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。 一、FM (Factorization Machines) 模型推导FM 模型简介在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特">
+<meta name="description" content="近期尝试了基于 FTRL 来训练 FM 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。">
 <meta name="keywords" content="优化,FTRL,模型,FM">
 <meta property="og:type" content="article">
 <meta property="og:title" content="用 FTRL 训练 FM 模型">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="近期尝试了基于 FTRL 来训练 FM 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。 一、FM (Factorization Machines) 模型推导FM 模型简介在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特">
+<meta property="og:description" content="近期尝试了基于 FTRL 来训练 FM 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/alg-ftrl-fm.png">
-<meta property="og:updated_time" content="2019-07-03T14:28:24.710Z">
+<meta property="og:updated_time" content="2020-06-10T13:17:22.058Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="用 FTRL 训练 FM 模型">
-<meta name="twitter:description" content="近期尝试了基于 FTRL 来训练 FM 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。 一、FM (Factorization Machines) 模型推导FM 模型简介在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特">
+<meta name="twitter:description" content="近期尝试了基于 FTRL 来训练 FM 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2019/07/03/ftrl-fm/alg-ftrl-fm.png">
 
 
@@ -467,6 +467,7 @@
 
       
         <p>近期尝试了基于 <strong>FTRL</strong> 来训练 <strong>FM</strong> 模型，用于短视频的排序。这篇博客主要总结一下算法的理论推导和工程化的一些心得。</p>
+<a id="more"></a>
 <h2 id="一、FM-Factorization-Machines-模型推导"><a href="#一、FM-Factorization-Machines-模型推导" class="headerlink" title="一、FM (Factorization Machines) 模型推导"></a>一、FM (Factorization Machines) 模型推导</h2><h3 id="FM-模型简介"><a href="#FM-模型简介" class="headerlink" title="FM 模型简介"></a>FM 模型简介</h3><p>在设计排序模型时，至关重要的步骤就是特征的构造和选择。除了一些简单单特征外，往往要对特征进行组合，例如对用户的年龄、性别组合，对视频的演员、类别进行组合等，更大的特征空间能够增加模型表征能力。对于特征组合来说，业界现在通用的做法主要有两大类：</p>
 <ul>
 <li><strong>FM</strong> 系列，常见的模型包括 <strong>FM</strong>，<strong>FFM</strong>，<strong>DeepFM</strong>，它们对特征的取值范围比较敏感。</li>

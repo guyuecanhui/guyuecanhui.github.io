@@ -125,7 +125,7 @@
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/ratio-preference.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/ratio-preference-abnormal.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/07/20/feature-selection-pearson/different-shape-of-same-pearson.png">
-<meta property="og:updated_time" content="2019-08-17T14:18:20.347Z">
+<meta property="og:updated_time" content="2020-06-10T13:17:06.400Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="常用的特征选择方法之 Pearson 相关系数">
 <meta name="twitter:description" content="众所周知，特征选择是机器学习活动至关重要的一步。最理想的情况下，我们把所有影响目标的独立因素给找出来，然后使用合适的量化手段，就能够得到完美描述目标问题的特征列表，用这些特征去建立合适容量的模型，这样的模型能够完美的匹配我们要解决的任务。 但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。 随着深度网络的崛">
@@ -473,6 +473,7 @@
 <p>但是实际上这种想法太难实现了，我们往往只能从已有的数据出发，通过一些特征变换和组合得到一些原始特征，然后从这些原始特征中选出与目标相关的特征。</p>
 <p>随着深度网络的崛起，越来越多的未经复杂变换的原始特征被加入到了深度网络中，大家期待有用的特征能够被自动的抽取和组合出来。但是这并不意味着特征工程就不需要了，推荐系统的大牛 Xavier 在技术博客《Rules of Machine Learning: Best Practices for ML Engineering》中提到很多关于特征工程的建议，非常值得一读，其中包含的思想就是特征是随着系统的优化进程而逐步添加的，并非一蹴而就，要始终保证特征的简单、直观、可复用、可监控和可靠性，这意味着我们需要时常对系统中存量特征做测试和筛选。</p>
 <p>特征选择通常有过滤法（Filter）、打包法（Wrap）和嵌入法（Embed），其中，后两者都是与模型相关的，需要具体问题具体对待，而过滤法是指对特征进行预处理，提前过滤掉一些对目标无益（即对模型无益）的特征，它只考虑任务目标，而与模型无关。</p>
+<a id="more"></a>
 <p>我打算把常用的特征选择方法都再回顾一遍，力争把每种方法都讲得通俗易懂。这篇文章先介绍 <strong>Pearson</strong> 相关系数。</p>
 <h3 id="Pearson-相关系数的定义"><a href="#Pearson-相关系数的定义" class="headerlink" title="Pearson 相关系数的定义"></a>Pearson 相关系数的定义</h3><p><strong>Pearson</strong> 相关系数是用来检测两个<strong>连续型变量</strong>之间<strong>线性相关</strong>的程度，取值范围为 $[-1,1]$，正值表示正相关，负值表示负相关，绝对值越大表示线性相关程度越高。在实际做特征工程时候，如果两个变量的相关系数取值为负，可以将特征变量取负号，使之与目标变量正相关，这样来保证所有特征与目标之间都是正相关。</p>
 <p>两个变量之间的 <strong>Pearson</strong> 相关系数定义为两个变量之间的协方差和标准差的商：</p>

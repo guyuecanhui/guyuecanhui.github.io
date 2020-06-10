@@ -123,7 +123,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/05/10/simrankpp/group-watch-1.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/05/10/simrankpp/group-watch-2.png">
-<meta property="og:updated_time" content="2019-05-12T14:48:49.603Z">
+<meta property="og:updated_time" content="2020-06-10T13:23:45.605Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="从 SimRank 到 SimRank++">
 <meta name="twitter:description" content="从 SimRank 到 SimRank++上一篇博客《SimRank与视频相似度计算》 介绍了 SimRank$^{[1]}$ 及其在视频推荐中的应用，这一篇再谈谈 SimRank++。顾名思义，SimRank++ 是在 SimRank 的基础上做了一些优化，在文献 [2] 中提出时是为了解决搜索词改写的问题，本质上也就是计算搜索词的相似度。作者发现，当需要考虑二部图的边权信息时，原始的 SimR">
@@ -468,6 +468,7 @@
 
       
         <h2 id="从-SimRank-到-SimRank"><a href="#从-SimRank-到-SimRank" class="headerlink" title="从 SimRank 到 SimRank++"></a>从 SimRank 到 SimRank++</h2><p>上一篇博客<a href="https://guyuecanhui.github.io/2019/04/29/simrank/">《SimRank与视频相似度计算》</a> 介绍了 <strong>SimRank</strong>$^{[1]}$ 及其在视频推荐中的应用，这一篇再谈谈 <strong>SimRank++</strong>。顾名思义，<strong>SimRank++</strong> 是在 <strong>SimRank</strong> 的基础上做了一些优化，在文献 [2] 中提出时是为了解决搜索词改写的问题，本质上也就是计算搜索词的相似度。作者发现，当需要考虑二部图的边权信息时，原始的 <strong>SimRank</strong> 模型难以评估物品间相似度的可信度，这篇博客从视频推荐的角度来阐释作者的优化点。</p>
+<a id="more"></a>
 <h3 id="从用户到用户群"><a href="#从用户到用户群" class="headerlink" title="从用户到用户群"></a>从用户到用户群</h3><p>由于我们影片的观众量级在千万级，而影片的数量在十万级，因此使用 <strong>SimRank</strong> 模型来计算视频相似度时，最大的计算和存储瓶颈在于<code>用户相似矩阵</code>、<code>用户-视频转移矩阵</code>及<code>视频-用户转移矩阵</code>。但是从使用场景上来讲，我们在这里实际上并不需要度量用户之间的相似度（尽管它们可以用来做用户协同推荐），用户仅仅是用来传递视频间的相似度。因此，为了减少计算和存储的开销，我们可以对用户进行聚类，使用用户组来代替用户完成视频相似度的传递。</p>
 <p>基于这个想法，我们可以使用各种聚类的方法：按用户性别、年龄、地域等；我是直接基于历史行为进行用户聚类。具体的做法是基于用户最近 $N$ 天的播放、收藏、分享等行为生成用户的表征向量（可以用 AutoEncoder、PCA 等方法），然后基于表征向量执行 KMeans（直接 KMeans 可能跑不出来），这里的用户群数量需要根据实际场景调试，我们希望类内最大距离越小越好。然后再将用户的行为聚合到用户组，例如有效播放次数累加、总播放时长的累加、总播放占比的累加、平均 CTR 等。这样我们就从<code>用户-视频二部图</code>切换到了<code>用户组-视频</code>二部图，整个网络的规模降低了 2 个数量级。</p>
 <h3 id="SimRank-的优化"><a href="#SimRank-的优化" class="headerlink" title="SimRank++ 的优化"></a>SimRank++ 的优化</h3><p>我们将用户聚成了用户组，丢失了大量的网络信息，虽然用户组作为网络中的一个节点，我们看不出它的出边是来自哪些用户，但是好在我们保留了这个组里有多少用户看了某个视频。而由于这一组用户又是相似的，因此我们期望通过充分利用边权来最小化网络信息的丢失。</p>

@@ -113,19 +113,19 @@
 
 
 
-<meta name="description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。 问题背景如何评估一个视频的质量是视频推荐中非常重要但是又很让人头疼的事情。尤其是在短视频场景下，每天新增大量的短视频，我们需要迅速判断一个新短视频的质量：如果">
+<meta name="description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。">
 <meta name="keywords" content="统计,概率,分布,贝叶斯,先验,后验,共轭,Beta分布,二项分布">
 <meta property="og:type" content="article">
 <meta property="og:title" content="例解共轭分布之视频质量评估">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/08/18/conjugate-priors-video-quality/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。 问题背景如何评估一个视频的质量是视频推荐中非常重要但是又很让人头疼的事情。尤其是在短视频场景下，每天新增大量的短视频，我们需要迅速判断一个新短视频的质量：如果">
+<meta property="og:description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/08/18/conjugate-priors-video-quality/beta-pdf.png">
-<meta property="og:updated_time" content="2019-09-08T14:01:12.395Z">
+<meta property="og:updated_time" content="2020-06-10T13:16:46.043Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="例解共轭分布之视频质量评估">
-<meta name="twitter:description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。 问题背景如何评估一个视频的质量是视频推荐中非常重要但是又很让人头疼的事情。尤其是在短视频场景下，每天新增大量的短视频，我们需要迅速判断一个新短视频的质量：如果">
+<meta name="twitter:description" content="在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (conjugate prior) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2019/08/18/conjugate-priors-video-quality/beta-pdf.png">
 
 
@@ -467,6 +467,7 @@
 
       
         <p>在推荐领域阅读文献的时候，我们常常会遇到共轭分布、共轭先验 (<strong>conjugate prior</strong>) 之类的概念。由于共轭这个翻译实在不太直观，因此这些概念也很难理解，我想结合两个视频推荐中的例子来尝试说明这些概念。今天先介绍视频质量评估的例子。</p>
+<a id="more"></a>
 <h3 id="问题背景"><a href="#问题背景" class="headerlink" title="问题背景"></a>问题背景</h3><p>如何评估一个视频的质量是视频推荐中非常重要但是又很让人头疼的事情。尤其是在短视频场景下，每天新增大量的短视频，我们需要迅速判断一个新短视频的质量：如果质量很好，我们可以将它向更多的人推荐；如果质量不好，我们可能不再主动推荐该视频。这里判断的时效很重要，因为如果没有及时发现一个垃圾视频，它可能就会通过推荐系统祸害很多的用户 =.=!</p>
 <p>由于视频非常多，我们无法人工对每个视频进行准确的质量评估，而且用户在短视频的观看行为呈现出更加多元的兴趣，因此小编们也无法代表所有用户的口味。因此，要评估一个短视频好不好，还是得看它在用户中的表现 (可以用完播率、点赞率、分享率等统计指标来度量)。</p>
 <p>假设我们只考虑用完播率 $r$ 来度量一个视频的质量 (后面交替使用完播率和视频质量)，它表示一个视频被播放完 (或者播放超过一定比例) 的数量 $m$ 与它展现给用户的次数 $n$ 的比例：</p>

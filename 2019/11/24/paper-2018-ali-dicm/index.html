@@ -124,7 +124,7 @@
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/ams-architecture.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/vgg16.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/24/paper-2018-ali-dicm/attentive-pooling.png">
-<meta property="og:updated_time" content="2019-12-08T15:28:38.790Z">
+<meta property="og:updated_time" content="2020-06-10T13:19:35.563Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="DICM with AMS 论文精读">
 <meta name="twitter:description" content="论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).  本文是阿里发表在 CIKM 2018 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 CTR 预估时就能够估">
@@ -472,6 +472,7 @@
 <p>论文引用：Ge, Tiezheng , et al. “Image Matters: Visually modeling user behaviors using Advanced Model Server.” (2018).</p>
 </blockquote>
 <p>本文是阿里发表在 <strong>CIKM 2018</strong> 上的文章，主要思路是将用户历史有过行为 (文章实际使用了点击行为) 的图片来对用户视觉兴趣进行建模，在广告 <strong>CTR</strong> 预估时就能够估计用户对广告图片的喜好，从而提升 <strong>CTR</strong> 预估的准确率。由于用户在商品页面行为历史通常较为丰富，因此训练样本中会包含大量的图片特征，这些特征使用传统的 <strong>PS</strong> 架构无法有效训练，因此文章提出了 <strong>AMS</strong> (<em>Advanced Model Server</em>) 架构，能够平衡存储和通信开销，使得天级更新模型成为可能。这篇文章主要的贡献也是在工程实现方面。</p>
+<a id="more"></a>
 <h3 id="背景和动机"><a href="#背景和动机" class="headerlink" title="背景和动机"></a>背景和动机</h3><p>广告 <strong>CTR</strong> 预估是广告系统中至关重要的环节，传统的 (非多模态) 预估模型，主要是使用一些 <strong>ID</strong> 和交叉统计之类的特征，但是由于 <strong>ID</strong> 没有语义，我们无法判断两个 <strong>ID</strong> 是不是有相关性，因此这些模型对于出现频次少或者新出现的 <strong>ID</strong> 无法充分训练，即存在冷启动的问题。</p>
 <p>解决冷启动问题通常会想到引入内容特征，而在电商领域，图片就是能够描述广告/商品的最直观且最受用户关注的内容特征。用户在购买商品的时候，通常会点击、浏览商品的图片，结合商品的描述、评论等其他信息来决定是否购买，因此用户曾经点击过的图片能够在很大程度上表征用户的兴趣。而用户是否点击广告，图片、标题等信息是影响最大的因素。因此，文章就考虑使用用户点击过的图片来建立用户的兴趣模型，再与广告的图片进行匹配，从而估计用户在视觉层面是否对该广告有兴趣；将这方面的估计与传统的基于 <strong>ID</strong> 等特征的估计相结合，来提升 <strong>CTR</strong> 估计的性能。基于这个思路，文章提出了 <strong>DICM</strong> (<em>Deep Image CTR Model</em>)。 </p>
 <p>使用用户图片历史来建立用户视觉偏好主要的问题就是数据传输和存储，如果使用传统的 <strong>PS</strong> 架构，图片数据是保存在 <strong>KV Store</strong> 里（也就是参数服务器），谁用谁来查一下，而图片的数量和数据量都是相对较大的，因此这种方式十分消耗资源，并且这种方式也难以针对 <strong>CTR</strong> 预估任务对预训练的图片特征进行进一步的组合和压缩，即图片数据不是目标相关的。文章针对这个问题，提出了一种扩展 <strong>PS</strong> 架构，称为 <strong>AMS</strong> 架构。下面就详细的介绍这两方面的工作。</p>

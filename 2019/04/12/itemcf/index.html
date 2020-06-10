@@ -113,19 +113,19 @@
 
 
 
-<meta name="description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。 ItemCF 推导过程首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因">
+<meta name="description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。">
 <meta name="keywords" content="推荐,协同过滤,算法">
 <meta property="og:type" content="article">
 <meta property="og:title" content="可能是最好懂的ItemCF解释了">
 <meta property="og:url" content="https://guyuecanhui.github.io/2019/04/12/itemcf/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。 ItemCF 推导过程首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因">
+<meta property="og:description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/04/12/itemcf/itemcf-f1.png">
-<meta property="og:updated_time" content="2019-05-04T13:33:58.679Z">
+<meta property="og:updated_time" content="2020-06-10T13:17:37.799Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="可能是最好懂的ItemCF解释了">
-<meta name="twitter:description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。 ItemCF 推导过程首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因">
+<meta name="twitter:description" content="说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2019/04/12/itemcf/itemcf-f1.png">
 
 
@@ -467,6 +467,7 @@
 
       
         <p>说到推荐系统，可能最为人熟知的算法就是协同过滤，特别是其中的 ItemCF，自亚马逊文章发表以后，得到了广泛而成功的应用。这篇文章主要谈谈我的理解。</p>
+<a id="more"></a>
 <h2 id="ItemCF-推导过程"><a href="#ItemCF-推导过程" class="headerlink" title="ItemCF 推导过程"></a>ItemCF 推导过程</h2><p>首先，ItemCF 依赖一个隐含的假设：就是每个用户的兴趣都局限在某几个方面，因此如果两个物品属于一个用户的兴趣列表，那么这两个物品可能就属于有限的几个领域，而如果两个物品属于很多用户的兴趣列表，那么它们就可能属于同一个领域，因而有很大的相似度。</p>
 <p>从这个假设出发，我们可以认为两个视频相似表现在它们被很多用户同时观看，两个物品共同观看的人数越多，说明它们的相似度越高，用公式来表达就是：</p>
 <script type="math/tex; mode=display">

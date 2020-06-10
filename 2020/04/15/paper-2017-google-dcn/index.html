@@ -123,7 +123,7 @@
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/15/paper-2017-google-dcn/dcn_cross.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/15/paper-2017-google-dcn/dcn_architecture.png">
-<meta property="og:updated_time" content="2020-05-09T15:43:27.071Z">
+<meta property="og:updated_time" content="2020-06-10T13:19:20.037Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Deep &amp; Cross 论文精读">
 <meta name="twitter:description" content="论文引用: Wang, Ruoxi, et al. “Deep &amp;amp; cross network for ad click predictions.” Proceedings of the ADKDD’17. 2017. 1-7.  本文是 Stanford 和 Google 联合发表在 KDD 2017 workshop 上的一篇 CTR 预估模型，模型采用 Wide&amp;amp;Deep">
@@ -471,6 +471,7 @@
 <p>论文引用: Wang, Ruoxi, et al. “Deep &amp; cross network for ad click predictions.” <em>Proceedings of the ADKDD’17</em>. 2017. 1-7.</p>
 </blockquote>
 <p>本文是 Stanford 和 Google 联合发表在 <strong>KDD</strong> 2017 workshop 上的一篇 <strong>CTR</strong> 预估模型，模型采用 <strong>Wide&amp;Deep</strong> 架构，最大的创新点在于将 wide 层替换成 cross 层，省去了原本大量的人工特征工程的工作，由 cross 层提供显式的高阶特征组合能力，同时保持较低的参数量和计算量。</p>
+<a id="more"></a>
 <h3 id="背景与动机"><a href="#背景与动机" class="headerlink" title="背景与动机"></a>背景与动机</h3><p>随着深度网络的兴起，各大厂纷纷尝试用深度网络来作为特征提取器，并取得了显著的效果。尤其是 Wide&amp;Deep 架构的提出，让大家意识到可以在模型中同时使用 <strong>DNN</strong> 来捕获特征的复杂映射关系，使用线性模型来记忆组合特征，但是这里的线性模型中的组合特征其实还是工程师针对具体场景人工构造的。</p>
 <p>进一步，大家考虑将 wide 层用自动特征组合的网络来替换，例如用 <strong>FM</strong> 来代替 wide 层 (<strong>DeepFM</strong>)，能够提供了二阶的自动特征组合能力。本文则更进一步，设计出 cross 网络来代替 wide 层，能够提供任意高阶的特征组合能力 (与 cross 层数相同)，同时保持很低的计算和存储开销。</p>
 <p>那有了 <strong>MLP</strong> 层为什么还需要 cross 层呢？我的理解是，<strong>MLP</strong> 层更擅长的是进行特征复杂的非线性变换，这些非线性变换通常是隐式的、对于乘性的特征组合捕获能力不强，而人基于对业务的深入理解能够显式构造一些十分有效的组合特征，如果让 <strong>MLP</strong> 层去学，可能需要比较大的参数规模才能学到。这也是 <strong>Wide&amp;Deep</strong> 为什么还需要保留 wide 层的原因。而 cross 层则设计为显式的进行特征组合，能够保证每一层都保留上一层的组合信息，并增加一阶组合，因此可以认为这两个结构是互补的。</p>

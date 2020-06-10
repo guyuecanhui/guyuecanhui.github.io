@@ -124,7 +124,7 @@
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/16/paper-2019-google-mmoe-bias/overview.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/16/paper-2019-google-mmoe-bias/mmoe.png">
 <meta property="og:image" content="https://guyuecanhui.github.io/2019/11/16/paper-2019-google-mmoe-bias/bias.png">
-<meta property="og:updated_time" content="2019-11-17T02:25:29.104Z">
+<meta property="og:updated_time" content="2020-06-10T13:23:29.937Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="MMoE-PosBias 论文精读">
 <meta name="twitter:description" content="Zhao, Zhe, et al. “Recommending what video to watch next: a multitask ranking system.” Proceedings of the 13th ACM Conference on Recommender Systems. ACM, 2019.   本文是 Youtube 发表在 RecSys 2019 上的文章，主要解">
@@ -478,6 +478,7 @@
 <li><strong>多模态特征</strong>。多模态特征包括语音、视频 、图像、文本、ID 类特征、连续型特征等。使用多模态的特征有助于信息互补，例如我们希望对低层次内容特征进行映射来跨越语义鸿沟、用于基于内容的过滤；同时将稀疏分布的 ID 类特征用于协同过滤等。</li>
 <li><strong>可扩展性</strong>。模型需要考虑线下训练和线上服务的性能，因此在保证学习效果的情况下，尽可能使用简单易扩展的网络架构。</li>
 </ol>
+<a id="more"></a>
 <p>为了应对这些挑战，文章提出了如下图所示的排序网络架构。该网络接收用户当前播放的视频信息和上下文信息，对数百个召回视频进行排序。这里的召回需要是从不同的角度进行召回，例如基于内容相似的召回、基于协同过滤的召回等，文章使用了 <strong>Deep Candidate Generation</strong> 模型$^{[1]}$等来生成召回。</p>
 <img src="/2019/11/16/paper-2019-google-mmoe-bias/overview.png" title="MMoE with PosBias 整体架构">
 <p>排序的整体架构服从 <strong>Wide &amp; Deep</strong> 架构，如上图所示。其中，左边的 <strong>wide</strong> 层是一个浅层的 <strong>tower</strong> 网络，用于学习选择偏差，这个偏差在上层会与 <strong>user engagement</strong> 的输出相加，用于抵消选择偏差；右边的 <strong>deep</strong> 层是一个 <strong>MMoE</strong> 的多目标网络（<strong>MMoE</strong> 的解读可以参考 [2]），用于从不同模态特征中学习不同的专家网络，并学习多个 <strong>Gate</strong> 来对多个目标进行预测，最后再对多个目标进行权衡，这里不同的目标使用不同的损失函数，对于目标是连续值的，使用 <strong>MSE</strong> 进行回归，对于目标是离散值的，使用 <strong>logLoss</strong> 进行分类，最终多个目标的结果使用线性加权的方式计算出最终的得分，权重目标是作者手调的。从训练和预测的工程效率角度出发，文章选择了最简单的 <strong>point-wise ranking</strong> 方案。</p>

@@ -113,19 +113,19 @@
 
 
 
-<meta name="description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。 AUC (Area Under the Curve) 的概念AUC（Area">
+<meta name="description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。">
 <meta name="keywords" content="推荐,指标,AUC">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AUC 理解与应用">
 <meta property="og:url" content="https://guyuecanhui.github.io/2020/04/04/auc/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。 AUC (Area Under the Curve) 的概念AUC（Area">
+<meta property="og:description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/04/04/auc/roc.png">
-<meta property="og:updated_time" content="2020-04-21T15:20:32.014Z">
+<meta property="og:updated_time" content="2020-06-10T13:16:31.518Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AUC 理解与应用">
-<meta name="twitter:description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。 AUC (Area Under the Curve) 的概念AUC（Area">
+<meta name="twitter:description" content="AUC 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 AUC 的概念、计算过程以及它如何应用于特征选择上。">
 <meta name="twitter:image" content="https://guyuecanhui.github.io/2020/04/04/auc/roc.png">
 
 
@@ -467,6 +467,7 @@
 
       
         <p><strong>AUC</strong> 是一个对分类器预测数值不敏感的指标，具有比较好的稳定性，也因此成为推荐系统中最常用的模型离线指标之一。但是就这个如此常见的指标，很多人对它也只是一知半解，知道该用它，也知道调用函数去计算它，但是对它的计算过程、它还有哪些用处，却知之甚少。这篇文章就再唠叨一下 <strong>AUC</strong> 的概念、计算过程以及它如何应用于特征选择上。</p>
+<a id="more"></a>
 <h2 id="AUC-Area-Under-the-Curve-的概念"><a href="#AUC-Area-Under-the-Curve-的概念" class="headerlink" title="AUC (Area Under the Curve) 的概念"></a>AUC (Area Under the Curve) 的概念</h2><p><strong>AUC</strong>（Area Under Curve）被定义为 <strong>ROC</strong> 曲线下与坐标轴围成的面积。<strong>AUC</strong> 主要用来评估二分类问题的准确率，即随机给定一个正样本和一个负样本，分类器预测该正样本的得分比预测该负样本的得分大的概率。</p>
 <p><strong>AUC</strong> 越接近 1 表明这个分类器的性能越好，随机猜测的 <strong>AUC</strong> 接近 0.5，如果一个分类器的 <strong>AUC</strong> 低于 0.5，只需要将它的结果取反就能一下子提高模型性能。</p>
 <h2 id="AUC-的计算"><a href="#AUC-的计算" class="headerlink" title="AUC 的计算"></a>AUC 的计算</h2><p>根据 <strong>AUC</strong> 的含义，给定样本的真实标签和预测得分，计算分类器的 <strong>AUC</strong> 指标，主要有三种方法：梯形法、穷举法和序数法。</p>

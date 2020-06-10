@@ -100,7 +100,7 @@
 
 
 
-  <meta name="keywords" content="推荐,排序,注意力,self-attention,ctr,">
+  <meta name="keywords" content="推荐,排序,注意力,ctr,self-attention,">
 
 
 
@@ -114,7 +114,7 @@
 
 
 <meta name="description" content="论文引用: Song, Weiping, et al. “Autoint: Automatic feature interaction learning via self-attentive neural networks.” Proceedings of the 28th ACM International Conference on Information and Knowledge Man">
-<meta name="keywords" content="推荐,排序,注意力,self-attention,ctr">
+<meta name="keywords" content="推荐,排序,注意力,ctr,self-attention">
 <meta property="og:type" content="article">
 <meta property="og:title" content="AutoInt 论文精读">
 <meta property="og:url" content="https://guyuecanhui.github.io/2020/05/09/paper-2019-pku-autoint/index.html">
@@ -122,7 +122,7 @@
 <meta property="og:description" content="论文引用: Song, Weiping, et al. “Autoint: Automatic feature interaction learning via self-attentive neural networks.” Proceedings of the 28th ACM International Conference on Information and Knowledge Man">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/05/09/paper-2019-pku-autoint/autoint.png">
-<meta property="og:updated_time" content="2020-05-25T15:29:39.579Z">
+<meta property="og:updated_time" content="2020-06-10T13:23:34.671Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="AutoInt 论文精读">
 <meta name="twitter:description" content="论文引用: Song, Weiping, et al. “Autoint: Automatic feature interaction learning via self-attentive neural networks.” Proceedings of the 28th ACM International Conference on Information and Knowledge Man">
@@ -470,6 +470,7 @@
 <p><strong>论文引用:</strong> Song, Weiping, et al. “Autoint: Automatic feature interaction learning via self-attentive neural networks.” <em>Proceedings of the 28th ACM International Conference on Information and Knowledge Management</em>. 2019.</p>
 </blockquote>
 <p>这是一篇北京大学发表在 <strong>CIKM 2019</strong> 的文章，看作者列表没有企业背景，主要还是提供一些理论思路。文章的核心也是想通过自动挖掘特征间的高阶交互关系来提升减少人工特征工程，但是与前面的 <strong>DeepFM</strong>、<strong>DCN</strong> 等能够提供显式特征交叉能力的模型最大的差别在于：本文是通过不同 field 间特征做 <strong>Self-Attention</strong> 来实现特征的交互，也因此获得了一定的特征组合的可视化能力（<em>即文章中声称提供了较好的可解释性</em>）。</p>
+<a id="more"></a>
 <h3 id="背景与动机"><a href="#背景与动机" class="headerlink" title="背景与动机"></a>背景与动机</h3><p>其实已有的深度模型的相关工作基本核心都是在做高阶的特征交叉，但是诸如 <strong>PNN</strong>、<strong>FNN</strong>、<strong>DeepCrossing</strong>、<strong>Wide&amp;Deep</strong>、<strong>DeepFM</strong> 等模型，主要是依赖前馈网络来实现高阶特征交叉，主要的问题是特征交叉过程是隐式的，很难解释是哪些特征间的组合起到了关键作用，这个问题也存在于 <strong>DCN</strong>、<strong>xDeepFM</strong> 等提供显式特征交叉能力的模型中。</p>
 <p>另外一些提供显式特征交叉能力的模型和算法也存在各种各样的问题，比如基于树+embedding 的$^{[1,2,3]}$，会将训练过程分裂成几个部分；比如显式做所有特征的高阶组合的 <strong>HOFM</strong> 模型$^{[4]}$，参数量过大，高于 5 阶的组合基本不可用（<em>实际上根据张俊林的说法，高于 4 阶的特征组合就已经收益很低了，这在 <strong>DCN</strong> 的测试中也得到了一定的验证</em>）。</p>
 <p>基于这个背景，文章的目标是想找到一种特征自动进行高阶交叉的方法，既能弥补 <strong>MLP</strong> 对乘性特征组合捕获能力不强的弱点，又能够较好的解释哪些特征组合比较有效。</p>
@@ -533,9 +534,9 @@ a_{i,j}^{(h)} = \frac{\exp(\boldsymbol{q}_i^{(h)}\cdot\boldsymbol{k}_j^{(h)})}{\
           
             <a href="/tags/注意力/" rel="tag"># 注意力</a>
           
-            <a href="/tags/self-attention/" rel="tag"># self-attention</a>
-          
             <a href="/tags/ctr/" rel="tag"># ctr</a>
+          
+            <a href="/tags/self-attention/" rel="tag"># self-attention</a>
           
         </div>
       

@@ -113,18 +113,18 @@
 
 
 
-<meta name="description" content="这两天学习了下Word2Vector的理论和实现，原理什么的网上很多，就不搬运了，推荐看参考文献[1-3]，这里主要讲下我对几个关键点的理解。 1、词向量的意义为什么要生成词向量，或者说词向量解决原来哪个领域什么方法的哪些不足？我的理解是这玩意主要就是为了解决如何让计算机理解自然语言中单词含义的问题。当然，现在随着 word2vec 用法的推广，这里已经不仅仅是自然语言中单词的理解了，还可以是各种">
+<meta name="description" content="这两天学习了下Word2Vector的理论和实现，原理什么的网上很多，就不搬运了，推荐看参考文献[1-3]，这里主要讲下我对几个关键点的理解。">
 <meta name="keywords" content="算法,表征向量">
 <meta property="og:type" content="article">
 <meta property="og:title" content="白话 Word2Vec">
 <meta property="og:url" content="https://guyuecanhui.github.io/2018/02/21/word2vec/index.html">
 <meta property="og:site_name" content="HCigmoid">
-<meta property="og:description" content="这两天学习了下Word2Vector的理论和实现，原理什么的网上很多，就不搬运了，推荐看参考文献[1-3]，这里主要讲下我对几个关键点的理解。 1、词向量的意义为什么要生成词向量，或者说词向量解决原来哪个领域什么方法的哪些不足？我的理解是这玩意主要就是为了解决如何让计算机理解自然语言中单词含义的问题。当然，现在随着 word2vec 用法的推广，这里已经不仅仅是自然语言中单词的理解了，还可以是各种">
+<meta property="og:description" content="这两天学习了下Word2Vector的理论和实现，原理什么的网上很多，就不搬运了，推荐看参考文献[1-3]，这里主要讲下我对几个关键点的理解。">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2019-04-24T14:15:24.933Z">
+<meta property="og:updated_time" content="2020-06-10T13:26:07.714Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="白话 Word2Vec">
-<meta name="twitter:description" content="这两天学习了下Word2Vector的理论和实现，原理什么的网上很多，就不搬运了，推荐看参考文献[1-3]，这里主要讲下我对几个关键点的理解。 1、词向量的意义为什么要生成词向量，或者说词向量解决原来哪个领域什么方法的哪些不足？我的理解是这玩意主要就是为了解决如何让计算机理解自然语言中单词含义的问题。当然，现在随着 word2vec 用法的推广，这里已经不仅仅是自然语言中单词的理解了，还可以是各种">
+<meta name="twitter:description" content="这两天学习了下Word2Vector的理论和实现，原理什么的网上很多，就不搬运了，推荐看参考文献[1-3]，这里主要讲下我对几个关键点的理解。">
 
 
 
@@ -465,6 +465,7 @@
 
       
         <p>这两天学习了下Word2Vector的理论和实现，原理什么的网上很多，就不搬运了，推荐看参考文献[1-3]，这里主要讲下我对几个关键点的理解。</p>
+<a id="more"></a>
 <h2 id="1、词向量的意义"><a href="#1、词向量的意义" class="headerlink" title="1、词向量的意义"></a>1、词向量的意义</h2><p>为什么要生成词向量，或者说词向量解决原来哪个领域什么方法的哪些不足？我的理解是这玩意主要就是为了解决如何让计算机理解自然语言中单词含义的问题。当然，现在随着 word2vec 用法的推广，这里已经不仅仅是自然语言中单词的理解了，还可以是各种现实生活中计算机本来没有办法理解的概念，比如用户的观影行为、图片的主题等等，把这些计算机一脸蒙逼的东西转换为它们最喜欢的浮点向量，然后把理解这个计算机一脸蒙逼的行为转换成向量的运算，这样实际就是完成了人类世界各种概念向计算机世界的映射/翻译，为人工智能占领世界打下了坚实的基础（扯远了）。那词向量比之前的方法好在哪呢？给我印象最深的就是含义相近的词能用距离相近的向量来表示！至于其他的一些数学处理上的好处，感觉只是副产品。文献 [1-2] 提供了一种能专门训练词向量的方法，一份好的词向量是可以直接用于翻译等应用的，所以感觉当我们自己数据量不足的时候，可以考虑直接用别人训练出来的词向量。</p>
 <h2 id="2、训练过程"><a href="#2、训练过程" class="headerlink" title="2、训练过程"></a>2、训练过程</h2><p>Mikolov 等人提出了两种模型（CBOW 和 Skip-gram）、两种目标函数（Hierarchical Softmax, HS 和 Negative Sampling, NS），所以乘一下就是4个训练过程，但是其实理解起来都是差不多的。</p>
 <p>先整体讲一下它们的关系，CBOW 模型是根据一个词 $w$ 的上下文 $U$ 来预测 $w$，Skip-gram是 根据一个词 $w$ 来预测上下文 $U$。初看时我是一脸蒙逼的，预测啥？后来才发现，实际上这里讲预测有点歧义，就是一个训练网络参数的过程。下文的理解需要有点基础知识，比如Huffman 编码之类的。</p>
