@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="推荐,GNN,长短期兴趣,序列推荐,attention,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="论文引用：Ma, Chen, et al. “Memory Augmented Graph Neural Networks for Sequential Recommendation.” arXiv preprint arXiv:1912.11730 (2019).  MA-GNN 是华为诺亚实验室发表在 AAAI 2020 上基于序列的长短兴趣建模和 topK 推荐的模型。文章主要解决了用户长短">
+<meta name="keywords" content="推荐,GNN,长短期兴趣,序列推荐,attention">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MA-GNN 论文精读">
+<meta property="og:url" content="https://guyuecanhui.github.io/2020/07/04/paper-2020-noha-magnn/index.html">
+<meta property="og:site_name" content="HCigmoid">
+<meta property="og:description" content="论文引用：Ma, Chen, et al. “Memory Augmented Graph Neural Networks for Sequential Recommendation.” arXiv preprint arXiv:1912.11730 (2019).  MA-GNN 是华为诺亚实验室发表在 AAAI 2020 上基于序列的长短兴趣建模和 topK 推荐的模型。文章主要解决了用户长短">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2020/07/04/paper-2020-noha-magnn/magnn-architecture.png">
+<meta property="og:image" content="https://guyuecanhui.github.io/2020/07/04/paper-2020-noha-magnn/item-adj-mat.png">
+<meta property="og:updated_time" content="2020-07-04T14:29:51.728Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="MA-GNN 论文精读">
+<meta name="twitter:description" content="论文引用：Ma, Chen, et al. “Memory Augmented Graph Neural Networks for Sequential Recommendation.” arXiv preprint arXiv:1912.11730 (2019).  MA-GNN 是华为诺亚实验室发表在 AAAI 2020 上基于序列的长短兴趣建模和 topK 推荐的模型。文章主要解决了用户长短">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2020/07/04/paper-2020-noha-magnn/magnn-architecture.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://guyuecanhui.github.io/2020/07/04/paper-2020-noha-magnn/">
+
+
+
+
+
+  <title>MA-GNN 论文精读 | HCigmoid</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HCigmoid</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Watch, learn and practise</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2020/07/04/paper-2020-noha-magnn/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">MA-GNN 论文精读</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2020-07-04T21:54:13+08:00">
+                2020-07-04
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/论文精读/" itemprop="url" rel="index">
+                    <span itemprop="name">论文精读</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2020/07/04/paper-2020-noha-magnn/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2020/07/04/paper-2020-noha-magnn/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  3.4k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  12
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <div class="note success"><p><strong>论文引用：</strong>Ma, Chen, et al. “Memory Augmented Graph Neural Networks for Sequential Recommendation.” <em>arXiv preprint arXiv:1912.11730</em> (2019). </p></div>
+<p><strong>MA-GNN</strong> 是华为诺亚实验室发表在 <strong>AAAI 2020</strong> 上基于序列的长短兴趣建模和 topK 推荐的模型。文章主要解决了用户长短期兴趣如何建模、如何融和，以及如何显式建模物品的共现关系并进而用于推荐的问题。</p>
+<a id="more"></a>
+<h2 id="背景与动机"><a href="#背景与动机" class="headerlink" title="背景与动机"></a>背景与动机</h2><p>在个性化推荐系统中，把握一个用户兴趣及其演变最直接和有效的途径是挖掘其行为序列。</p>
+<p>研究表明，用户未来可能交互的物品与其历史有过交互的物品高度相关。基于这个发现，我们可以从用户行为序列中尝试提取他可能的兴趣。而用户的兴趣又可以进一步细分为长短期兴趣：从长期来看，用户的序列偏向于某个/某些类别的物品；但是在短期来看，用户的兴趣可能短暂的偏移到某个特定的类别。由于存在这种时序关系，本文说的用户行为序列是基于时间发生的先后进行排列的。</p>
+<p>以小视频播放为例，用户长期兴趣可能是军事、战争；偶尔刷到一个钓鱼的视频（探索），感觉挺有意思的，这时候可能会希望看更多相似的视频，这时候用户的短期兴趣就变成了钓鱼；用户看了几条钓鱼的视频，可能会觉得很有趣，逐渐将其演变成长期兴趣；也可能觉得没多大意思，又想继续看军事类的视频了。推荐系统需要兼顾用户的长短期兴趣，根据用户实时反馈适当的增加或者减少基于用户短期兴趣的推荐。</p>
+<p>文章认为，要构建一个基于用户长短兴趣推荐的模型，核心有三点：</p>
+<ol>
+<li>用户长期兴趣：体现在用户历史长期的行为序列中；</li>
+<li>用户短期兴趣：体现在用户最近的数个行为序列中；</li>
+<li>物品共现模式：基于用户历史序列和全局的统计分析，预测他可能还会喜欢什么；</li>
+</ol>
+<p>下面详细介绍文章的解决方案。</p>
+<h2 id="MA-GNN-Memory-Augmented-Graph-Neural-Networks"><a href="#MA-GNN-Memory-Augmented-Graph-Neural-Networks" class="headerlink" title="MA-GNN (Memory Augmented Graph Neural Networks)"></a>MA-GNN (Memory Augmented Graph Neural Networks)</h2><p>文章要解决的问题是：给定用户 $u$ 的行为序列，从某个时间点进行划分，将该时间点以前的序列称为历史序列并作为训练数据，用 $H^u$ 表示；将该时间点以后的序列称为目标序列并作为测试数据，用 $T^u$ 表示；训练模型来为这些用户推荐 topK 个物品，并评估这些推荐结果是否在测试数据中出现，评估指标可以使用 <strong>Recall@10</strong> 和 <strong>NDCG@10</strong> 等。这是一个典型的离线任务。</p>
+<p>为了解决这个问题，文章设计了多个模块并进行集成，网络架构如下图所示。</p>
+<img src="/2020/07/04/paper-2020-noha-magnn/magnn-architecture.png" title="MA-GNN 整体架构">
+<p>首先基于用户的历史行为，用矩阵分解等方式生成用户的稳定兴趣；基于用户短期行为，挖掘物品共现关系，并用 <strong>GNN</strong> (Graph Neural Network) 提取其短期兴趣；基于用户长期行为，用 <strong>MDAtt</strong> (Multi-dimention Attention) &amp; <strong>MemNet</strong> (Memory Network) 提取其长期兴趣；基于 <strong>gateNet</strong> 对长短期兴趣进行融合；最后基于所有这些信息进行推荐。下面详细介绍下几个主要的模块。</p>
+<h3 id="用户、物品向量表示"><a href="#用户、物品向量表示" class="headerlink" title="用户、物品向量表示"></a>用户、物品向量表示</h3><p>由于物品和用户都是高维稀疏的，因此在建模之前需要获得他们在同一向量空间的低秩表示。这个表示一方面是方便联系用户和物品进行建模，另一方面也反映了用户的稳定兴趣。获得这种表示的方法有很多，文章使用了传统的矩阵分解，即对于每个用户有过交互的物品生成一条记录，用 $p_u\in \mathbb{R}^d$ 表示用户 $u$ 的向量，用 $q_i\in \mathbb{R}^d$ 表示物品 $i$ 的向量，用 $p_u^{\top}\cdot q_i$ 来预测用户是否会与该物品发生交互。</p>
+<p>这只是获得表达的一种方式，它的主要问题是只能对有过行为的用户/物品生成 embedding，并且只能离线训练和更新。我们也可以加一些 side information，使用类似 <strong>TowerModel</strong> 的模型来生成用户 embedding，这样能够生成新用户/物品的表示。</p>
+<h3 id="短期兴趣建模"><a href="#短期兴趣建模" class="headerlink" title="短期兴趣建模"></a>短期兴趣建模</h3><p>短期兴趣体现在用户最新的几次交互序列中，它会强烈的影响用户近期的行为。因此在建模用户短期兴趣时，文章只考虑每个用户 $u$ 最近 $t$ 个交互的子序列 $S^u $，并通过 <strong>GNN</strong> (Graph Neural Netwrok) 来聚合这个子序列的信息，从而生成用户的短期兴趣。</p>
+<p><strong>GNN</strong> 能够比较好的学习 local structure，并对邻居信息进行聚合。为了生成 graph，文章采用的方式是对每个用户的历史序列，依次将每个物品与其后 3 个物品分别添加无向边并设置权重为 1（如果边已经存在，就将权重加 1）。我们可以将物品进行编号，然后得到所有历史序列生成的一个连接矩阵 $A$，矩阵的每个元素 $A_{i,j}$ 表示物品 $i$ 与物品 $j$ 的边权，最后再按行对权重进行求和归一化。如下图所示：</p>
+<img src="/2020/07/04/paper-2020-noha-magnn/item-adj-mat.png" title="物品邻接矩阵构建示例">
+<p>连接矩阵 $A$ 主要是为了编码每个物品在无向图中的邻居信息。基于此，文章构建了一个两层的 <strong>GNN</strong> 来生成用户的短期兴趣，对于用户 $u$ 和他最近交互子序列 $S^u$，第一层对这个序列中每个物品 $i$ 生成一个带局部结构编码的隐向量：</p>
+<script type="math/tex; mode=display">
+h_i=\tanh\big(W^{(1)}\cdot[\sum_{k\in \mathcal{N_i}} e_kA_{i,k};e_i]\big), \quad \forall i\in S^u</script><p>这里符号 $[\cdot;\cdot]$ 表示向量拼接，即将两个 $d$ 维向量拼接成一个 $2d$ 维的向量；$e_k\in \mathbb{R}^d$ 表示物品 $k$ 的 embedding，它是网络参数的一部分，需要跟上面的 $q_k$ 区分开；$W^{(1)}\in \mathbb{R}^{d\times 2d}$ 也是 <strong>GNN</strong> 参数。</p>
+<p>第二层将序列中所有物品的隐向量进行 avg-pooling，得到用户的短期兴趣表示 $p_u^s$：</p>
+<script type="math/tex; mode=display">
+p_u^s=\frac{1}{n}\sum_{i\in S^u} h_i</script><p>其中，$W^{(2)}\in \mathbb{R}^{d\times 2d}$ 是 <strong>GNN</strong> 参数。基于 $p_u^s$，我们就已经可以进行短期兴趣召回了。但是这个召回过于偏重最近 $t$ 个交互物品，可能会丢失用户的长期兴趣。</p>
+<h3 id="长期兴趣建模"><a href="#长期兴趣建模" class="headerlink" title="长期兴趣建模"></a>长期兴趣建模</h3><p>为了将用户的长期兴趣考虑进来，我们需要挖掘用户 $u$ 在 $ S^u$ 之前的序列中的兴趣，记为 $L^u $，长度记为 $m$，它的矩阵表示记为 $\mathcal{L}_u$。文章为了减少存储并避免学到的长期兴趣与 $p_u $ 相似，借鉴 <strong>Transformer</strong> 的思想，对序列中物品的位置编码后，计算 <strong>MDAtt</strong>，生成用户长期行为的 query 向量，再根据共享 $K,V$ 矩阵计算加权后的用户长期兴趣。具体过程如下：</p>
+<ol>
+<li>对用户的行为序列 $L^u$ 进行位置编码，其中 $P(\cdot)$ 表示位置编码函数，参考 <strong>Transformer</strong> 论文 $^{[1]}$，用户历史行为序列用 $\mathcal{L}_u\in\mathbb{R}^{d\times m}$ 来表示：<script type="math/tex; mode=display">
+\mathcal{L}_u :=\mathcal{L}_u+P(\mathcal{L}_u)</script></li>
+<li>计算用户历史序列 $L^u$ 与其稳定兴趣 $p_u$ 的 MDAtt 权重矩阵 $\alpha_u \in \mathbb{R}^{h\times m}$，这里的 attention 使用加和的形式 $^{[1]}$，并使用 $h$ 维 attention。因此，$\alpha_u$ 的每一行表示用户历史的行为与其稳定兴趣的权重，而不同的行则表示从不同的角度得到的权重。其中，$W_a^{(1)},\ W_a^{(2)}\in\mathbb{R}^{d\times d},\ W_a^{(3)}\in\mathbb{R}^{h\times d}$ 均为 attention 相关的参数矩阵。<script type="math/tex; mode=display">
+\alpha_u = \text{softmax}\Big(W_a^{(3)} \tanh\big(W_a^{(1)}\mathcal{L}_u+(W_a^{(2)}p_u)\otimes \boldsymbol{1}_m\big)\Big)</script></li>
+<li>计算每维 attetion 的加权向量，并进行 avg-pooling，得到用户历史行为的 query 向量 $z_u\in\mathbb{R}^d$：<script type="math/tex; mode=display">
+z_u = \text{avg}\big(\tanh(\alpha_u\cdot \mathcal{L}_u)\big)</script></li>
+<li>用 $K,V\in\mathbb{R}^{d\times n}$ 表示所有用户共享的内存网络，它们的每一列对应于一种隐式的用户兴趣，我们保存 $n$ 个隐式兴趣。我们计算 $z_u$ 与各个隐式兴趣 $K$ 向量的相关性，并作为权重计算它与 $V$ 向量的加权和，再加上残差，得到这个用户长期的综合隐式兴趣向量 $p_u^l$：<script type="math/tex; mode=display">
+p_u^l=z_u+\text{softmax}(z_u\cdot K)\cdot V^{\top}</script></li>
+</ol>
+<p>其中，第 4 步中的 $K, V$ 矩阵就是文章所谓的内存网络 (<strong>MemNet</strong>)，它的计算跟 <strong>Self-Attention</strong> 过程很像，区别在于 <strong>Self-Attention</strong> 中，每个物品都对应 $K, V$ 矩阵的一个向量，而这里则是一个隐式的兴趣对应于一个 $K, V$ 向量。</p>
+<h3 id="长短期兴趣融合"><a href="#长短期兴趣融合" class="headerlink" title="长短期兴趣融合"></a>长短期兴趣融合</h3><p>前面介绍了对于用户 $u$，基于 <strong>GNN</strong> 生成最近 $t$ 个交互的表示 $p_u^s$，基于 <strong>MDAtt</strong> 和 <strong>MemNet</strong> 生成历史 $m$ 个行为的表示 $p_u^l$，接下来文章考虑如何将长短兴趣进行融合。</p>
+<p>一个比较直观的想法是将长短期兴趣进行线性加权，比如长、短期兴趣各占 $50\%$。但是这就引入了一个很难调的超参，并且实际上用户的兴趣是动态变化的，例如有时候突然想看某些类别的视频，这个时候短期兴趣占主导，看了一会可能就没那么上头了，这时候慢慢又回归到长期兴趣来，从这个例子中我们可以看出这个超参可能是动态变化的。</p>
+<p>因此，文章的方案是借鉴 <strong>gateNet</strong> 的思想，自动的学习这个权重如何生成。具体来讲，引入参数矩阵 $W_g^{(1)}$,$W_g^{(2)}$,$W_g^{(3)}\in\mathbb{R}^{d\times d}$ 来学习权重 $g_u$，进而算出加权融合后的兴趣表示 $p^c_u$：</p>
+<script type="math/tex; mode=display">
+\begin{align}g_u &= \sigma\big(W_g^{(1)}\cdot p_u^s + W_g^{(2)}\cdot p_u^l + W_g^{(3)}\cdot p_u\big)\\p_u^c &=g_u \odot p_u^s+(\boldsymbol{1}_d-g_u)\odot p_u^l\end{align}</script><h3 id="物品共现模型"><a href="#物品共现模型" class="headerlink" title="物品共现模型"></a>物品共现模型</h3><p>在预测用户是否喜欢某个物品的时候，一方面看他是否对该物品感兴趣（通过用户与物品向量表示来计算），另一方面还可以看看用户历史有过行为的物品与该物品的共现关系，即大多数据有过类似行为的用户会不会对该物品感兴趣。文章通过一个双线性映射函数来显式的对物品的共现关系进行建模，对于物品 $i,j$，它们的共现强度为：</p>
+<script type="math/tex; mode=display">
+e_i^{\top}\cdot W_r\cdot q_j</script><p>其中，$W_r\in \mathbb{R}^{d\times d}$ 是用来捕获物品在隐向量空间中的关联关系。这样，根据用户 $u$ 短期行为列表 $S^u$ 中所有物品与某个物品 $j$ 的共现强度的均值，我们就能估算从统上来讲，用户是否会对该物品感兴趣：</p>
+<script type="math/tex; mode=display">
+c_{u,j}=\frac{1}{n}\sum_{i\in S^u} e_i^\top\cdot W_r\cdot q_j</script><h3 id="预测与训练"><a href="#预测与训练" class="headerlink" title="预测与训练"></a>预测与训练</h3><p>基于用户长短期兴趣表示以及物品间共现关系的表示，我们可以预测用户 $u$ 对某个物品 $j$ 的喜好为：</p>
+<script type="math/tex; mode=display">
+r_{u,j}=p_u^\top\cdot q_j + p_u^{c\top}\cdot q_j+c_{u,j}</script><p>在训练时，文章使用 pair-wise 的 <strong>BPR</strong> 目标，即最大化正例和负例的差距：</p>
+<script type="math/tex; mode=display">
+\arg\min_{P,Q,E,\Theta} \sum_u\sum_l\sum_{S^u,L^u,i,j} -\log \sigma(r_{u,i}-r_{u,j})+\lambda(\parallel P\parallel ^2+\parallel Q\parallel ^2+\parallel E\parallel^2+\parallel \Theta\parallel ^2)</script><p>其中，$i$ 表示正例，$j$ 表示负例，通常是随机从未观测的样本中采样，$\Theta$ 表示所有可学习的网络参数，$P,Q$ 分别表示用户/物品的向量表示 (矩阵分解生成)，$E$ 表示物品的 embedding table (网络参数)。使用反向传播和 <strong>GD</strong> 来优化该目标。</p>
+<h3 id="实验与讨论"><a href="#实验与讨论" class="headerlink" title="实验与讨论"></a>实验与讨论</h3><p>文章的对比实验表示 <strong>MA-GNN</strong> 在离线效果上有一定的优化，并且研究了 head 数量和 <strong>MemNet</strong> 中隐式兴趣个数的影响，结果表明这两个值越大越好，但是 <strong>MemNet</strong> 的容量更重要一些。文章还可视化了 <strong>MemNet</strong> 的权重，发现相似的视频生成的 query 对应的 attention 权重也比较相似。</p>
+<p>总体来看，这篇文章借鉴了 <strong>GNN</strong>、<strong>MDAtt+MemNet</strong>、<strong>gateNet</strong>、<strong>bilinearMap</strong>、<strong>MF</strong> 等思想，将序列推荐问题分解成三个小的子问题并用不同的技术去解决，最终通过端到端的训练将整个过程糅合在一起。有些地方的处理可能还是太复杂了，例如 loss 的设计，还有 <strong>MF</strong> 是否可以简化掉等，会导致生产环境中的样本组织、训练和线上推理的复杂度过高，在实际应用的时候可以根据实际情况进行调整。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><p>[1] Vaswani, Ashish, et al. “Attention is all you need.” <em>Advances in neural information processing systems</em>. 2017.<br>[2] Attention机制详解（一）——Seq2Seq中的Attention. <a href="https://zhuanlan.zhihu.com/p/47063917" target="_blank" rel="noopener">https://zhuanlan.zhihu.com/p/47063917</a>.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/推荐/" rel="tag"># 推荐</a>
+          
+            <a href="/tags/GNN/" rel="tag"># GNN</a>
+          
+            <a href="/tags/长短期兴趣/" rel="tag"># 长短期兴趣</a>
+          
+            <a href="/tags/序列推荐/" rel="tag"># 序列推荐</a>
+          
+            <a href="/tags/attention/" rel="tag"># attention</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2020/06/02/tversky-contrast-model/" rel="next" title="Tversky 对比模型及其在推荐系统中的应用">
+                <i class="fa fa-chevron-left"></i> Tversky 对比模型及其在推荐系统中的应用
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">古月残辉</p>
+              <p class="site-description motion-element" itemprop="description">总结心得</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">30</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">70</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:guyuecanhui@icloud.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#背景与动机"><span class="nav-number">1.</span> <span class="nav-text">背景与动机</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MA-GNN-Memory-Augmented-Graph-Neural-Networks"><span class="nav-number">2.</span> <span class="nav-text">MA-GNN (Memory Augmented Graph Neural Networks)</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#用户、物品向量表示"><span class="nav-number">2.1.</span> <span class="nav-text">用户、物品向量表示</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#短期兴趣建模"><span class="nav-number">2.2.</span> <span class="nav-text">短期兴趣建模</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#长期兴趣建模"><span class="nav-number">2.3.</span> <span class="nav-text">长期兴趣建模</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#长短期兴趣融合"><span class="nav-number">2.4.</span> <span class="nav-text">长短期兴趣融合</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#物品共现模型"><span class="nav-number">2.5.</span> <span class="nav-text">物品共现模型</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#预测与训练"><span class="nav-number">2.6.</span> <span class="nav-text">预测与训练</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实验与讨论"><span class="nav-number">2.7.</span> <span class="nav-text">实验与讨论</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古月残辉</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">51.6k</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: '6du4Ppc2TvUuhcccRHSDNH2v-gzGzoHsz',
+        appKey: 'zOKNml4W1Bq3OTzEuLt5hUjI',
+        placeholder: '感谢阅读！欢迎评论！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>

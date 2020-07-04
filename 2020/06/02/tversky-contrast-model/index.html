@@ -105,8 +105,6 @@
 
 
 
-  
-
 
   <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
 
@@ -124,7 +122,7 @@
 <meta property="og:description" content="物品相似度评估在推荐中当属核心问题之一，尤其是当用户有一些明确的喜好、或者当前有一个明确的消费目标的时候，推荐与用户搜索内容/当前浏览内容相似的内容，能够极大的提升用户体验。例如，“猜你喜欢”、“再来一条”、“相关推荐” 等场景，就是围绕用户的这类诉求设计的，它属于 ”探索与利用“ 中的 ”利用“。 相似度评估已经是一个研究十分深入的领域，尤其是在心理学领域。我们往往说不清楚到底什么样的物品是相似">
 <meta property="og:locale" content="default">
 <meta property="og:image" content="https://guyuecanhui.github.io/2020/06/02/tversky-contrast-model/queries.png">
-<meta property="og:updated_time" content="2020-06-10T13:14:42.933Z">
+<meta property="og:updated_time" content="2020-06-14T01:59:32.210Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Tversky 对比模型及其在推荐系统中的应用">
 <meta name="twitter:description" content="物品相似度评估在推荐中当属核心问题之一，尤其是当用户有一些明确的喜好、或者当前有一个明确的消费目标的时候，推荐与用户搜索内容/当前浏览内容相似的内容，能够极大的提升用户体验。例如，“猜你喜欢”、“再来一条”、“相关推荐” 等场景，就是围绕用户的这类诉求设计的，它属于 ”探索与利用“ 中的 ”利用“。 相似度评估已经是一个研究十分深入的领域，尤其是在心理学领域。我们往往说不清楚到底什么样的物品是相似">
@@ -509,7 +507,10 @@ S(a,b)=\frac{f(A\cap B)}{f(A\cap B)+\alpha f(A-B) + \beta f(B-A)}, \quad\alpha,\
 </ul>
 <h3 id="模型的应用"><a href="#模型的应用" class="headerlink" title="模型的应用"></a>模型的应用</h3><p><strong>Tversky</strong> <strong>对比模型</strong>一眼看上去就非常符合常理，十分吸引人。但是实际上在应用到推荐系统中时，其复杂性就远远高于它的形式上的简单性。我们需要根据实际场景数据学到参数 $\theta,\alpha,\beta$，并且学到一个合理的权重函数，这里的难点主要在于：如何设置正负样本？样本怎么组织？</p>
 <p>文献 $[1]$ 介绍了他们在时装线上商城上实践的经验，他们通过设置一些问卷实验来收集数据。问卷发放给典型的用户，每次给他们一张时装的图片作为目标，然后给出两张在特征上有所不同的时装图片作为备选，让用户选择哪一张备选图片与目标最相似，如下图所示。用户问卷收集完毕后，还需要经过一些统计上的处理才能作为后续的训练数据。</p>
+<div style="width:70%; margin:auto">
 <img src="/2020/06/02/tversky-contrast-model/queries.png" title="实验设计：上面图片为目标图片，下面两张为备选图片">
+</div>
+
 <p>样本组织上，作者基于<strong>对比模型</strong>按如下过程来生成一个样本，并设置标签：</p>
 <script type="math/tex; mode=display">
 \begin{align}\begin{cases}Y&=I\big(S(T,A)-S(T,B)\big) \\S(T,X) &= \theta w^\top\cdot x_{T\cap A} -\alpha w^\top\cdot x_{T- A} -\beta w^\top\cdot x_{A-T}\end{cases}\end{align}</script><p>其中，$I(x)$ 是指示函数，当 $x&gt; 0$ 时 $I(x)=1$，否则 $I(x)=0$；$T$ 表示实验中的目标时装的特征集合，$A,B$ 表示两个备选时装的特征集合，$w$ 表示每个特征的权重。</p>
@@ -565,6 +566,10 @@ L(\gamma)=logloss(\alpha,\beta,\theta,w)-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2020/07/04/paper-2020-noha-magnn/" rel="prev" title="MA-GNN 论文精读">
+                MA-GNN 论文精读 <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -644,7 +649,7 @@ L(\gamma)=logloss(\alpha,\beta,\theta,w)-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">29</span>
+                  <span class="site-state-item-count">30</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -666,7 +671,7 @@ L(\gamma)=logloss(\alpha,\beta,\theta,w)-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">66</span>
+                  <span class="site-state-item-count">70</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -750,7 +755,7 @@ L(\gamma)=logloss(\alpha,\beta,\theta,w)-\frac{1}{\mu}\log(\alpha)-\frac{1}{\mu}
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">48.2k</span>
+    <span title="Site words total count">51.6k</span>
   
 </div>
 
