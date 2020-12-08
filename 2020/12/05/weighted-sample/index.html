@@ -121,7 +121,7 @@
 <meta property="og:site_name" content="HCigmoid">
 <meta property="og:description" content="加权随机采样在推荐系统中随处可见，既可能用在模型训练数据处理过程中，也可能用于一些规则式的推荐策略里。典型的场景例如：  在新用户冷启动时，我们可以通过某些指标评估出内容的质量，并根据质量得分来将内容加权随机推荐给新用户，质量越高的内容，被曝光给新用户的概率也越大。 在样本采样时，有一种方法是对每条正样本，随机从所有的内容中选取 $k$ 个负样本，而每个内容被选为负样本的概率与其热度成正比（例如">
 <meta property="og:locale" content="default">
-<meta property="og:updated_time" content="2020-12-08T15:47:38.132Z">
+<meta property="og:updated_time" content="2020-12-08T15:56:10.926Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="加权随机采样">
 <meta name="twitter:description" content="加权随机采样在推荐系统中随处可见，既可能用在模型训练数据处理过程中，也可能用于一些规则式的推荐策略里。典型的场景例如：  在新用户冷启动时，我们可以通过某些指标评估出内容的质量，并根据质量得分来将内容加权随机推荐给新用户，质量越高的内容，被曝光给新用户的概率也越大。 在样本采样时，有一种方法是对每条正样本，随机从所有的内容中选取 $k$ 个负样本，而每个内容被选为负样本的概率与其热度成正比（例如">
@@ -427,7 +427,7 @@
                   <span class="post-meta-item-text">字数统计&#58;</span>
                 
                 <span title="字数统计">
-                  3.2k
+                  2.7k
                 </span>
               
 
@@ -443,7 +443,7 @@
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
                 <span title="阅读时长">
-                  12
+                  10
                 </span>
               
             </div>
@@ -472,15 +472,15 @@
 </ol>
 <p>以上这些加权采样的场景往往都不可避免的面对大数据量挑战，因此对性能要求较高。而再细分一下，上面的场景 1, 2 都属于无放回采样，也就是需要采样的内容都不相同；而场景 3 则属于有放回采样，即允许采到相同的样本。本文就这两类加权随机采样问题分别探讨高效的解法。</p>
 <a id="more"></a>
-<h3 id="常规方案——基数法"><a href="#常规方案——基数法" class="headerlink" title="常规方案——基数法"></a>常规方案——基数法</h3><p>先再把问题抽象并更正式一点的描述一下：假设列表 $S$ 中有 $n$ 个元素，初始时，已知每个元素 $i$ 被抽取的概率为 $p<em>i: \sum</em>{i=1}^n p_i=1$，则：</p>
+<h3 id="常规方案——基数法"><a href="#常规方案——基数法" class="headerlink" title="常规方案——基数法"></a>常规方案——基数法</h3><p>先再把问题抽象并更正式一点的描述一下：假设列表 $S$ 中有 $n$ 个元素，初始时，已知每个元素 $i$ 被抽取的概率为 <script type="math/tex">p_i: \sum_{i=1}^n p_i=1</script>，则：</p>
 <ol>
-<li>无放回加权随机采样是指，随机从 $S$ 中不放回的抽取 $m$ 个元素，每个元素 $i$ 被抽取的概率为 $q<em>i= \frac{p_i}{\sum</em>{j\in S’}p_j}$，其中 $S’$ 表示该次抽样时所有剩余元素的集合；</li>
+<li>无放回加权随机采样是指，随机从 $S$ 中不放回的抽取 $m$ 个元素，每个元素 $i$ 被抽取的概率为 <script type="math/tex">q_i= \frac{p_i}{\sum_{j\in S'}p_j}</script>，其中 $S’$ 表示该次抽样时所有剩余元素的集合；</li>
 <li>有放回加权随机采样是指，随机从 $S$ 中有放回的抽取 $m$ 个元素，每个元素 $i$ 被抽取的概率为 $p_i$。</li>
 </ol>
 <p>一般来讲，我们更希望获得一种时间复杂度低的抽样算法，也就是能够用尽可能少的步骤来得到 $m$ 个抽样的结果。在不考虑极致的精度和极端场景时，一种简单粗暴的方案是基于基数的抽样算法，这也是 <strong>word2vec</strong> 官方实现$^{[1]}$的策略：</p>
 <ol>
 <li>生成一个超大的数组 $A$，数组长度为 $k$，例如 $k=10^8$，或者 $k=\text{ceil}(1/\min(p_i))$；</li>
-<li>将数组中的元素填充为集合元素的 index，元素 $i$ 的 index 被填充的数量为 $\lfloor k\cdot \sum<em>{j\le i} p_i\rfloor - \lfloor k\cdot \sum</em>{j&lt; i} p_i\rfloor$；</li>
+<li>将数组中的元素填充为集合元素的 index，元素 $i$ 的 index 被填充的数量为 <script type="math/tex">\lfloor k\cdot \sum_{j\le i} p_i\rfloor - \lfloor k\cdot \sum_{j< i} p_i\rfloor</script>；</li>
 <li>每次生成随机整数 $r: 0\le r &lt; k$，并将 $A[r]$ 对应的元素作为采样结果；</li>
 <li>对于无放回的情况，还需要记录已经采样的结果集合，如果采样的结果出现在集合中，则重新采样，直到得到 $m$ 个不同的采样结果。</li>
 </ol>
@@ -516,9 +516,9 @@
 <li>将 $R$ 中小最的关键值记为阈值 $k_{min}$；</li>
 <li>对剩下的元素重复以下步骤：<ol>
 <li>令 $r=\text{rand}(0,1)$ 且 $x_p=\log(r)/\log(t)$；</li>
-<li>从当前元素 $c$ 开始跳过元素，直到遇到元素 $i$，满足 $p<em>c+p</em>{c+1}+\cdots +p<em>{i−1}&lt;x_p\le p_c+p</em>{c+1}+\cdots+p_{i−1}+p_i$；</li>
+<li>从当前元素 $c$ 开始跳过元素，直到遇到元素 $i$，满足 <script type="math/tex">p_c+p_{c+1}+\cdots +p_{i−1}<x_p\le p_c+p_{c+1}+\cdots+p_{i−1}+p_i</script>；</li>
 <li>使用 $i$ 替换 $R$ 中关键值最小的元素；</li>
-<li>令 $t=k^{p<em>i}</em>{min}$, $r_2=\text{rand}(t,1)$, $i$ 的关键值 $k_i=r_2^{(1/p_i)}$；</li>
+<li>令 <script type="math/tex">t=k^{p_i}_{min}</script>, $r_2=\text{rand}(t,1)$, $i$ 的关键值 $k_i=r_2^{(1/p_i)}$；</li>
 <li>令新的阈值 $k_{min}$ 为此时 $R$ 中的最小关键值。</li>
 </ol>
 </li>
@@ -761,7 +761,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">58.7k</span>
+    <span title="Site words total count">58.2k</span>
   
 </div>
 
