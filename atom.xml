@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://guyuecanhui.github.io/"/>
-  <updated>2020-07-29T14:58:38.567Z</updated>
+  <updated>2020-12-08T15:47:38.132Z</updated>
   <id>https://guyuecanhui.github.io/</id>
   
   <author>
@@ -15,6 +15,42 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>加权随机采样</title>
+    <link href="https://guyuecanhui.github.io/2020/12/05/weighted-sample/"/>
+    <id>https://guyuecanhui.github.io/2020/12/05/weighted-sample/</id>
+    <published>2020-12-05T14:54:16.000Z</published>
+    <updated>2020-12-08T15:47:38.132Z</updated>
+    
+    <content type="html"><![CDATA[<p>加权随机采样在推荐系统中随处可见，既可能用在模型训练数据处理过程中，也可能用于一些规则式的推荐策略里。典型的场景例如：</p><ol><li>在新用户冷启动时，我们可以通过某些指标评估出内容的质量，并根据质量得分来将内容加权随机推荐给新用户，质量越高的内容，被曝光给新用户的概率也越大。</li><li>在样本采样时，有一种方法是对每条正样本，随机从所有的内容中选取 $k$ 个负样本，而每个内容被选为负样本的概率与其热度成正比（例如 <strong>word2vec</strong> 的 <strong>negative sampling</strong> 技术）。</li><li>基于用户历史行为可以构建内容的有向图，当用户行为较稀疏时，我们可以使用 <strong>deepwalk</strong> 之类的算法在图中随机游走，生成内容的序列，再基于 <strong>word2vec</strong> 等算法生成这些内容的 embedding。在随机游走时，比如当前到达节点 $v$，那么下一次游走到其他节点的概率，与有向边的权重正相关。</li></ol><p>以上这些加权采样的场景往往都不可避免的面对大数据量挑战，因此对性能要求较高。而再细分一下，上面的场景 1, 2 都属于无放回采样，也就是需要采样的内容都不相同；而场景 3 则属于有放回采样，即允许采到相同的样本。本文就这两类加权随机采样问题分别探讨高效的解法。</p><a id="more"></a><h3 id="常规方案——基数法"><a href="#常规方案——基数法" class="headerlink" title="常规方案——基数法"></a>常规方案——基数法</h3><p>先再把问题抽象并更正式一点的描述一下：假设列表 $S$ 中有 $n$ 个元素，初始时，已知每个元素 $i$ 被抽取的概率为 $p<em>i: \sum</em>{i=1}^n p_i=1$，则：</p><ol><li>无放回加权随机采样是指，随机从 $S$ 中不放回的抽取 $m$ 个元素，每个元素 $i$ 被抽取的概率为 $q<em>i= \frac{p_i}{\sum</em>{j\in S’}p_j}$，其中 $S’$ 表示该次抽样时所有剩余元素的集合；</li><li>有放回加权随机采样是指，随机从 $S$ 中有放回的抽取 $m$ 个元素，每个元素 $i$ 被抽取的概率为 $p_i$。</li></ol><p>一般来讲，我们更希望获得一种时间复杂度低的抽样算法，也就是能够用尽可能少的步骤来得到 $m$ 个抽样的结果。在不考虑极致的精度和极端场景时，一种简单粗暴的方案是基于基数的抽样算法，这也是 <strong>word2vec</strong> 官方实现$^{[1]}$的策略：</p><ol><li>生成一个超大的数组 $A$，数组长度为 $k$，例如 $k=10^8$，或者 $k=\text{ceil}(1/\min(p_i))$；</li><li>将数组中的元素填充为集合元素的 index，元素 $i$ 的 index 被填充的数量为 $\lfloor k\cdot \sum<em>{j\le i} p_i\rfloor - \lfloor k\cdot \sum</em>{j&lt; i} p_i\rfloor$；</li><li>每次生成随机整数 $r: 0\le r &lt; k$，并将 $A[r]$ 对应的元素作为采样结果；</li><li>对于无放回的情况，还需要记录已经采样的结果集合，如果采样的结果出现在集合中，则重新采样，直到得到 $m$ 个不同的采样结果。</li></ol><p>我们将这种方法称为基数法。这种方法在 $S$ 中元素的数量远远超过 $m$，并且每个元素被抽取的概率远远小于 $1$ 时有较高的效率，是一种空间换时间的策略。但是在极端情况下，例如某个元素 $i$ 的 $p_i$ 接近 $1$ 时，无放回的抽样效率可能极低，因为每次抽样绝大概率抽到 $i$，进而需要重新抽样。另外，由于第 $2$ 步实际是一种近似策略，只能保证大体上数据 $A$ 中的元素 index 数量与其抽样概率成正相关，而不能保留精确的比例。因此，在需要更高效率和更高精度的条件下，我们可以考虑下面的方案。</p><h3 id="有放回加权随机采样——Alias-Method"><a href="#有放回加权随机采样——Alias-Method" class="headerlink" title="有放回加权随机采样——Alias Method"></a>有放回加权随机采样——Alias Method</h3><p>虽然基数法应用在有放回加权随机采样时，每次采样的时间复杂度为 $O(1)$，但是我们获得的实际上是一种非精确的采样，并且基数法的空间复杂度较高。相对而言，<strong>Alias Method</strong>$^{[2]}$ 是一种空间和时间都极为高效的算法，它的主要流程分为初始化和采样两步：首先用 $O(n)$ 的复杂度初始化两个长度为 $n$ 的数组，然后基于这两个数组进行采样，每次采样的复杂度为 $O(1)$。下面详细介绍下这种方法的流程。</p><p>首先将所有元素的抽样概率都乘以 $n$，得到一个平均概率为 $1$ 的新的采样概率 $Q=[q_1, q_2, \cdots,q_n]$，然后对这些概率进行两两组合：</p><ol><li>选择一个概率不超过 $1$ 的元素 $i$：$q_i\le 1$，设置 $Prob[i]=q_i$；</li><li>选择一个概率不小于 $1$ 的元素 $j$：$q_j\ge 1$，设置 $Alias[i] = j$，并将 $q_j:=q_j-(1-q_i)$，即用 $q_j$ 来补足 $q_i$ 少于 $1$ 的部分；</li></ol><p>这样组合以后，我们得到了两个数组：原始概率 $Prob$ 和组合元素索引 $Alias$。从构造的过程中，我们可以发现这两个数组的长度都是 $n$，并且 $Prob$ 对应的类别顺序与 $P$ 一致，而 $Alias$ 则保存着跟原始类别进行概率组合的类别编号。进一步的，对于每个数组下标 $i$，它一定会对应一个原始的元素 $i$，以及至多一个组合元素 $Alias[i]$，这个组合元素是用来跟 $i$ 一起将概率凑成 $1$ 的。</p><p>基于这两个数组，在每次采样时，只需要生成两个随机数：</p><ol><li>第一个随机数范围是 $r_1\in[1,n]$，用于确定原始元素，假设 $r_1=i$；</li><li>第二个随机数范围是 $r_2\in [0,1]$，如果 $r_2&lt; Prob[i]$，本次采样的类别就是原始元素 $i$，否则本次采样的类别是其组合元素 $j=Alias[i]$；</li></ol><p>到这里，大家肯定会好奇，在两两组合概率时，是不是一定能找到一种方案，使得对于所有的元素 $i$，一定能为其找到最多一个组合类别，使得它们的概率之和为 $1$。答案当然是肯定的，我们可以用归纳法进行证明：</p><ol><li>当 $n=1$ 时，$Prob[1]=1$, $Alias[1]=null$，命题显然成立；</li><li>对于任意正整数 $k$，假设当 $n=k$ 时命题成立，则当 $n=k+1$ 时，我们一定能找到两个类别 $c_i, c_j$，满足 $q_i\le 1, q_j\ge 1$，则我们设置 $Prob[i]=q_i$，$Alias[i] = j$，$q_j:=q_j-(1-q_i)$ 后，得到除 $c_i$ 外的 $k$ 个类别，它们的平均概率仍为 $1$，因此根据假设，$n=k+1$ 时，命题仍然成立。</li></ol><p>因此，我们按上面的组合策略，一定能成功构造出一个 $Alias$ 和 $Prob$ 的数组。</p><p>下面提供了一个 <strong>python</strong> 版本的实现，仅供参考。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> numpy.random <span class="keyword">as</span> npr</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AliasMethodSampling</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, p)</span>:</span></span><br><span class="line">        self.prob, self.alias = self._setup_alias(p)</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_setup_alias</span><span class="params">(self, p)</span>:</span></span><br><span class="line">        small, large = [], []</span><br><span class="line">        n = len(p)</span><br><span class="line">        prob, alias = np.zeros(n), np.zeros(n, dtype=np.int)</span><br><span class="line">        <span class="comment"># init small and large array</span></span><br><span class="line">        <span class="keyword">for</span> i, pi <span class="keyword">in</span> enumerate(p):</span><br><span class="line">            prob[i] = pi * n</span><br><span class="line">            small.append(i) <span class="keyword">if</span> prob[i] &lt; <span class="number">1.0</span> <span class="keyword">else</span> large.append(i)</span><br><span class="line">        <span class="comment"># fill a small element each iteration</span></span><br><span class="line">        <span class="keyword">while</span> small <span class="keyword">and</span> large:</span><br><span class="line">            il, ig = small.pop(), large.pop()</span><br><span class="line">            alias[il] = ig</span><br><span class="line">            prob[ig] = (prob[ig] + prob[il]) - <span class="number">1</span></span><br><span class="line">            small.append(ig) <span class="keyword">if</span> prob[ig] &lt; <span class="number">1</span> <span class="keyword">else</span> large.append(ig)</span><br><span class="line">        <span class="comment"># handle numerical instability</span></span><br><span class="line">        <span class="keyword">while</span> large:</span><br><span class="line">            print(<span class="string">'only large exists'</span>, prob, alias, large, small)</span><br><span class="line">            prob[large.pop()] = <span class="number">1</span></span><br><span class="line">        <span class="keyword">while</span> small:</span><br><span class="line">            print(<span class="string">'only small exists'</span>, prob, alias, large, small)</span><br><span class="line">            prob[small.pop()] = <span class="number">1</span></span><br><span class="line">        <span class="keyword">return</span> prob, alias</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">take_sample</span><span class="params">(self)</span>:</span></span><br><span class="line">        i_rand = npr.randint(len(self.prob))</span><br><span class="line">        <span class="keyword">return</span> i_rand <span class="keyword">if</span> npr.rand() &lt; self.prob[i_rand] <span class="keyword">else</span> self.alias[i_rand]</span><br><span class="line">    </span><br><span class="line">    </span><br><span class="line">probs, cnt = [<span class="number">0.1</span>, <span class="number">0.5</span>, <span class="number">0.2</span>, <span class="number">0.05</span>, <span class="number">0.15</span>], np.zeros(<span class="number">5</span>)</span><br><span class="line">alias = AliasMethodSampling(probs)</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1000000</span>):</span><br><span class="line">    cnt[alias.take_sample()] += <span class="number">1</span></span><br><span class="line">    </span><br><span class="line">cnt / <span class="number">1000000</span></span><br></pre></td></tr></table></figure><h3 id="无放回加权随机采样——A-ExpJ-算法"><a href="#无放回加权随机采样——A-ExpJ-算法" class="headerlink" title="无放回加权随机采样——A-ExpJ 算法"></a>无放回加权随机采样——A-ExpJ 算法</h3><p>在上面讨论的有放回加权随机采样情形中，每次抽样时，每个元素的抽样概率实际上是不发生变化的，我们也不需要知道之前抽样的结果是什么。但是在无放回情形中，每次抽到一个元素后，后面就不能再抽到相同的元素，也就意味着每次抽样后，元素的抽样概率会发生变化；并且我们需要记录之前抽样的结果有哪些，来防止抽到重复的元素。</p><p>前面也提到了，应用基数法来进行无放回加权随机采样的主要问题是可能重复抽到同一个元素，而生成随机数的成本其实是很高的，极端场景下，我们需要生成随机数的次数远大于 $n$。</p><p>文献 $[3]$ 提出了一种基于代理特征来采样的方法，也就是对于每个元素 $i$，我们选取服从均匀分布的随机数 $u_i=\text{rand}(0,1)$，用 $k_i=u_i^{1/p_i}$ 来作为采样的关键值，并选择关键值最大的 $m$ 个样本作为采样结果。这样，我们至多需要生成 $n$ 个随机数，就能完成采样过程。至于 $k_i$ 选择的正确性可以参考文献 $[3]$ 中的证明。基于这种代理特征的好处是，不需要知道每个元素的采样概率，只需要知道其权重即可 (也就是说不需要知道所有元素的总权重，无需做概率的归一化)，这就特别适合流式采样的场景。</p><p>当然，这里选择关键值最大的 $m$ 个样本可以采用最大堆来实现，这样就只需要进行一次全量 $O(n)$ 扫描，同时只要保留 $m$ 个当前最大的结果即可，这就是 <strong>A-Res</strong> 算法。在绝大多数场景中，<strong>A-Res</strong> 算法已经足够高效了。</p><p>为了进一步减少随机数生成的数量，作者提出了 <strong>A-ExpJ</strong> 算法，能将随机数的生成量从 $O(n)$ 减少到 $O(m\log⁡(\frac{n}{m})))$。实际上就是用计算复杂度比较低的反向计算来代替复杂度高的随机数生成，并直接跳过一些关键值明显较小的元素。具体步骤如下：</p><ol><li>将列表 $S$ 的前 $m$ 个元素放入结果集合 $R$；</li><li>对于结果集里的每个元素，计算关键值 $k_i=u_i^{(1/p_i)}$，其中 $u_i=\text{rand}(0,1)$；</li><li>将 $R$ 中小最的关键值记为阈值 $k_{min}$；</li><li>对剩下的元素重复以下步骤：<ol><li>令 $r=\text{rand}(0,1)$ 且 $x_p=\log(r)/\log(t)$；</li><li>从当前元素 $c$ 开始跳过元素，直到遇到元素 $i$，满足 $p<em>c+p</em>{c+1}+\cdots +p<em>{i−1}&lt;x_p\le p_c+p</em>{c+1}+\cdots+p_{i−1}+p_i$；</li><li>使用 $i$ 替换 $R$ 中关键值最小的元素；</li><li>令 $t=k^{p<em>i}</em>{min}$, $r_2=\text{rand}(t,1)$, $i$ 的关键值 $k_i=r_2^{(1/p_i)}$；</li><li>令新的阈值 $k_{min}$ 为此时 $R$ 中的最小关键值。</li></ol></li></ol><p>下面提供了一种 <strong>python</strong> 实现，仅供参考。</p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> math</span><br><span class="line"><span class="keyword">import</span> heapq</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">a_expj_sample</span><span class="params">(prob, m)</span>:</span></span><br><span class="line">    <span class="string">""" 根据 prob 数组无放回随机抽取 m 个元素 """</span></span><br><span class="line">    topn = []</span><br><span class="line">    <span class="keyword">for</span> i, pi <span class="keyword">in</span> enumerate(prob[:m]):</span><br><span class="line">        heapq.heappush(topn, (random.random() ** (<span class="number">1</span>/pi), i))</span><br><span class="line">        </span><br><span class="line">    thres, w_sum = topn[<span class="number">0</span>][<span class="number">0</span>], <span class="number">0</span></span><br><span class="line">    xw = math.log(random.random()) / math.log(thres)</span><br><span class="line">    i = m</span><br><span class="line">    <span class="keyword">for</span> pi <span class="keyword">in</span> prob[m:]:</span><br><span class="line">        <span class="keyword">if</span> w_sum + pi &gt;= xw:</span><br><span class="line">            tw = thres ** pi</span><br><span class="line">            r2 = random.uniform(tw, <span class="number">1</span>)</span><br><span class="line">            ki = r2 ** (<span class="number">1</span>/pi)</span><br><span class="line">            heapq.heappop(topn)</span><br><span class="line">            heapq.heappush(topn, (ki, i))</span><br><span class="line">            thres = topn[<span class="number">0</span>][<span class="number">0</span>]</span><br><span class="line">            xw = math.log(random.random()) / math.log(thres)</span><br><span class="line">            w_sum = <span class="number">0</span></span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            w_sum += pi</span><br><span class="line">        i += <span class="number">1</span></span><br><span class="line">    <span class="keyword">return</span> [item[<span class="number">1</span>] <span class="keyword">for</span> item <span class="keyword">in</span> topn]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">probs = [<span class="number">0.1</span>, <span class="number">0.5</span>, <span class="number">0.2</span>, <span class="number">0.05</span>, <span class="number">0.15</span>]</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> k <span class="keyword">in</span> range(<span class="number">1</span>, <span class="number">4</span>):</span><br><span class="line">    cnt = np.zeros(<span class="number">5</span>)</span><br><span class="line">    <span class="keyword">for</span> i <span class="keyword">in</span> range(<span class="number">1000000</span>):</span><br><span class="line">        <span class="keyword">for</span> j <span class="keyword">in</span> a_expj_sample(probs, k):</span><br><span class="line">            cnt[j] += <span class="number">1</span></span><br><span class="line">    print(k, <span class="string">':'</span>, cnt / <span class="number">1000000</span> / k)</span><br></pre></td></tr></table></figure><h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>本文主要介绍了三种加权采样的算法，其中，有放回加权随机采样推荐使用 <strong>Alias Method</strong>，无放回加权随机采样推荐使用 <strong>A-ExpJ</strong> 或者 <strong>A-Res</strong>，如果对精度要求没那么高，并且样本权重呈现非极端的分布，也可以使用简单的基数法。本篇讨论的算法主要应用场景在于<strong>我们已知每个元素的采样权重，进而可以设置其采样概率</strong>。但是有些情况下，我们是<strong>不知道这些元素的分布是什么样</strong>，而我们希望从这些未知分布中抽取样本，再利用这些样本对目标做一个估计。这时就需要考虑重要性采样、马尔可夫链蒙特卡罗方法、<strong>Gibbs</strong> 采样等采样算法，后面有机会再讨论吧。</p><h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] Github: word2vec. dav: <a href="https://github.com/dav/word2vec/blob/master/src/word2vec.c" target="_blank" rel="noopener">https://github.com/dav/word2vec/blob/master/src/word2vec.c</a>.</p><p>[2] Darts,Dice, and coids. Keith. 2011: <a href="http://www.keithschwarz.com/darts-dice-coins" target="_blank" rel="noopener">http://www.keithschwarz.com/darts-dice-coins</a>.</p><p>[3] Efraimidis, Pavlos S. , and P. G. Spirakis . “Weighted random sampling with a reservoir.” <em>Information Processing Letters</em>97.5(2006):181-185.</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;p&gt;加权随机采样在推荐系统中随处可见，既可能用在模型训练数据处理过程中，也可能用于一些规则式的推荐策略里。典型的场景例如：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;在新用户冷启动时，我们可以通过某些指标评估出内容的质量，并根据质量得分来将内容加权随机推荐给新用户，质量越高的内容，被曝光给新用户的概率也越大。&lt;/li&gt;
+&lt;li&gt;在样本采样时，有一种方法是对每条正样本，随机从所有的内容中选取 $k$ 个负样本，而每个内容被选为负样本的概率与其热度成正比（例如 &lt;strong&gt;word2vec&lt;/strong&gt; 的 &lt;strong&gt;negative sampling&lt;/strong&gt; 技术）。&lt;/li&gt;
+&lt;li&gt;基于用户历史行为可以构建内容的有向图，当用户行为较稀疏时，我们可以使用 &lt;strong&gt;deepwalk&lt;/strong&gt; 之类的算法在图中随机游走，生成内容的序列，再基于 &lt;strong&gt;word2vec&lt;/strong&gt; 等算法生成这些内容的 embedding。在随机游走时，比如当前到达节点 $v$，那么下一次游走到其他节点的概率，与有向边的权重正相关。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;以上这些加权采样的场景往往都不可避免的面对大数据量挑战，因此对性能要求较高。而再细分一下，上面的场景 1, 2 都属于无放回采样，也就是需要采样的内容都不相同；而场景 3 则属于有放回采样，即允许采到相同的样本。本文就这两类加权随机采样问题分别探讨高效的解法。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="数学" scheme="https://guyuecanhui.github.io/categories/%E6%95%B0%E5%AD%A6/"/>
+    
+    
+      <category term="weighted sample" scheme="https://guyuecanhui.github.io/tags/weighted-sample/"/>
+    
+      <category term="有放回采样" scheme="https://guyuecanhui.github.io/tags/%E6%9C%89%E6%94%BE%E5%9B%9E%E9%87%87%E6%A0%B7/"/>
+    
+      <category term="alias method" scheme="https://guyuecanhui.github.io/tags/alias-method/"/>
+    
+      <category term="无放回采样" scheme="https://guyuecanhui.github.io/tags/%E6%97%A0%E6%94%BE%E5%9B%9E%E9%87%87%E6%A0%B7/"/>
+    
+      <category term="A-ExpJ" scheme="https://guyuecanhui.github.io/tags/A-ExpJ/"/>
+    
+  </entry>
   
   <entry>
     <title>Fast Greedy MAP for DPP 论文精读</title>
@@ -131,9 +167,9 @@
     
       <category term="特征交叉" scheme="https://guyuecanhui.github.io/tags/%E7%89%B9%E5%BE%81%E4%BA%A4%E5%8F%89/"/>
     
-      <category term="CIN" scheme="https://guyuecanhui.github.io/tags/CIN/"/>
-    
       <category term="ctr" scheme="https://guyuecanhui.github.io/tags/ctr/"/>
+    
+      <category term="CIN" scheme="https://guyuecanhui.github.io/tags/CIN/"/>
     
   </entry>
   
@@ -160,11 +196,11 @@
     
       <category term="排序" scheme="https://guyuecanhui.github.io/tags/%E6%8E%92%E5%BA%8F/"/>
     
-      <category term="ctr" scheme="https://guyuecanhui.github.io/tags/ctr/"/>
+      <category term="注意力" scheme="https://guyuecanhui.github.io/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B/"/>
     
       <category term="self-attention" scheme="https://guyuecanhui.github.io/tags/self-attention/"/>
     
-      <category term="注意力" scheme="https://guyuecanhui.github.io/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B/"/>
+      <category term="ctr" scheme="https://guyuecanhui.github.io/tags/ctr/"/>
     
   </entry>
   
@@ -275,8 +311,6 @@
     
       <category term="排序" scheme="https://guyuecanhui.github.io/tags/%E6%8E%92%E5%BA%8F/"/>
     
-      <category term="注意力" scheme="https://guyuecanhui.github.io/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B/"/>
-    
       <category term="多模态" scheme="https://guyuecanhui.github.io/tags/%E5%A4%9A%E6%A8%A1%E6%80%81/"/>
     
       <category term="预排序" scheme="https://guyuecanhui.github.io/tags/%E9%A2%84%E6%8E%92%E5%BA%8F/"/>
@@ -284,6 +318,8 @@
       <category term="图片" scheme="https://guyuecanhui.github.io/tags/%E5%9B%BE%E7%89%87/"/>
     
       <category term="分布式" scheme="https://guyuecanhui.github.io/tags/%E5%88%86%E5%B8%83%E5%BC%8F/"/>
+    
+      <category term="注意力" scheme="https://guyuecanhui.github.io/tags/%E6%B3%A8%E6%84%8F%E5%8A%9B/"/>
     
   </entry>
   
@@ -583,99 +619,6 @@
       <category term="线性模型" scheme="https://guyuecanhui.github.io/tags/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
     
       <category term="LR" scheme="https://guyuecanhui.github.io/tags/LR/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>符号约定与常用公式</title>
-    <link href="https://guyuecanhui.github.io/2019/05/11/terminology/"/>
-    <id>https://guyuecanhui.github.io/2019/05/11/terminology/</id>
-    <published>2019-05-11T13:51:23.000Z</published>
-    <updated>2020-06-10T13:24:19.697Z</updated>
-    
-    <content type="html"><![CDATA[<h2 id="一、推荐系统常用符号含义"><a href="#一、推荐系统常用符号含义" class="headerlink" title="一、推荐系统常用符号含义"></a>一、推荐系统常用符号含义</h2><div class="table-container"><table><thead><tr><th style="text-align:left">符号表示</th><th style="text-align:left">含义</th></tr></thead><tbody><tr><td style="text-align:left">$\boldsymbol{x}$</td><td style="text-align:left">输入变量，一般为特征向量</td></tr><tr><td style="text-align:left">$\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$</td><td style="text-align:left">第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x_i$ 表示样本的第 $i$ 维特征</td></tr><tr><td style="text-align:left"><script type="math/tex">\mathcal{X}=\{\boldsymbol{x}_1,\cdots,\boldsymbol{x}_N\}</script></td><td style="text-align:left">输入实例集合</td></tr><tr><td style="text-align:left"><script type="math/tex">(x_j^{(i)})^k</script></td><td style="text-align:left">第 $j$ 个输入变量的第 $i$ 维特征取值的 $k$ 次方</td></tr><tr><td style="text-align:left">$y$</td><td style="text-align:left">输出变量，一般为样本标签</td></tr><tr><td style="text-align:left">$y_i$</td><td style="text-align:left">第 $i$ 个输出变量的取值</td></tr><tr><td style="text-align:left">$\mathcal{Y}={y_1,\cdots,y_N}$</td><td style="text-align:left">输出实例集合</td></tr><tr><td style="text-align:left">$(\boldsymbol{x}_i,y_i)$</td><td style="text-align:left">第 $i$ 个样本点</td></tr><tr><td style="text-align:left">$\mathcal{T}={(\boldsymbol{x}_1,y_1),\cdots,(\boldsymbol{x}_N,y_N)}$</td><td style="text-align:left">训练数据集</td></tr><tr><td style="text-align:left">$\boldsymbol{w}=(w_1,\cdots,w_n)$</td><td style="text-align:left">权重向量</td></tr><tr><td style="text-align:left">$w_i^t$</td><td style="text-align:left">第 $i$ 维特征的权重在第 $t$ 轮迭代的取值</td></tr><tr><td style="text-align:left">$\parallel \boldsymbol{w} \parallel_i^j$</td><td style="text-align:left">权重向量 $\boldsymbol{w}$ 的 Li 范数的 $j$ 次方，例如 L1 范数：$\parallel \boldsymbol{w} \parallel_1$，L2 范数： $\parallel \boldsymbol{w} \parallel_2^2$</td></tr><tr><td style="text-align:left">$\boldsymbol{g}=(g_1,\cdots,g_n)$</td><td style="text-align:left">梯度向量</td></tr><tr><td style="text-align:left">$\psi(\boldsymbol{w})$</td><td style="text-align:left">正则化函数</td></tr></tbody></table></div><a id="more"></a><h2 id="二、常用定理"><a href="#二、常用定理" class="headerlink" title="二、常用定理"></a>二、常用定理</h2><h3 id="中心极限定理"><a href="#中心极限定理" class="headerlink" title="中心极限定理"></a>中心极限定理</h3><ol><li>样本的平均值约等于总体的平均值。</li><li>给定一个任意分布的总体，从中随机抽取 $N$ 个样本，抽取 $k$ 次，这 $k$ 组抽样平均值的分布接近正态分布。</li><li>经验表明，当每组抽样数量 $N\ge 30$ 时就服从中心极限定理。</li></ol><h3 id="极大似然估计"><a href="#极大似然估计" class="headerlink" title="极大似然估计"></a>极大似然估计</h3><p><strong>前提假设：</strong>训练样本的分布能代表样本的真实分布；每个样本集中的样本都是所谓独立同分布的随机变量，且有充分的训练样本。</p><p><strong>最大似然估计的目的是：</strong>利用已知的样本结果，反推最有可能（最大概率）导致这样结果的参数值。换句话说，极大似然估计提供了一种给定观察数据来评估模型参数的方法，即：<strong>模型已定，参数未知</strong>。</p><p>ML估计的求解方法：</p><script type="math/tex; mode=display">\hat{\theta} = \arg \max_{\theta} l(\theta) = \arg \max_{\theta}\prod_{i=1}^N p(\boldsymbol{x}_i|\theta)</script><p>为了便于分析，定义对数似然函数 $H(\theta) = \ln l(\theta)$，则：</p><script type="math/tex; mode=display">\hat{\theta} = \arg \max_{\theta} \ln l(\theta) = \arg \max_{\theta}\sum_{i=1}^N \ln p(\boldsymbol{x}_i|\theta)</script><p>当 $H(\theta)$ 连续可微的情况下，可以通过求导（单个未知参数）或者求梯度（多个未知参数）的方式求解方程。</p><h2 id="三、常用的函数和公式"><a href="#三、常用的函数和公式" class="headerlink" title="三、常用的函数和公式"></a>三、常用的函数和公式</h2><h3 id="Sigmoid-函数"><a href="#Sigmoid-函数" class="headerlink" title="Sigmoid 函数"></a>Sigmoid 函数</h3><ul><li>表达式：$\pi(x)=\frac{1}{1+e^{-x}}=\frac{e^x}{1+e^x}$；</li><li>导数：$\pi’(x)=\pi(x)\big(1-\pi(x)\big)$；</li></ul><h3 id="LogLoss"><a href="#LogLoss" class="headerlink" title="LogLoss"></a>LogLoss</h3><ul><li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_{l}(\boldsymbol{x},y)=\ln(1+e^{f(\boldsymbol{x})})-yf(\boldsymbol{x})$</li><li>导数：$l_l’(\boldsymbol{x},y)=\Big(\pi\big(f(\boldsymbol{x})\big)-y\Big)\cdot f’(\boldsymbol{x})$</li><li>使用极大似然估计，标签值为 {0,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li></ul><h3 id="SigmoidLoss"><a href="#SigmoidLoss" class="headerlink" title="SigmoidLoss"></a>SigmoidLoss</h3><ul><li>样本的 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong> 表达式：$l_s(\boldsymbol{x},y)=\ln(1+e^{-yf(\boldsymbol{x})})$</li><li>导数：$l_s’(\boldsymbol{x},y)=y\Big(\pi\big(y\cdot f(\boldsymbol{x})\big)-1\Big)\cdot f’(\boldsymbol{x})$</li><li>使用极大似然估计，标签值为 {-1,1}，推导参考 <a href="https://guyuecanhui.github.io/2019/05/15/lr/">LR 模型</a></li></ul>]]></content>
-    
-    <summary type="html">
-    
-      &lt;h2 id=&quot;一、推荐系统常用符号含义&quot;&gt;&lt;a href=&quot;#一、推荐系统常用符号含义&quot; class=&quot;headerlink&quot; title=&quot;一、推荐系统常用符号含义&quot;&gt;&lt;/a&gt;一、推荐系统常用符号含义&lt;/h2&gt;&lt;div class=&quot;table-container&quot;&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr&gt;
-&lt;th style=&quot;text-align:left&quot;&gt;符号表示&lt;/th&gt;
-&lt;th style=&quot;text-align:left&quot;&gt;含义&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$\boldsymbol{x}$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;输入变量，一般为特征向量&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x_i$ 表示样本的第 $i$ 维特征&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;&lt;script type=&quot;math/tex&quot;&gt;\mathcal{X}=\{\boldsymbol{x}_1,\cdots,\boldsymbol{x}_N\}&lt;/script&gt;&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;输入实例集合&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;&lt;script type=&quot;math/tex&quot;&gt;(x_j^{(i)})^k&lt;/script&gt;&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;第 $j$ 个输入变量的第 $i$ 维特征取值的 $k$ 次方&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$y$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;输出变量，一般为样本标签&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$y_i$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;第 $i$ 个输出变量的取值&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$\mathcal{Y}={y_1,\cdots,y_N}$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;输出实例集合&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$(\boldsymbol{x}_i,y_i)$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;第 $i$ 个样本点&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$\mathcal{T}={(\boldsymbol{x}_1,y_1),\cdots,(\boldsymbol{x}_N,y_N)}$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;训练数据集&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$\boldsymbol{w}=(w_1,\cdots,w_n)$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;权重向量&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$w_i^t$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;第 $i$ 维特征的权重在第 $t$ 轮迭代的取值&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$\parallel \boldsymbol{w} \parallel_i^j$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;权重向量 $\boldsymbol{w}$ 的 Li 范数的 $j$ 次方，例如 L1 范数：$\parallel \boldsymbol{w} \parallel_1$，L2 范数： $\parallel \boldsymbol{w} \parallel_2^2$&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$\boldsymbol{g}=(g_1,\cdots,g_n)$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;梯度向量&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;$\psi(\boldsymbol{w})$&lt;/td&gt;
-&lt;td style=&quot;text-align:left&quot;&gt;正则化函数&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;/div&gt;
-    
-    </summary>
-    
-      <category term="数学" scheme="https://guyuecanhui.github.io/categories/%E6%95%B0%E5%AD%A6/"/>
-    
-    
-      <category term="符号" scheme="https://guyuecanhui.github.io/tags/%E7%AC%A6%E5%8F%B7/"/>
-    
-      <category term="定理" scheme="https://guyuecanhui.github.io/tags/%E5%AE%9A%E7%90%86/"/>
-    
-      <category term="公式" scheme="https://guyuecanhui.github.io/tags/%E5%85%AC%E5%BC%8F/"/>
     
   </entry>
   

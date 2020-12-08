@@ -329,6 +329,260 @@
   
   
   <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/05/11/terminology/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+                
+                <a class="post-title-link" href="/2019/05/11/terminology/" itemprop="url">符号约定与常用公式</a></h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2019-05-11T21:51:23+08:00">
+                2019-05-11
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2019/05/11/terminology/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2019/05/11/terminology/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  780
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  3
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        
+          <h2 id="一、推荐系统常用符号含义"><a href="#一、推荐系统常用符号含义" class="headerlink" title="一、推荐系统常用符号含义"></a>一、推荐系统常用符号含义</h2><div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">符号表示</th>
+<th style="text-align:left">含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">$\boldsymbol{x}$</td>
+<td style="text-align:left">输入变量，一般为特征向量</td>
+</tr>
+<tr>
+<td style="text-align:left">$\boldsymbol{x}_i=(x_i^{(1)}, \cdots, x_i^{(n)})^{\top}$</td>
+<td style="text-align:left">第 $i$ 个输入变量的取值，在推导损失函数等场景下，由于每次只考虑一条样本，记样本为 $\boldsymbol{x}=(x_1,\cdots,x_n)$，此时 $x_i$ 表示样本的第 $i$ 维特征</td>
+</tr>
+<tr>
+<td style="text-align:left"><script type="math/tex">\mathcal{X}=\{\boldsymbol{x}_1,\cdots,\boldsymbol{x}_N\}</script></td>
+<td style="text-align:left">输入实例集合</td>
+</tr>
+<tr>
+<td style="text-align:left"><script type="math/tex">(x_j^{(i)})^k</script></td>
+<td style="text-align:left">第 $j$ 个输入变量的第 $i$ 维特征取值的 $k$ 次方</td>
+</tr>
+<tr>
+<td style="text-align:left">$y$</td>
+<td style="text-align:left">输出变量，一般为样本标签</td>
+</tr>
+<tr>
+<td style="text-align:left">$y_i$</td>
+<td style="text-align:left">第 $i$ 个输出变量的取值</td>
+</tr>
+<tr>
+<td style="text-align:left">$\mathcal{Y}={y_1,\cdots,y_N}$</td>
+<td style="text-align:left">输出实例集合</td>
+</tr>
+<tr>
+<td style="text-align:left">$(\boldsymbol{x}_i,y_i)$</td>
+<td style="text-align:left">第 $i$ 个样本点</td>
+</tr>
+<tr>
+<td style="text-align:left">$\mathcal{T}={(\boldsymbol{x}_1,y_1),\cdots,(\boldsymbol{x}_N,y_N)}$</td>
+<td style="text-align:left">训练数据集</td>
+</tr>
+<tr>
+<td style="text-align:left">$\boldsymbol{w}=(w_1,\cdots,w_n)$</td>
+<td style="text-align:left">权重向量</td>
+</tr>
+<tr>
+<td style="text-align:left">$w_i^t$</td>
+<td style="text-align:left">第 $i$ 维特征的权重在第 $t$ 轮迭代的取值</td>
+</tr>
+<tr>
+<td style="text-align:left">$\parallel \boldsymbol{w} \parallel_i^j$</td>
+<td style="text-align:left">权重向量 $\boldsymbol{w}$ 的 Li 范数的 $j$ 次方，例如 L1 范数：$\parallel \boldsymbol{w} \parallel_1$，L2 范数： $\parallel \boldsymbol{w} \parallel_2^2$</td>
+</tr>
+<tr>
+<td style="text-align:left">$\boldsymbol{g}=(g_1,\cdots,g_n)$</td>
+<td style="text-align:left">梯度向量</td>
+</tr>
+<tr>
+<td style="text-align:left">$\psi(\boldsymbol{w})$</td>
+<td style="text-align:left">正则化函数</td>
+</tr>
+</tbody>
+</table>
+</div>
+          <!--noindex-->
+          <div class="post-button text-center">
+            <a class="btn" href="/2019/05/11/terminology/#more" rel="contents">
+              阅读全文 &raquo;
+            </a>
+          </div>
+          <!--/noindex-->
+        
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+
+      
+
+      
+
+      
+      
+        <div class="post-eof"></div>
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+    
+      
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
     <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2019/05/10/simrankpp/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -2004,196 +2258,6 @@
 
 
     
-      
-
-  
-
-  
-  
-  
-
-  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
-  
-  
-  
-  <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2018/02/24/svdpp/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="name" content="古月残辉">
-      <meta itemprop="description" content>
-      <meta itemprop="image" content="/images/avatar.gif">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="HCigmoid">
-    </span>
-
-    
-      <header class="post-header">
-
-        
-        
-          <h1 class="post-title" itemprop="name headline">
-                
-                <a class="post-title-link" href="/2018/02/24/svdpp/" itemprop="url">SVD++ 论文精读</a></h1>
-        
-
-        <div class="post-meta">
-          <span class="post-time">
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-calendar-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">发表于</span>
-              
-              <time title="创建于" itemprop="dateCreated datePublished" datetime="2018-02-24T20:16:34+08:00">
-                2018-02-24
-              </time>
-            
-
-            
-
-            
-          </span>
-
-          
-            <span class="post-category">
-            
-              <span class="post-meta-divider">|</span>
-            
-              <span class="post-meta-item-icon">
-                <i class="fa fa-folder-o"></i>
-              </span>
-              
-                <span class="post-meta-item-text">分类于</span>
-              
-              
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/论文精读/" itemprop="url" rel="index">
-                    <span itemprop="name">论文精读</span>
-                  </a>
-                </span>
-
-                
-                
-              
-            </span>
-          
-
-          
-            
-              <span class="post-comments-count">
-                <span class="post-meta-divider">|</span>
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-comment-o"></i>
-                </span>
-                <a href="/2018/02/24/svdpp/#comments" itemprop="discussionUrl">
-                  <span class="post-comments-count valine-comment-count" data-xid="/2018/02/24/svdpp/" itemprop="commentCount"></span>
-                </a>
-              </span>
-            
-          
-
-          
-          
-
-          
-
-          
-            <div class="post-wordcount">
-              
-                
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-file-word-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">字数统计&#58;</span>
-                
-                <span title="字数统计">
-                  2.9k
-                </span>
-              
-
-              
-                <span class="post-meta-divider">|</span>
-              
-
-              
-                <span class="post-meta-item-icon">
-                  <i class="fa fa-clock-o"></i>
-                </span>
-                
-                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
-                
-                <span title="阅读时长">
-                  12
-                </span>
-              
-            </div>
-          
-
-          
-
-        </div>
-      </header>
-    
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-      
-
-      
-        
-          <blockquote>
-<p>论文引用：Koren, Y. . (2008). Factorization meets the neighborhood : a multifaceted collaborative filtering model. Proceedings of the 14th ACM SIGKDD International Conference of Knowledge Discovery and Data Mining, 2008. ACM Press.</p>
-</blockquote>
-<p>本文对协同过滤中最主要的两种方法（基于邻域的方法和基于隐特征模型的方法）分别提出了优化方案，并且设计了一个联合模型将两种方法统一，从而达到更好的效果。为了进行区分，本文将对 SVD 进行优化的方案称为 SVD+，将联合模型的方法称为 SVD++。</p>
-          <!--noindex-->
-          <div class="post-button text-center">
-            <a class="btn" href="/2018/02/24/svdpp/#more" rel="contents">
-              阅读全文 &raquo;
-            </a>
-          </div>
-          <!--/noindex-->
-        
-      
-    </div>
-    
-    
-    
-
-    
-
-    
-
-    
-
-    <footer class="post-footer">
-      
-
-      
-
-      
-
-      
-      
-        <div class="post-eof"></div>
-      
-    </footer>
-  </div>
-  
-  
-  
-  </article>
-
-
-    
   </section>
 
   
@@ -2244,7 +2308,7 @@
               
                 <a href="/archives/">
               
-                  <span class="site-state-item-count">31</span>
+                  <span class="site-state-item-count">32</span>
                   <span class="site-state-item-name">日志</span>
                 </a>
               </div>
@@ -2266,7 +2330,7 @@
               
               <div class="site-state-item site-state-tags">
                 <a href="/tags/index.html">
-                  <span class="site-state-item-count">73</span>
+                  <span class="site-state-item-count">78</span>
                   <span class="site-state-item-name">标签</span>
                 </a>
               </div>
@@ -2334,7 +2398,7 @@
     
       <span class="post-meta-item-text">Site words total count&#58;</span>
     
-    <span title="Site words total count">55.5k</span>
+    <span title="Site words total count">58.7k</span>
   
 </div>
 
