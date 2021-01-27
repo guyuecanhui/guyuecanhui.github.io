@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="https://guyuecanhui.github.io/"/>
-  <updated>2020-12-08T15:56:10.926Z</updated>
+  <updated>2021-01-27T15:22:11.146Z</updated>
   <id>https://guyuecanhui.github.io/</id>
   
   <author>
@@ -15,6 +15,39 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>淘宝商品向量生成模型 EGES</title>
+    <link href="https://guyuecanhui.github.io/2021/01/24/paper-2018-ali-eges/"/>
+    <id>https://guyuecanhui.github.io/2021/01/24/paper-2018-ali-eges/</id>
+    <published>2021-01-24T13:59:32.000Z</published>
+    <updated>2021-01-27T15:22:11.146Z</updated>
+    
+    <content type="html"><![CDATA[<div class="note success"><p><strong>论文引用:</strong> Wang, Jizhe , et al. “Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba.” 2018. </p></div><p>本文是淘宝发表在 <strong>KDD 2018</strong> 上的关于商品 embedding 生成的文章，主要为了解决商品推荐系统面临三个主要问题：可扩展性、稀疏性和冷启动问题。其中，可扩展性是指随着用户量和商品量的急剧扩张，推荐系统的负载也随之增加，影响可扩展性的要素包括模型的训练开销、模型存储开销和推理性能等；稀疏性是指大部分用户只消费过小部分的商品，同时很多商品也只被少量用户消费，对于这些用户/商品很难做精准的推荐；而冷启动问题主要是针对新上架的商品，缺少用户行为，跟稀疏性类似，都会导致商品难以通过协同行为来评估相似度或质量。</p><p>为了解决这三个挑战，业内通常使用两阶段的推荐策略：召回+排序，先基于用户消费历史从商品库中召回与这些历史相似/相关的商品，再基于用户偏好来对这些候选商品进行排序。其中，召回阶段的核心是商品之间的相似度评估模型。</p><p>传统的 <strong>CF</strong> 方法主要是基于商品共现统计来评估商品间的相似度，例如 <strong>ItemCF</strong> 等，而本文首先基于用户行为构建商品的有向图，通过随机游走生成商品序列，再训练模型从这些序列中抽取商品间的相似度，这种方式能够捕获更高级别的相似度，类似于 <strong>SimRank</strong> 与 <strong>ItemCF</strong> 的关系 $^{[1]}$。<strong>EGES</strong> 使用 <strong>word2vec</strong> 进行训练，生成每个商品的 embedding，这种方式存储和推理都相当高效。</p><a id="more"></a><p><strong>EGES</strong> 模型的训练有如下三个关键步骤：</p><ol><li>构建商品的有向图；</li><li>随机游走生成商品序列；</li><li>训练模型生成商品的 embedding；</li></ol><p>下面分别展开讨论。</p><h3 id="1-构建商品的有向图"><a href="#1-构建商品的有向图" class="headerlink" title="1 构建商品的有向图"></a>1 构建商品的有向图</h3><p>首先是如何建图。基于图编码来抽取商品相似度，主要是为了能直接捕获更高阶的商品相似度。假设一个用户在一段时间内的兴趣变化不大，这段时间称为一个 session（文章里按 1 小时来划分 session），那么可以认为用户在一个 session 内消费的所有商品具有一定的相关性。我们把商品抽象成图中的点，按用户消费的时间顺序将一个 session 内的商品用有向边依次连接，如下图所示，边权设置为 1（或者基于一些交互特征的函数，如停留时长）；把所有用户的所有 session 生成的这些有向图进行合并，边权相加，就能得到全网的商品有向图，记为 $\mathcal{G}=(\mathbb{V}, \mathbb{E})$，其中，$\mathbb{V}$ 表示节点集合，也就是商品的集合；$\mathbb{E}$ 表示带权有向边集合，连接点 $i$ 到 $j$ 的有向边权表示所有用户先消费物品 $i$ 再消费物品 $j$ 的频率。</p><img src="/2021/01/24/paper-2018-ali-eges/build.png" title="图 1. 基于用户行为序列建立商品有向图"><p>在实际业务中进行建图时，我们还需要识别出对业务无效的行为，从而排除一些无效的边。比如，用户误点行为，通常表现为详情页停留时间过短；非正常用户行为，通常表现为行为相对于整体过于活跃，很可能是一些机器行为；非正常商品行为，比如商品的信息经常发生修改，甚至与上架时完全不同。这些无效行为如果加入模型训练，反而会影响商品的相似度评估，因此要在一开始就识别并排除掉。</p><h3 id="2-随机游走生成商品序列"><a href="#2-随机游走生成商品序列" class="headerlink" title="2 随机游走生成商品序列"></a>2 随机游走生成商品序列</h3><p>有了商品有向图后，我们就需要应用 graph embedding 技术来将代表商品的点映射到低维向量空间，同时保留图中局部拓扑结构信息。本文使用的方法就是对图进行采样，先基于图的边权来决定从一个点到其每个邻居节点的转移概率，再基于 random walk 之类的游走算法，来得到采样的序列，最后应用 word2vec 算法，将这些序列看成句子，生成每个节点的 embedding。</p><p>下面详细讨论下如何生成采样序列的问题。前面提到了，我们在建图的时候，边权的设置可以是用户消费过一个商品后又消费另一个商品的频次，或者是频次的加权结果，很自然的想到，如果两点间的边权越大，我们采样序列中，它们同时出现的概率也应该越大，也就是这两个点间的转移概率应该越大。记节点 $i,j$ 之间的边权为 $m_{i,j}$，可以将转移概率定义为边权的线性函数：</p><script type="math/tex; mode=display">\begin{align}P(v_j|v_i)=\begin{cases}\frac{m_{i,j}}{\sum_{k\in N_+(v_i)} m_{i,k}} &,\ v_j\in N_+(v_i), \\0 &,\ e_{i,j}\not \in \mathbb{E}\end{cases}\end{align}</script><p>其中，$N_+(v_i)$ 表示节点 $i$ 在图 $\mathcal{G}$ 中指向的邻居节点集合。基于这个转移概率函数，我们得到采样序列的流程如下：先随机选择一个起始节点，然后每次使用 alias method $^{[2]}$ 来采样序列的下一个节点，直到当前节点没有邻居节点，或者达到最大序列长度。</p><p>除了这种简单的转移函数，node2vec 算法 $^{[3]}$ 还提出了一种有偏的随机游走策略，通过引入两个超参数来决定游走是偏向于向远离初始点的方向探索，还是围绕初始点附近进行探索，因此更加灵活，但是初始化的效率比较低。</p><h3 id="3-训练模型生成商品的-embedding"><a href="#3-训练模型生成商品的-embedding" class="headerlink" title="3 训练模型生成商品的 embedding"></a>3 训练模型生成商品的 embedding</h3><p>得到采样序列的集合后，我们就可以用 <strong>word2vec</strong> 中的 negtive sampling + skipgram 算法来生成每个节点的 embedding，目标是最大化所有序列中节点共现的概率：</p><script type="math/tex; mode=display">\min_\Phi \log \sigma\big(\Phi(v_j)^\top \Phi(v_i)\big) +\sum_{t\in N_-(v_i)}\log \sigma\big(\Phi(v_t)^\top \Phi(v_i)\big)</script><p>其中，$\Phi:\mathbb{V}\rightarrow \mathbb{R}^d$ 表示将节点映射为 $d$ 维 embedding 的函数；$N_-(v_i)$ 表示对 $v_i$ 随机生成的负样本节点集合；$\sigma(\cdot)$ 表示 sigmoid 函数。</p><p>回顾 <strong>word2vec</strong>，我们是基于节点的 ID 把每个节点映射成一个 embedding，这种方式的缺点在于只能处理出现频次大于一定阈值的节点，但是在例如淘宝的场景中，大量的商品（特别是新商品）被消费的次数很少，因此无法为这些商品生成 embedding。</p><p>实际上，这些商品是有一些元数据信息（side information）的，比如品牌、类别、价格、描述、海报等，这些信息本身就能被用于评估商品间的相似度。为了使用这些信息，文章进一步对商品每个类别的 side information 都映射到与 ID embedding 同维度的向量空间，然后将商品 ID embedding 和所有 side information 的 embedding 求和，得到商品 $v$ 的最终表示 $H_v$，再送到 softmax 网络中进行训练，如下图所示，其中 SI 0 表示 ID 维度。</p><img src="/2021/01/24/paper-2018-ali-eges/architecture.png" title="图 2. EGES 模型整体架构"><p>再进一步，商品不同类别的 embedding 信息含量是不同的，例如在评估 iPhone 和 iMac 的相似度时，品牌信息的重要性更高；而在评估女性衣服相似度的时候，款式和价格因素的影响更大，因此文章增加权重矩阵 $\boldsymbol{A}\in \mathbb{R}^{|V|\times (n+1)}$，即为每个商品每个类别的 embedding 都分配一个可学习的权重 $a_{v,i}$，然后计算商品 $v$ 的加权 embedding：</p><script type="math/tex; mode=display">H_v = \frac{\sum_{j=0}^n e^{a_{v,j}}\boldsymbol{W}_{v,j}}{\sum_{j=0}^n e^{a_{v,j}}}</script><p>其中，$\boldsymbol{W}_{v,j}$ 表示商品 $v$ 第 $j$ 个类别的 side information 对应的 embedding。把 $H_v$ 看成是 $v$ 的 input vector，记 $Z_u$ 表示商品 $u$ 的 output vector（即 $v$ 在 softmax 层中的 embedding），用 label $y$ 表示 $u$ 是否是 $v$ 的上下文节点，则 EGES 的目标函数定义为：</p><script type="math/tex; mode=display">\mathcal{L}(v,u,y)=-\Big(y\log\big(\sigma(H_v^\top Z_u)\big)+(1-y)\log\big(1-\sigma(H_v^\top Z_u)\big)\Big)</script><p>再基于梯度反向传播就能对参数 $\boldsymbol{W}, A, Z$ 进行更新了。</p><h3 id="4-模型上线和效果评估"><a href="#4-模型上线和效果评估" class="headerlink" title="4 模型上线和效果评估"></a>4 模型上线和效果评估</h3><p>上面讲完了 <strong>EGES</strong> 的训练过程，其实 embedding 的离线评估是很困难的。文章提出一种连接预测的方式，也就是把图中随机选一些有向边作为正例，随机构造一些不存在的有向边作为负例来测试模型。除了这种方式，还可以通过选择一些典型的 case 来将各维度的 embedding 进行可视化，或者召回相似列表，看看是否满足主观预期，但是这种方式可以用来理解和优化，不适合用于评估。</p><p>将模型上线时，一般是根据训练好的模型预计算并缓存所有商品的 embedding，并基于 faiss 等 ANN 检索器构建索引，同时缓存所有 side information 的 embedding；对于新商品，在入库时就需要基于其 side information 查询相应的 embedding，然后求平均 embedding 作为新商品的 embedding 并缓存；需要基于种子商品进行召回时，先查询种子商品的 embedding，在线请求 ANN 相似结果。如果线上召回想更快点，就离线算出所有商品的 topN 相似商品并缓存。</p><h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] SimRank与视频相似度计算. 胡诚. <a href="https://guyuecanhui.github.io/2019/04/29/simrank/">https://guyuecanhui.github.io/2019/04/29/simrank/</a></p><p>[2] 加权随机采样. 胡诚. <a href="https://guyuecanhui.github.io/2020/12/05/weighted-sample/">https://guyuecanhui.github.io/2020/12/05/weighted-sample/</a></p><p>[3] Grover, Aditya , and J. Leskovec . “node2vec: Scalable Feature Learning for Networks.” <em>the 22nd ACM SIGKDD International Conference</em> ACM, 2016.</p>]]></content>
+    
+    <summary type="html">
+    
+      &lt;div class=&quot;note success&quot;&gt;&lt;p&gt;&lt;strong&gt;论文引用:&lt;/strong&gt; Wang, Jizhe , et al. “Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba.” 2018. &lt;/p&gt;&lt;/div&gt;
+&lt;p&gt;本文是淘宝发表在 &lt;strong&gt;KDD 2018&lt;/strong&gt; 上的关于商品 embedding 生成的文章，主要为了解决商品推荐系统面临三个主要问题：可扩展性、稀疏性和冷启动问题。其中，可扩展性是指随着用户量和商品量的急剧扩张，推荐系统的负载也随之增加，影响可扩展性的要素包括模型的训练开销、模型存储开销和推理性能等；稀疏性是指大部分用户只消费过小部分的商品，同时很多商品也只被少量用户消费，对于这些用户/商品很难做精准的推荐；而冷启动问题主要是针对新上架的商品，缺少用户行为，跟稀疏性类似，都会导致商品难以通过协同行为来评估相似度或质量。&lt;/p&gt;
+&lt;p&gt;为了解决这三个挑战，业内通常使用两阶段的推荐策略：召回+排序，先基于用户消费历史从商品库中召回与这些历史相似/相关的商品，再基于用户偏好来对这些候选商品进行排序。其中，召回阶段的核心是商品之间的相似度评估模型。&lt;/p&gt;
+&lt;p&gt;传统的 &lt;strong&gt;CF&lt;/strong&gt; 方法主要是基于商品共现统计来评估商品间的相似度，例如 &lt;strong&gt;ItemCF&lt;/strong&gt; 等，而本文首先基于用户行为构建商品的有向图，通过随机游走生成商品序列，再训练模型从这些序列中抽取商品间的相似度，这种方式能够捕获更高级别的相似度，类似于 &lt;strong&gt;SimRank&lt;/strong&gt; 与 &lt;strong&gt;ItemCF&lt;/strong&gt; 的关系 $^{[1]}$。&lt;strong&gt;EGES&lt;/strong&gt; 使用 &lt;strong&gt;word2vec&lt;/strong&gt; 进行训练，生成每个商品的 embedding，这种方式存储和推理都相当高效。&lt;/p&gt;
+    
+    </summary>
+    
+      <category term="推荐系统" scheme="https://guyuecanhui.github.io/categories/%E6%8E%A8%E8%8D%90%E7%B3%BB%E7%BB%9F/"/>
+    
+    
+      <category term="召回" scheme="https://guyuecanhui.github.io/tags/%E5%8F%AC%E5%9B%9E/"/>
+    
+      <category term="embedding" scheme="https://guyuecanhui.github.io/tags/embedding/"/>
+    
+      <category term="word2vec" scheme="https://guyuecanhui.github.io/tags/word2vec/"/>
+    
+      <category term="coldstart" scheme="https://guyuecanhui.github.io/tags/coldstart/"/>
+    
+      <category term="eges" scheme="https://guyuecanhui.github.io/tags/eges/"/>
+    
+  </entry>
   
   <entry>
     <title>加权随机采样</title>
@@ -593,32 +626,6 @@
       <category term="模型" scheme="https://guyuecanhui.github.io/tags/%E6%A8%A1%E5%9E%8B/"/>
     
       <category term="FM" scheme="https://guyuecanhui.github.io/tags/FM/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>二项 Logistic Regression 模型</title>
-    <link href="https://guyuecanhui.github.io/2019/05/15/lr/"/>
-    <id>https://guyuecanhui.github.io/2019/05/15/lr/</id>
-    <published>2019-05-15T14:02:00.000Z</published>
-    <updated>2020-06-10T13:18:25.520Z</updated>
-    
-    <content type="html"><![CDATA[<p>本文主要介绍一下二项 <strong>Logistic Regression</strong> 模型推导。</p><a id="more"></a><h3 id="模型描述"><a href="#模型描述" class="headerlink" title="模型描述"></a>模型描述</h3><p>记 $\pi(x)=\frac{1}{1+e^{-x}}$，二项 <strong>Logistic Regression</strong> 模型是如下的条件概率分布：</p><script type="math/tex; mode=display">\begin{cases}P(y=1|\boldsymbol{x})=\pi(\boldsymbol{wx})=\frac{1}{1+e^{-\boldsymbol{wx}}}=\frac{e^{\boldsymbol{wx}}}{1+e^{\boldsymbol{wx}}} \\P(y\not=1|\boldsymbol{x})=1-\pi(\boldsymbol{wx})=\frac{1}{1+e^{\boldsymbol{wx}}}\end{cases}\qquad(1)</script><h3 id="模型求解（极大似然估计）"><a href="#模型求解（极大似然估计）" class="headerlink" title="模型求解（极大似然估计）"></a>模型求解（极大似然估计）</h3><p>常见的 label 设置有正负样本分别为 {1,0} 或 {1,-1}，下面分别讨论两种设置下的损失函数和梯度的推导。首先要假设训练样本独立同分布并且数量足够，模型中待估计的参数为 $\boldsymbol{w}$，似然函数的目标是 $y_i=1$ 时 $\pi(\boldsymbol{wx}_i)$ 尽可能大，且 $y_i\not =1$ 时 $1-\pi(\boldsymbol{wx}_i)$ 尽可能大。</p><h4 id="1-label-为-1-0"><a href="#1-label-为-1-0" class="headerlink" title="1. label 为 {1,0}"></a>1. label 为 {1,0}</h4><p>此时，可以直接将 $\hat{y}=\pi(\boldsymbol{wx})$ 的结果作为对 $y$ 值的预测（或者说是预测结果为 1 的概率）。根据<a href="https://guyuecanhui.github.io/2019/05/11/terminology/">最大似然估计公式</a>，$p(\boldsymbol{x}_i|\boldsymbol{w})=\big(\pi(\boldsymbol{wx}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{wx}_i)\big)^{1-y_i}$，对数似然函数可以设计为：</p><script type="math/tex; mode=display">\begin{align}H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln\Big(\big(\pi(\boldsymbol{wx}_i)\big)^{y_i}\cdot\big(1-\pi(\boldsymbol{wx}_i)\big)^{1-y_i}\Big) \\&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln\big(\pi(\boldsymbol{wx}_i)\big)+(1-y_i)\cdot\big(1-\pi(\boldsymbol{wx}_i)\big)\Big) \\&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\cdot \ln(\frac{e^{\boldsymbol{wx}_i}}{1+e^{\boldsymbol{wx}_i}})+(1-y_i)\cdot \ln(\frac{1}{1+e^{\boldsymbol{wx}_i}})\Big) \\&=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \Big(y_i\boldsymbol{wx}_i-\ln(1+e^{\boldsymbol{wx}_i})\Big)\qquad(2)\end{align}</script><p>这里，$l_l(\boldsymbol{x},y)=-\big(y\cdot \ln(\hat{y})+(1-y)\cdot\ln(1-\hat{y})\big)=\ln(1+e^{f(\boldsymbol{x})})-yf(\boldsymbol{x})$ 记作样本 $ (\boldsymbol{x},y)$ 的 <strong>LogLoss</strong>，后面会经常见到。</p><p>根据损失函数 $l_l(\boldsymbol{x},y)$，对每个维度上的参数分别求导：</p><script type="math/tex; mode=display">\begin{align}\frac{\partial l_l(\boldsymbol{x},y)}{\partial w_i}&=\frac{1}{(1+e^{\boldsymbol{wx}})}\cdot e^{\boldsymbol{wx}}\cdot x_i-y\cdot x_i\\&=\big(\pi(\boldsymbol{wx})-y\big)\cdot x_i\\&=(\hat{y}-y)\cdot x_i\qquad(3)\end{align}</script><h4 id="2-label-为-1-1"><a href="#2-label-为-1-1" class="headerlink" title="2. label 为 {1,-1}"></a>2. label 为 {1,-1}</h4><p>此时仍然可以认为 $\pi(\boldsymbol{wx})$ 输出了模型预测样本结果为 1 的概率，但是由于负样本的标签为 -1，因此考虑使用 $p(\boldsymbol{x}_i|\boldsymbol{w})=\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}$，则对数似然函数可以设计为：</p><script type="math/tex; mode=display">\begin{align}H(\boldsymbol{w}) &=\arg \max_{\boldsymbol{w}}\sum_{i=1}^N \ln(\frac{1}{1+e^{-y_i\boldsymbol{wx}_i}}) \\&=\arg \min_{\boldsymbol{w}}\sum_{i=1}^N \ln(1+e^{-y_i\boldsymbol{wx}_i}) \qquad(4)\\\end{align}</script><p>这里，$l_s(\boldsymbol{x},y)=\ln(1+e^{-y\boldsymbol{wx}})$ 称作样本 $(\boldsymbol{x},y)$ 的 <strong>SigmoidLoss</strong>，后面也会经常看到。</p><p>根据损失函数 $l_s(\boldsymbol{x},y)$，对每个维度上的参数分别求导：</p><script type="math/tex; mode=display">\begin{align}\frac{\partial l_s(\boldsymbol{x},y)}{\partial w_i}&=\frac{1}{1+e^{-y\boldsymbol{wx}}}\cdot e^{-y\boldsymbol{wx}}\cdot (-y\cdot x_i) \\&=y\cdot \big(\pi(y\boldsymbol{wx})-1\big)\cdot x_i\qquad(4)\\\end{align}</script>]]></content>
-    
-    <summary type="html">
-    
-      &lt;p&gt;本文主要介绍一下二项 &lt;strong&gt;Logistic Regression&lt;/strong&gt; 模型推导。&lt;/p&gt;
-    
-    </summary>
-    
-      <category term="数学" scheme="https://guyuecanhui.github.io/categories/%E6%95%B0%E5%AD%A6/"/>
-    
-    
-      <category term="模型" scheme="https://guyuecanhui.github.io/tags/%E6%A8%A1%E5%9E%8B/"/>
-    
-      <category term="线性模型" scheme="https://guyuecanhui.github.io/tags/%E7%BA%BF%E6%80%A7%E6%A8%A1%E5%9E%8B/"/>
-    
-      <category term="LR" scheme="https://guyuecanhui.github.io/tags/LR/"/>
     
   </entry>
   
