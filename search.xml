@@ -1,6 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[AB 测试数学基础]]></title>
+    <url>%2F2021%2F04%2F28%2Fabtest-calculator%2F</url>
+    <content type="text"><![CDATA[在视频推荐优化的过程中，最重要的措施莫过于 A/B 测试了。典型的 A/B 测试场景中，我们首先将流量均匀的分桶，选择部分桶使用基线算法，作为对照组（Control），选择相同数量的桶用于测试新的特性，作为实验组（Treatment）。实验过程中不断收集用户的反馈数据，用来计算核心指标（本文考虑 CTR），最后分析、评估出最好的版本。 这里分析最佳版本就需要借助假设检验的技术，例如检验某个实验组的 CTR 是否优于对照组，属于双比率检验（2 Proportion-test，用于根据两个随机样本中的数据对两个总体比率之间的差值进行推断）。由于推荐系统中样本量比较大（满足 $n\cdot(1-p)&gt;5, n\cdot p&gt;5$，$n$ 表示样本数，$p$ 表示 CTR），我们通常采用的是 Z 检验的技术，它是基于标准正态分布来近似推断实验组优于对照组的概率。 注意，Z 检验是大样本下的近似检验，如果需要精确检验，可以基于超几何分布来进行检验，但是数据量非常大的情况下，计算成本较高，所以一般还是使用 Z 检验技术。 具体来讲，假设对照组和实验组样本数为 $n_1,n_2$，平均 CTR 为 $\bar{p}_1,\bar{p}_2$ ，这里平均 CTR 是指我们基于实验观测到的结果，假设实际上两组的 CTR 为 $p_1,p_2$，根据中心极限定理，$p_1$ 和 $p_2$ 均趋向正态分布，且由于独立正态分布变量之和依旧是正态分布，$p_1-p_2$ 也趋向正态分布： p_1\sim N(\bar{p}_1,\frac{\bar{p}_1(1-\bar{p}_1)}{n_1})\\ p_2\sim N(\bar{p}_2,\frac{\bar{p}_2(1-\bar{p}_2)}{n_2})\\ p_1-p_2\sim N(\bar{p}_1-\bar{p}_2,\frac{\bar{p}_1(1-\bar{p}_1)}{n_1}+\frac{\bar{p}_2(1-\bar{p}_2)}{n_2})统计显著性接下来，我们开始假设检验过程。首先要建立原假设（Null Hypothesis），即假设对照组不比实验组差，即 $H_0:\ p_1-p_2\ge 0$，且观测到的差异是由于随机波动引起的。我们最希望的是拒绝该假设，并接受实验组的效果显著优于对照组，即对立假设 $H_1:\ p_1&lt;p_2$。 要拒绝零假设，我们需要根据我们观测的数据来看看 $p_1$ 是否真的不比 $p_2$ 小，如果 $p_1$ 和 $p_2$ 相差很小或者 $p_1$ 明显大于 $p_2$，则确实无法拒绝原假设；但是如果 $p_2$ 比 $p_1$ 大很多，那么我们就有把握拒绝零假设。大多少算是多呢？我们可以通过统计量 Z 来检验： Z=\frac{\bar{p}_1-\bar{p}_2}{\sqrt{\frac{\bar{p}_1(1-\bar{p}_1)}{n_1}+\frac{\bar{p}_2(1-\bar{p}_2)}{n_2}}}其中，$\bar{p}_1-\bar{p}_2$ 是实际观测到的差异，$\sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}}$ 是实际观测到的标准误差，直观来看的话，Z-score 表示的是实际差异有多少个标准误差。Z-score 与正态分布的关系如下图所示 $^{[1]}$： 显然，Z-score 越小（负数），说明观测结果与原假设越不相符，我们越有理由拒绝原假设。那小到什么程度可以拒绝呢？这就需要人工拍一个显著水平 $\alpha$，它表示假定原假设为真时，我们却拒绝原假设的概率（即第一类错误的概率，在本文中，第一类错误是指实验组实际上不比对照组好，但是却错误的认为实验组更好）。由于错误转正一个并不好的实验组代价是很大的，我们希望 $\alpha$ 越小越好，通常取 $\alpha=0.05$。 基于 Z-score 和正态分布可以估计观测到的数据出现的概率，记为 $p$（p-value），如果 $p&lt;\alpha$，也就是观测到数据比预期的显著水平更极端，此时可以拒绝原假设。对应到上面的图中，我们可以确定拒绝域：Z\le Z_\alpha，或者等价的 p_{Z\le Z_\alpha}]]></content>
+      <categories>
+        <category>数学</category>
+      </categories>
+      <tags>
+        <tag>ab</tag>
+        <tag>统计</tag>
+        <tag>p-value</tag>
+        <tag>z-score</tag>
+        <tag>置信区间</tag>
+        <tag>置信度</tag>
+        <tag>功效</tag>
+        <tag>显著水平</tag>
+        <tag>双比率检验</tag>
+        <tag>假设检验</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[淘宝商品向量生成模型 EGES]]></title>
     <url>%2F2021%2F01%2F24%2Fpaper-2018-ali-eges%2F</url>
     <content type="text"><![CDATA[论文引用: Wang, Jizhe , et al. “Billion-scale Commodity Embedding for E-commerce Recommendation in Alibaba.” 2018. 本文是淘宝发表在 KDD 2018 上的关于商品 embedding 生成的文章，主要为了解决商品推荐系统面临三个主要问题：可扩展性、稀疏性和冷启动问题。其中，可扩展性是指随着用户量和商品量的急剧扩张，推荐系统的负载也随之增加，影响可扩展性的要素包括模型的训练开销、模型存储开销和推理性能等；稀疏性是指大部分用户只消费过小部分的商品，同时很多商品也只被少量用户消费，对于这些用户/商品很难做精准的推荐；而冷启动问题主要是针对新上架的商品，缺少用户行为，跟稀疏性类似，都会导致商品难以通过协同行为来评估相似度或质量。 为了解决这三个挑战，业内通常使用两阶段的推荐策略：召回+排序，先基于用户消费历史从商品库中召回与这些历史相似/相关的商品，再基于用户偏好来对这些候选商品进行排序。其中，召回阶段的核心是商品之间的相似度评估模型。 传统的 CF 方法主要是基于商品共现统计来评估商品间的相似度，例如 ItemCF 等，而本文首先基于用户行为构建商品的有向图，通过随机游走生成商品序列，再训练模型从这些序列中抽取商品间的相似度，这种方式能够捕获更高级别的相似度，类似于 SimRank 与 ItemCF 的关系 $^{[1]}$。EGES 使用 word2vec 进行训练，生成每个商品的 embedding，这种方式存储和推理都相当高效。 EGES 模型的训练有如下三个关键步骤： 构建商品的有向图； 随机游走生成商品序列； 训练模型生成商品的 embedding； 下面分别展开讨论。 1 构建商品的有向图首先是如何建图。基于图编码来抽取商品相似度，主要是为了能直接捕获更高阶的商品相似度。假设一个用户在一段时间内的兴趣变化不大，这段时间称为一个 session（文章里按 1 小时来划分 session），那么可以认为用户在一个 session 内消费的所有商品具有一定的相关性。我们把商品抽象成图中的点，按用户消费的时间顺序将一个 session 内的商品用有向边依次连接，如下图所示，边权设置为 1（或者基于一些交互特征的函数，如停留时长）；把所有用户的所有 session 生成的这些有向图进行合并，边权相加，就能得到全网的商品有向图，记为 $\mathcal{G}=(\mathbb{V}, \mathbb{E})$，其中，$\mathbb{V}$ 表示节点集合，也就是商品的集合；$\mathbb{E}$ 表示带权有向边集合，连接点 $i$ 到 $j$ 的有向边权表示所有用户先消费物品 $i$ 再消费物品 $j$ 的频率。 在实际业务中进行建图时，我们还需要识别出对业务无效的行为，从而排除一些无效的边。比如，用户误点行为，通常表现为详情页停留时间过短；非正常用户行为，通常表现为行为相对于整体过于活跃，很可能是一些机器行为；非正常商品行为，比如商品的信息经常发生修改，甚至与上架时完全不同。这些无效行为如果加入模型训练，反而会影响商品的相似度评估，因此要在一开始就识别并排除掉。 2 随机游走生成商品序列有了商品有向图后，我们就需要应用 graph embedding 技术来将代表商品的点映射到低维向量空间，同时保留图中局部拓扑结构信息。本文使用的方法就是对图进行采样，先基于图的边权来决定从一个点到其每个邻居节点的转移概率，再基于 random walk 之类的游走算法，来得到采样的序列，最后应用 word2vec 算法，将这些序列看成句子，生成每个节点的 embedding。 下面详细讨论下如何生成采样序列的问题。前面提到了，我们在建图的时候，边权的设置可以是用户消费过一个商品后又消费另一个商品的频次，或者是频次的加权结果，很自然的想到，如果两点间的边权越大，我们采样序列中，它们同时出现的概率也应该越大，也就是这两个点间的转移概率应该越大。记节点 $i,j$ 之间的边权为 $m_{i,j}$，可以将转移概率定义为边权的线性函数： \begin{align} P(v_j|v_i)=\begin{cases} \frac{m_{i,j}}{\sum_{k\in N_+(v_i)} m_{i,k}} &,\ v_j\in N_+(v_i), \\ 0 &,\ e_{i,j}\not \in \mathbb{E} \end{cases} \end{align}其中，$N_+(v_i)$ 表示节点 $i$ 在图 $\mathcal{G}$ 中指向的邻居节点集合。基于这个转移概率函数，我们得到采样序列的流程如下：先随机选择一个起始节点，然后每次使用 alias method $^{[2]}$ 来采样序列的下一个节点，直到当前节点没有邻居节点，或者达到最大序列长度。 除了这种简单的转移函数，node2vec 算法 $^{[3]}$ 还提出了一种有偏的随机游走策略，通过引入两个超参数来决定游走是偏向于向远离初始点的方向探索，还是围绕初始点附近进行探索，因此更加灵活，但是初始化的效率比较低。 3 训练模型生成商品的 embedding得到采样序列的集合后，我们就可以用 word2vec 中的 negtive sampling + skipgram 算法来生成每个节点的 embedding，目标是最大化所有序列中节点共现的概率： \min_\Phi \log \sigma\big(\Phi(v_j)^\top \Phi(v_i)\big) +\sum_{t\in N_-(v_i)}\log \sigma\big(\Phi(v_t)^\top \Phi(v_i)\big)其中，$\Phi:\mathbb{V}\rightarrow \mathbb{R}^d$ 表示将节点映射为 $d$ 维 embedding 的函数；$N_-(v_i)$ 表示对 $v_i$ 随机生成的负样本节点集合；$\sigma(\cdot)$ 表示 sigmoid 函数。 回顾 word2vec，我们是基于节点的 ID 把每个节点映射成一个 embedding，这种方式的缺点在于只能处理出现频次大于一定阈值的节点，但是在例如淘宝的场景中，大量的商品（特别是新商品）被消费的次数很少，因此无法为这些商品生成 embedding。 实际上，这些商品是有一些元数据信息（side information）的，比如品牌、类别、价格、描述、海报等，这些信息本身就能被用于评估商品间的相似度。为了使用这些信息，文章进一步对商品每个类别的 side information 都映射到与 ID embedding 同维度的向量空间，然后将商品 ID embedding 和所有 side information 的 embedding 求和，得到商品 $v$ 的最终表示 $H_v$，再送到 softmax 网络中进行训练，如下图所示，其中 SI 0 表示 ID 维度。 再进一步，商品不同类别的 embedding 信息含量是不同的，例如在评估 iPhone 和 iMac 的相似度时，品牌信息的重要性更高；而在评估女性衣服相似度的时候，款式和价格因素的影响更大，因此文章增加权重矩阵 $\boldsymbol{A}\in \mathbb{R}^{|V|\times (n+1)}$，即为每个商品每个类别的 embedding 都分配一个可学习的权重 $a_{v,i}$，然后计算商品 $v$ 的加权 embedding： H_v = \frac{\sum_{j=0}^n e^{a_{v,j}}\boldsymbol{W}_{v,j}}{\sum_{j=0}^n e^{a_{v,j}}}其中，$\boldsymbol{W}_{v,j}$ 表示商品 $v$ 第 $j$ 个类别的 side information 对应的 embedding。把 $H_v$ 看成是 $v$ 的 input vector，记 $Z_u$ 表示商品 $u$ 的 output vector（即 $v$ 在 softmax 层中的 embedding），用 label $y$ 表示 $u$ 是否是 $v$ 的上下文节点，则 EGES 的目标函数定义为： \mathcal{L}(v,u,y)=-\Big(y\log\big(\sigma(H_v^\top Z_u)\big)+(1-y)\log\big(1-\sigma(H_v^\top Z_u)\big)\Big)再基于梯度反向传播就能对参数 $\boldsymbol{W}, A, Z$ 进行更新了。 4 模型上线和效果评估上面讲完了 EGES 的训练过程，其实 embedding 的离线评估是很困难的。文章提出一种连接预测的方式，也就是把图中随机选一些有向边作为正例，随机构造一些不存在的有向边作为负例来测试模型。除了这种方式，还可以通过选择一些典型的 case 来将各维度的 embedding 进行可视化，或者召回相似列表，看看是否满足主观预期，但是这种方式可以用来理解和优化，不适合用于评估。 将模型上线时，一般是根据训练好的模型预计算并缓存所有商品的 embedding，并基于 faiss 等 ANN 检索器构建索引，同时缓存所有 side information 的 embedding；对于新商品，在入库时就需要基于其 side information 查询相应的 embedding，然后求平均 embedding 作为新商品的 embedding 并缓存；需要基于种子商品进行召回时，先查询种子商品的 embedding，在线请求 ANN 相似结果。如果线上召回想更快点，就离线算出所有商品的 topN 相似商品并缓存。 参考文献[1] SimRank与视频相似度计算. 胡诚. https://guyuecanhui.github.io/2019/04/29/simrank/ [2] 加权随机采样. 胡诚. https://guyuecanhui.github.io/2020/12/05/weighted-sample/ [3] Grover, Aditya , and J. Leskovec . “node2vec: Scalable Feature Learning for Networks.” the 22nd ACM SIGKDD International Conference ACM, 2016.]]></content>
@@ -381,9 +401,9 @@
         <category>推荐系统</category>
       </categories>
       <tags>
-        <tag>推荐</tag>
         <tag>统计</tag>
         <tag>置信区间</tag>
+        <tag>推荐</tag>
       </tags>
   </entry>
   <entry>

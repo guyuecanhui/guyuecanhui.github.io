@@ -1,0 +1,1364 @@
+<!DOCTYPE html>
+
+
+
+  
+
+
+<html class="theme-next gemini use-motion" lang>
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+    
+      
+    
+
+    
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic|Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.4" rel="stylesheet" type="text/css">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=5.1.4">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=5.1.4">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=5.1.4" color="#222">
+
+
+
+
+
+  <meta name="keywords" content="ab,统计,p-value,z-score,置信区间,置信度,功效,显著水平,双比率检验,假设检验,">
+
+
+
+
+
+  <link rel="alternate" href="/atom.xml" title="HCigmoid" type="application/atom+xml">
+
+
+
+
+
+
+<meta name="description" content="在视频推荐优化的过程中，最重要的措施莫过于 A/B 测试了。典型的 A/B 测试场景中，我们首先将流量均匀的分桶，选择部分桶使用基线算法，作为对照组（Control），选择相同数量的桶用于测试新的特性，作为实验组（Treatment）。实验过程中不断收集用户的反馈数据，用来计算核心指标（本文考虑 CTR），最后分析、评估出最好的版本。 这里分析最佳版本就需要借助假设检验的技术，例如检验某个实验组的">
+<meta name="keywords" content="ab,统计,p-value,z-score,置信区间,置信度,功效,显著水平,双比率检验,假设检验">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AB 测试数学基础">
+<meta property="og:url" content="https://guyuecanhui.github.io/2021/04/28/abtest-calculator/index.html">
+<meta property="og:site_name" content="HCigmoid">
+<meta property="og:description" content="在视频推荐优化的过程中，最重要的措施莫过于 A/B 测试了。典型的 A/B 测试场景中，我们首先将流量均匀的分桶，选择部分桶使用基线算法，作为对照组（Control），选择相同数量的桶用于测试新的特性，作为实验组（Treatment）。实验过程中不断收集用户的反馈数据，用来计算核心指标（本文考虑 CTR），最后分析、评估出最好的版本。 这里分析最佳版本就需要借助假设检验的技术，例如检验某个实验组的">
+<meta property="og:locale" content="default">
+<meta property="og:image" content="https://guyuecanhui.github.io/2021/04/28/abtest-calculator/zscore_pvalue_normal.png">
+<meta property="og:updated_time" content="2021-05-09T15:31:16.674Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="AB 测试数学基础">
+<meta name="twitter:description" content="在视频推荐优化的过程中，最重要的措施莫过于 A/B 测试了。典型的 A/B 测试场景中，我们首先将流量均匀的分桶，选择部分桶使用基线算法，作为对照组（Control），选择相同数量的桶用于测试新的特性，作为实验组（Treatment）。实验过程中不断收集用户的反馈数据，用来计算核心指标（本文考虑 CTR），最后分析、评估出最好的版本。 这里分析最佳版本就需要借助假设检验的技术，例如检验某个实验组的">
+<meta name="twitter:image" content="https://guyuecanhui.github.io/2021/04/28/abtest-calculator/zscore_pvalue_normal.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '5.1.4',
+    sidebar: {"position":"left","display":"post","offset":12,"b2t":false,"scrollpercent":false,"onmobile":false},
+    fancybox: true,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="https://guyuecanhui.github.io/2021/04/28/abtest-calculator/">
+
+
+
+
+
+  <title>AB 测试数学基础 | HCigmoid</title>
+  
+
+
+
+
+
+
+
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="default">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">HCigmoid</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Watch, learn and practise</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-about">
+          <a href="/about/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-user"></i> <br>
+            
+            关于
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+
+      
+        <li class="menu-item menu-item-search">
+          
+            <a href="javascript:;" class="popup-trigger">
+          
+            
+              <i class="menu-item-icon fa fa-search fa-fw"></i> <br>
+            
+            搜索
+          </a>
+        </li>
+      
+    </ul>
+  
+
+  
+    <div class="site-search">
+      
+  <div class="popup search-popup local-search-popup">
+  <div class="local-search-header clearfix">
+    <span class="search-icon">
+      <i class="fa fa-search"></i>
+    </span>
+    <span class="popup-btn-close">
+      <i class="fa fa-times-circle"></i>
+    </span>
+    <div class="local-search-input-wrapper">
+      <input autocomplete="off" placeholder="搜索..." spellcheck="false" type="text" id="local-search-input">
+    </div>
+  </div>
+  <div id="local-search-result"></div>
+</div>
+
+
+
+    </div>
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal" itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="https://guyuecanhui.github.io/2021/04/28/abtest-calculator/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="古月残辉">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/images/avatar.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="HCigmoid">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">AB 测试数学基础</h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2021-04-28T21:57:34+08:00">
+                2021-04-28
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/数学/" itemprop="url" rel="index">
+                    <span itemprop="name">数学</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2021/04/28/abtest-calculator/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count valine-comment-count" data-xid="/2021/04/28/abtest-calculator/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="page-pv"><i class="fa fa-file-o"></i> 阅读数
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-wordcount">
+              
+                
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">字数统计&#58;</span>
+                
+                <span title="字数统计">
+                  1.1k
+                </span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">
+                  4
+                </span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>在视频推荐优化的过程中，最重要的措施莫过于 A/B 测试了。典型的 A/B 测试场景中，我们首先将流量均匀的分桶，选择部分桶使用基线算法，作为<strong>对照组</strong>（Control），选择相同数量的桶用于测试新的特性，作为<strong>实验组</strong>（Treatment）。实验过程中不断收集用户的反馈数据，用来计算核心指标（本文考虑 CTR），最后分析、评估出最好的版本。</p>
+<p>这里分析最佳版本就需要借助假设检验的技术，例如检验某个实验组的 CTR 是否优于对照组，属于<strong>双比率检验</strong>（2 Proportion-test，用于根据两个随机样本中的数据对两个总体比率之间的差值进行推断）。由于推荐系统中样本量比较大（满足 $n\cdot(1-p)&gt;5, n\cdot p&gt;5$，$n$ 表示样本数，$p$ 表示 CTR），我们通常采用的是 Z 检验的技术，它是基于标准正态分布来<strong>近似推断</strong>实验组优于对照组的概率。</p>
+<a id="more"></a>
+<p>注意，Z 检验是大样本下的近似检验，如果需要精确检验，可以基于超几何分布来进行检验，但是数据量非常大的情况下，计算成本较高，所以一般还是使用 Z 检验技术。</p>
+<p>具体来讲，假设对照组和实验组样本数为 $n_1,n_2$，平均 CTR 为 $\bar{p}_1,\bar{p}_2$ ，这里平均 CTR 是指我们基于实验观测到的结果，假设实际上两组的 CTR 为 $p_1,p_2$，根据中心极限定理，$p_1$ 和 $p_2$ 均趋向正态分布，且由于独立正态分布变量之和依旧是正态分布，$p_1-p_2$ 也趋向正态分布：</p>
+<script type="math/tex; mode=display">
+p_1\sim N(\bar{p}_1,\frac{\bar{p}_1(1-\bar{p}_1)}{n_1})\\
+p_2\sim N(\bar{p}_2,\frac{\bar{p}_2(1-\bar{p}_2)}{n_2})\\
+p_1-p_2\sim N(\bar{p}_1-\bar{p}_2,\frac{\bar{p}_1(1-\bar{p}_1)}{n_1}+\frac{\bar{p}_2(1-\bar{p}_2)}{n_2})</script><h3 id="统计显著性"><a href="#统计显著性" class="headerlink" title="统计显著性"></a>统计显著性</h3><p>接下来，我们开始假设检验过程。首先要建立<strong>原假设</strong>（Null Hypothesis），即假设对照组不比实验组差，即 $H_0:\ p_1-p_2\ge 0$，且观测到的差异是由于随机波动引起的。我们最希望的是拒绝该假设，并接受实验组的效果显著优于对照组，即<strong>对立假设</strong> $H_1:\ p_1&lt;p_2$。</p>
+<p>要拒绝零假设，我们需要根据我们观测的数据来看看 $p_1$ 是否真的不比 $p_2$ 小，如果 $p_1$ 和 $p_2$ 相差很小或者 $p_1$ 明显大于 $p_2$，则确实无法拒绝原假设；但是如果 $p_2$ 比 $p_1$ 大很多，那么我们就有把握拒绝零假设。大多少算是多呢？我们可以通过统计量 Z 来检验：</p>
+<script type="math/tex; mode=display">
+Z=\frac{\bar{p}_1-\bar{p}_2}{\sqrt{\frac{\bar{p}_1(1-\bar{p}_1)}{n_1}+\frac{\bar{p}_2(1-\bar{p}_2)}{n_2}}}</script><p>其中，$\bar{p}_1-\bar{p}_2$ 是实际观测到的差异，$\sqrt{\frac{p_1(1-p_1)}{n_1}+\frac{p_2(1-p_2)}{n_2}}$ 是实际观测到的标准误差，直观来看的话，Z-score 表示的是实际差异有多少个标准误差。Z-score 与正态分布的关系如下图所示 $^{[1]}$：</p>
+<img src="/2021/04/28/abtest-calculator/zscore_pvalue_normal.png" title="图 1. 正态分布中的显著水平、Z-score 和 p-value">
+<p>显然，Z-score 越小（负数），说明观测结果与原假设越不相符，我们越有理由拒绝原假设。那小到什么程度可以拒绝呢？这就需要人工拍一个显著水平 $\alpha$，它表示假定原假设为真时，我们却拒绝原假设的概率（即<strong>第一类错误</strong>的概率，在本文中，第一类错误是指实验组实际上不比对照组好，但是却错误的认为实验组更好）。由于错误转正一个并不好的实验组代价是很大的，我们希望 $\alpha$ 越小越好，通常取 $\alpha=0.05$。</p>
+<p>基于 Z-score 和正态分布可以估计观测到的数据出现的概率，记为 $p$（p-value），如果 $p&lt;\alpha$，也就是观测到数据比预期的显著水平更极端，此时可以拒绝原假设。对应到上面的图中，我们可以确定拒绝域：<script type="math/tex">Z\le Z_\alpha</script>，或者等价的 <script type="math/tex">p_{Z\le Z_\alpha}<\alpha</script>。</p>
+<p>总结一下上面的假设检验过程：</p>
+<ol>
+<li>确定原假设 $H_0:\ p_1-p_2\ge 0$，对立假设 $H_1:\ p_1&lt;p_2$；</li>
+<li>确定显著水平 $\alpha=0.05$；</li>
+<li>计算样本均值 $\bar{p}_1,\bar{p}_2$ 和统计量 $Z$，</li>
+<li>查正态分布表得到临界值 $Z_{\alpha}=-1.96$；</li>
+<li>如果 $Z\le Z_\alpha$ 成立，则拒绝原假设，并认为实验组显著优于对照组，水平为 $\alpha$；否则无法拒绝原假设。</li>
+</ol>
+<p>这个过程实际上是一个单侧检验，我们还可以检验对照组与实验组是否有显著差别，即双侧检验，这里把各种情况下的假设和拒绝域都汇总帖出来。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>双侧检验</th>
+<th>左侧检验</th>
+<th>右侧检验</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>假设</td>
+<td>$H_0:\ p_1-p_2= 0$<br>$H_1:\ p_1-p_2\not =0$</td>
+<td>$H_0:\ p_1-p_2\ge 0$<br>$H_1:\ p_1-p_2&lt;0$</td>
+<td>$H_0:\ p_1-p_2\le 0$<br>$H_1:\ p_1-p_2&gt;0$</td>
+</tr>
+<tr>
+<td>拒绝域</td>
+<td><script type="math/tex">\mid Z\mid \ge Z_{1-\frac{\alpha}{2}}</script></td>
+<td><script type="math/tex">Z\le Z_\alpha</script></td>
+<td><script type="math/tex">Z\ge Z_{1-\alpha}</script></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>特别的，当我们原假设是 $p_1-p_2=0$ 时，也就是假设两组 CTR 没有差异，这时统计量 Z 简化为：</p>
+<script type="math/tex; mode=display">
+Z=\frac{\bar{p}_1-\bar{p}_2}{\sqrt{\bar{p}_0(1-\bar{p}_0)\big(\frac{1}{n_1}+\frac{1}{n_2}\big)}}</script><p>其中，$\bar{p}_0=\frac{c_1+c_2}{n_1+n2}$ 表示两组样本的平均 CTR。</p>
+<h3 id="统计功效"><a href="#统计功效" class="headerlink" title="统计功效"></a>统计功效</h3><p>前面提到了，对于相同的原假设，我们可以用多种方法来检验，其中自然有优劣之分，可以用检验的<strong>功效函数</strong>来区分 $^{[2]}$。所谓检验的功效函数，简单来讲就是基于该检验之下，原假设被拒绝的概率。检验的功效越大，当原假设为假时，我们拒绝原假设的概率越大。</p>
+<p>但如果原假设为真，我们还拒绝原假设，那不就相当于是错误的把更好的实验组给否定了吗（即<strong>第二类错误</strong>）？此时功效函数越大反而说明犯第二类错误的概率越大，说功效就不合适了。因此，一般只有原假设为假时，我们才考虑功效值。一般记某个检验发生第二类错误的概率为 $\beta$，则其功效值为 $power=1-\beta$。对于左侧检验，功效值的计算公式为：</p>
+<script type="math/tex; mode=display">
+1-\beta=\Phi\Big(\frac{\bar{p}_2-\bar{p}_1-Z_\alpha\sqrt{\frac{2p_0(1-p_0)}{n}}}
+{\frac{\bar{p}_1(1-\bar{p}_1)}{n}+\frac{\bar{p}_2(1-\bar{p}_2)}{n}}\Big)</script><p>其中，$\Phi(\cdot)$ 表示标准正态分布的累积分布函数，同时，为了简化后面的样本量分析，这里考虑 $n_1=n_2=n$，即实验组和对照组的样本量大致相同（这是符合 A/B 实验设计的要求的，如果不同，可以取 $n=\min(n_1,n_2)$）。上式具体推导过程就不详述了，右侧检验和双侧检验的功效值可以参考 $[3]$。</p>
+<p>在选择一个检验时，我们希望它发生第一类错误和第二类错误的概率越小越好，但实际上这两者是此消彼长的，就好比置信区间和置信度的权衡一样。由于一般发生第一类错误的影响更大一些，所以我们一般控制第一类错误的概率不超过 $\alpha$，然后让功效越大越好，一般取功效值 $power=0.8$（当然，如果第二类错误的影响更大，可以控制第二类错误的概率不超过 $\beta$，再让第一类错误发生的概率越小越好）。这些概念的关系如下表所示：</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th></th>
+<th>接受 $H_0$</th>
+<th>拒绝 $H_0$</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>$H_0$ 为真</td>
+<td>$\checkmark$ (置信度 $1-\alpha$)</td>
+<td>第一类错误，$\le\alpha$</td>
+</tr>
+<tr>
+<td>$H_0$ 为假</td>
+<td>第二类错误，$\le \beta$</td>
+<td>$\checkmark$ (功效 $1-\beta$)</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>最后，怎样在确定显著水平 $\alpha$ 的情况下，提高 Z 检验的功效值呢？增加样本量！我们可以根据功效的计算公式对所需的样本量 $n$ 进行求解（继续忽略推导过程），得到预期功效为 $1-\beta$ 的样本量为：</p>
+<script type="math/tex; mode=display">
+n=\frac{2(Z_\alpha+Z_\beta)^2}{(2\sin^{-1}\sqrt{\bar{p}_1}-2\sin^{-1}\sqrt{\bar{p}_2})^2}</script><p>至此，我们已经介绍了针对 CTR 的 AB 实验如何进行 Z 检验，以及如何基于指定的显著水平 $\alpha$、统计功效 $1-\beta$ 来估计所需的样本量。文章覆盖的检验对象和类型都非常有限，在其他实验中，我们可能需要进行双侧检验，或者对人均时长、GAUC 等其他指标进行检验，就需要根据实际情况选择合适的统计量和检测法来进行检验，并估计达到指定功效的样本量。当然，如果用户量和样本量非常大，可以忽略假设检验，直接根据均值来确定最佳变体。</p>
+<h3 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h3><p>[1] 什么是 z 得分？什么是 p 值？. <a href="https://desktop.arcgis.com/zh-cn/arcmap/latest/tools/spatial-statistics-toolbox/what-is-a-z-score-what-is-a-p-value.htm" target="_blank" rel="noopener">https://desktop.arcgis.com/zh-cn/arcmap/latest/tools/spatial-statistics-toolbox/what-is-a-z-score-what-is-a-p-value.htm</a>.</p>
+<p>[2] 陈希孺. 概率论与数据统计. 中国科技大学出版社, 2009.</p>
+<p>[3] 功效和样本数量. <a href="https://wenku.baidu.com/view/c807b8d48662caaedd3383c4bb4cf7ec4afeb6b3.html" target="_blank" rel="noopener">https://wenku.baidu.com/view/c807b8d48662caaedd3383c4bb4cf7ec4afeb6b3.html</a>.</p>
+
+      
+    </div>
+    
+    
+    
+
+    
+
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/ab/" rel="tag"># ab</a>
+          
+            <a href="/tags/统计/" rel="tag"># 统计</a>
+          
+            <a href="/tags/p-value/" rel="tag"># p-value</a>
+          
+            <a href="/tags/z-score/" rel="tag"># z-score</a>
+          
+            <a href="/tags/置信区间/" rel="tag"># 置信区间</a>
+          
+            <a href="/tags/置信度/" rel="tag"># 置信度</a>
+          
+            <a href="/tags/功效/" rel="tag"># 功效</a>
+          
+            <a href="/tags/显著水平/" rel="tag"># 显著水平</a>
+          
+            <a href="/tags/双比率检验/" rel="tag"># 双比率检验</a>
+          
+            <a href="/tags/假设检验/" rel="tag"># 假设检验</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2021/01/24/paper-2018-ali-eges/" rel="next" title="淘宝商品向量生成模型 EGES">
+                <i class="fa fa-chevron-left"></i> 淘宝商品向量生成模型 EGES
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+
+  
+    <div class="comments" id="comments">
+    </div>
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+            
+              <p class="site-author-name" itemprop="name">古月残辉</p>
+              <p class="site-description motion-element" itemprop="description">总结心得</p>
+          </div>
+
+          <nav class="site-state motion-element">
+
+            
+              <div class="site-state-item site-state-posts">
+              
+                <a href="/archives/">
+              
+                  <span class="site-state-item-count">34</span>
+                  <span class="site-state-item-name">日志</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-categories">
+                <a href="/categories/index.html">
+                  <span class="site-state-item-count">6</span>
+                  <span class="site-state-item-name">分类</span>
+                </a>
+              </div>
+            
+
+            
+              
+              
+              <div class="site-state-item site-state-tags">
+                <a href="/tags/index.html">
+                  <span class="site-state-item-count">90</span>
+                  <span class="site-state-item-name">标签</span>
+                </a>
+              </div>
+            
+
+          </nav>
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+                
+                  <span class="links-of-author-item">
+                    <a href="mailto:guyuecanhui@icloud.com" target="_blank" title="E-Mail">
+                      
+                        <i class="fa fa-fw fa-envelope"></i>E-Mail</a>
+                  </span>
+                
+            </div>
+          
+
+          
+          
+
+          
+          
+
+          
+
+        </div>
+      </section>
+
+      
+      <!--noindex-->
+        <section class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+              
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#统计显著性"><span class="nav-number">1.</span> <span class="nav-text">统计显著性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#统计功效"><span class="nav-number">2.</span> <span class="nav-text">统计功效</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考文献"><span class="nav-number">3.</span> <span class="nav-text">参考文献</span></a></li></ol></div>
+            
+
+          </div>
+        </section>
+      <!--/noindex-->
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; 2018 &mdash; <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">古月残辉</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">Site words total count&#58;</span>
+    
+    <span title="Site words total count">61.8k</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="site-uv">
+      <i class="fa fa-user"></i> 访问人数
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+      人
+    </span>
+  
+
+  
+    <span class="site-pv">
+      <i class="fa fa-eye"></i> 总访问量
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+      次
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  
+
+  
+  
+    <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+  
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.4"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.4"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.4"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.4"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.4"></script>
+
+
+
+  
+
+
+  
+
+
+
+
+	
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+  <script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+  <script src="//unpkg.com/valine/dist/Valine.min.js"></script>
+  
+  <script type="text/javascript">
+    var GUEST = ['nick','mail','link'];
+    var guest = 'nick,mail,link';
+    guest = guest.split(',').filter(item=>{
+      return GUEST.indexOf(item)>-1;
+    });
+    new Valine({
+        el: '#comments' ,
+        verify: false,
+        notify: false,
+        appId: '6du4Ppc2TvUuhcccRHSDNH2v-gzGzoHsz',
+        appKey: 'zOKNml4W1Bq3OTzEuLt5hUjI',
+        placeholder: '感谢阅读！欢迎评论！',
+        avatar:'mm',
+        guest_info:guest,
+        pageSize:'10' || 10,
+    });
+  </script>
+
+
+
+  
+
+  <script type="text/javascript">
+    // Popup Window;
+    var isfetched = false;
+    var isXml = true;
+    // Search DB path;
+    var search_path = "search.xml";
+    if (search_path.length === 0) {
+      search_path = "search.xml";
+    } else if (/json$/i.test(search_path)) {
+      isXml = false;
+    }
+    var path = "/" + search_path;
+    // monitor main search box;
+
+    var onPopupClose = function (e) {
+      $('.popup').hide();
+      $('#local-search-input').val('');
+      $('.search-result-list').remove();
+      $('#no-result').remove();
+      $(".local-search-pop-overlay").remove();
+      $('body').css('overflow', '');
+    }
+
+    function proceedsearch() {
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay"></div>')
+        .css('overflow', 'hidden');
+      $('.search-popup-overlay').click(onPopupClose);
+      $('.popup').toggle();
+      var $localSearchInput = $('#local-search-input');
+      $localSearchInput.attr("autocapitalize", "none");
+      $localSearchInput.attr("autocorrect", "off");
+      $localSearchInput.focus();
+    }
+
+    // search function;
+    var searchFunc = function(path, search_id, content_id) {
+      'use strict';
+
+      // start loading animation
+      $("body")
+        .append('<div class="search-popup-overlay local-search-pop-overlay">' +
+          '<div id="search-loading-icon">' +
+          '<i class="fa fa-spinner fa-pulse fa-5x fa-fw"></i>' +
+          '</div>' +
+          '</div>')
+        .css('overflow', 'hidden');
+      $("#search-loading-icon").css('margin', '20% auto 0 auto').css('text-align', 'center');
+
+      $.ajax({
+        url: path,
+        dataType: isXml ? "xml" : "json",
+        async: true,
+        success: function(res) {
+          // get the contents from search data
+          isfetched = true;
+          $('.popup').detach().appendTo('.header-inner');
+          var datas = isXml ? $("entry", res).map(function() {
+            return {
+              title: $("title", this).text(),
+              content: $("content",this).text(),
+              url: $("url" , this).text()
+            };
+          }).get() : res;
+          var input = document.getElementById(search_id);
+          var resultContent = document.getElementById(content_id);
+          var inputEventFunction = function() {
+            var searchText = input.value.trim().toLowerCase();
+            var keywords = searchText.split(/[\s\-]+/);
+            if (keywords.length > 1) {
+              keywords.push(searchText);
+            }
+            var resultItems = [];
+            if (searchText.length > 0) {
+              // perform local searching
+              datas.forEach(function(data) {
+                var isMatch = false;
+                var hitCount = 0;
+                var searchTextCount = 0;
+                var title = data.title.trim();
+                var titleInLowerCase = title.toLowerCase();
+                var content = data.content.trim().replace(/<[^>]+>/g,"");
+                var contentInLowerCase = content.toLowerCase();
+                var articleUrl = decodeURIComponent(data.url);
+                var indexOfTitle = [];
+                var indexOfContent = [];
+                // only match articles with not empty titles
+                if(title != '') {
+                  keywords.forEach(function(keyword) {
+                    function getIndexByWord(word, text, caseSensitive) {
+                      var wordLen = word.length;
+                      if (wordLen === 0) {
+                        return [];
+                      }
+                      var startPosition = 0, position = [], index = [];
+                      if (!caseSensitive) {
+                        text = text.toLowerCase();
+                        word = word.toLowerCase();
+                      }
+                      while ((position = text.indexOf(word, startPosition)) > -1) {
+                        index.push({position: position, word: word});
+                        startPosition = position + wordLen;
+                      }
+                      return index;
+                    }
+
+                    indexOfTitle = indexOfTitle.concat(getIndexByWord(keyword, titleInLowerCase, false));
+                    indexOfContent = indexOfContent.concat(getIndexByWord(keyword, contentInLowerCase, false));
+                  });
+                  if (indexOfTitle.length > 0 || indexOfContent.length > 0) {
+                    isMatch = true;
+                    hitCount = indexOfTitle.length + indexOfContent.length;
+                  }
+                }
+
+                // show search results
+
+                if (isMatch) {
+                  // sort index by position of keyword
+
+                  [indexOfTitle, indexOfContent].forEach(function (index) {
+                    index.sort(function (itemLeft, itemRight) {
+                      if (itemRight.position !== itemLeft.position) {
+                        return itemRight.position - itemLeft.position;
+                      } else {
+                        return itemLeft.word.length - itemRight.word.length;
+                      }
+                    });
+                  });
+
+                  // merge hits into slices
+
+                  function mergeIntoSlice(text, start, end, index) {
+                    var item = index[index.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    var hits = [];
+                    var searchTextCountInSlice = 0;
+                    while (position + word.length <= end && index.length != 0) {
+                      if (word === searchText) {
+                        searchTextCountInSlice++;
+                      }
+                      hits.push({position: position, length: word.length});
+                      var wordEnd = position + word.length;
+
+                      // move to next position of hit
+
+                      index.pop();
+                      while (index.length != 0) {
+                        item = index[index.length - 1];
+                        position = item.position;
+                        word = item.word;
+                        if (wordEnd > position) {
+                          index.pop();
+                        } else {
+                          break;
+                        }
+                      }
+                    }
+                    searchTextCount += searchTextCountInSlice;
+                    return {
+                      hits: hits,
+                      start: start,
+                      end: end,
+                      searchTextCount: searchTextCountInSlice
+                    };
+                  }
+
+                  var slicesOfTitle = [];
+                  if (indexOfTitle.length != 0) {
+                    slicesOfTitle.push(mergeIntoSlice(title, 0, title.length, indexOfTitle));
+                  }
+
+                  var slicesOfContent = [];
+                  while (indexOfContent.length != 0) {
+                    var item = indexOfContent[indexOfContent.length - 1];
+                    var position = item.position;
+                    var word = item.word;
+                    // cut out 100 characters
+                    var start = position - 20;
+                    var end = position + 80;
+                    if(start < 0){
+                      start = 0;
+                    }
+                    if (end < position + word.length) {
+                      end = position + word.length;
+                    }
+                    if(end > content.length){
+                      end = content.length;
+                    }
+                    slicesOfContent.push(mergeIntoSlice(content, start, end, indexOfContent));
+                  }
+
+                  // sort slices in content by search text's count and hits' count
+
+                  slicesOfContent.sort(function (sliceLeft, sliceRight) {
+                    if (sliceLeft.searchTextCount !== sliceRight.searchTextCount) {
+                      return sliceRight.searchTextCount - sliceLeft.searchTextCount;
+                    } else if (sliceLeft.hits.length !== sliceRight.hits.length) {
+                      return sliceRight.hits.length - sliceLeft.hits.length;
+                    } else {
+                      return sliceLeft.start - sliceRight.start;
+                    }
+                  });
+
+                  // select top N slices in content
+
+                  var upperBound = parseInt('1');
+                  if (upperBound >= 0) {
+                    slicesOfContent = slicesOfContent.slice(0, upperBound);
+                  }
+
+                  // highlight title and content
+
+                  function highlightKeyword(text, slice) {
+                    var result = '';
+                    var prevEnd = slice.start;
+                    slice.hits.forEach(function (hit) {
+                      result += text.substring(prevEnd, hit.position);
+                      var end = hit.position + hit.length;
+                      result += '<b class="search-keyword">' + text.substring(hit.position, end) + '</b>';
+                      prevEnd = end;
+                    });
+                    result += text.substring(prevEnd, slice.end);
+                    return result;
+                  }
+
+                  var resultItem = '';
+
+                  if (slicesOfTitle.length != 0) {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + highlightKeyword(title, slicesOfTitle[0]) + "</a>";
+                  } else {
+                    resultItem += "<li><a href='" + articleUrl + "' class='search-result-title'>" + title + "</a>";
+                  }
+
+                  slicesOfContent.forEach(function (slice) {
+                    resultItem += "<a href='" + articleUrl + "'>" +
+                      "<p class=\"search-result\">" + highlightKeyword(content, slice) +
+                      "...</p>" + "</a>";
+                  });
+
+                  resultItem += "</li>";
+                  resultItems.push({
+                    item: resultItem,
+                    searchTextCount: searchTextCount,
+                    hitCount: hitCount,
+                    id: resultItems.length
+                  });
+                }
+              })
+            };
+            if (keywords.length === 1 && keywords[0] === "") {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-search fa-5x" /></div>'
+            } else if (resultItems.length === 0) {
+              resultContent.innerHTML = '<div id="no-result"><i class="fa fa-frown-o fa-5x" /></div>'
+            } else {
+              resultItems.sort(function (resultLeft, resultRight) {
+                if (resultLeft.searchTextCount !== resultRight.searchTextCount) {
+                  return resultRight.searchTextCount - resultLeft.searchTextCount;
+                } else if (resultLeft.hitCount !== resultRight.hitCount) {
+                  return resultRight.hitCount - resultLeft.hitCount;
+                } else {
+                  return resultRight.id - resultLeft.id;
+                }
+              });
+              var searchResultList = '<ul class=\"search-result-list\">';
+              resultItems.forEach(function (result) {
+                searchResultList += result.item;
+              })
+              searchResultList += "</ul>";
+              resultContent.innerHTML = searchResultList;
+            }
+          }
+
+          if ('auto' === 'auto') {
+            input.addEventListener('input', inputEventFunction);
+          } else {
+            $('.search-icon').click(inputEventFunction);
+            input.addEventListener('keypress', function (event) {
+              if (event.keyCode === 13) {
+                inputEventFunction();
+              }
+            });
+          }
+
+          // remove loading animation
+          $(".local-search-pop-overlay").remove();
+          $('body').css('overflow', '');
+
+          proceedsearch();
+        }
+      });
+    }
+
+    // handle and trigger popup window;
+    $('.popup-trigger').click(function(e) {
+      e.stopPropagation();
+      if (isfetched === false) {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+      } else {
+        proceedsearch();
+      };
+    });
+
+    $('.popup-btn-close').click(onPopupClose);
+    $('.popup').click(function(e){
+      e.stopPropagation();
+    });
+    $(document).on('keyup', function (event) {
+      var shouldDismissSearchPopup = event.which === 27 &&
+        $('.search-popup').is(':visible');
+      if (shouldDismissSearchPopup) {
+        onPopupClose();
+      }
+    });
+  </script>
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        tex2jax: {
+          inlineMath: [ ['$','$'], ["\\(","\\)"]  ],
+          processEscapes: true,
+          skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+        }
+      });
+    </script>
+
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax(), i;
+        for (i=0; i < all.length; i += 1) {
+          all[i].SourceElement().parentNode.className += ' has-jax';
+        }
+      });
+    </script>
+    <script type="text/javascript" src="//cdn.bootcss.com/mathjax/2.7.1/latest.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  
+
+
+  
+
+  
+
+</body>
+</html>
